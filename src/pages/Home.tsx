@@ -653,7 +653,7 @@ function FeaturedProductsSection() {
             <p className="text-green-100/35 mt-2 text-sm">Five dish-specific packs. No prep, no waste — ready in minutes.</p>
           </div>
           <Link to="/products"
-            className="inline-flex items-center gap-2 px-5 py-2.5 border border-green-500/30 hover:border-green-400/60 text-green-300/80 hover:text-green-200 font-700 rounded-xl text-sm transition-all whitespace-nowrap hover:bg-green-500/10">
+            className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-green-500 text-green-400 hover:bg-green-500 hover:text-white font-700 rounded-xl text-sm transition-all duration-200 whitespace-nowrap">
             View All Products <ArrowRight size={14} />
           </Link>
         </motion.div>
