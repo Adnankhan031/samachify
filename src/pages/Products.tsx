@@ -5,9 +5,9 @@ import { ArrowRight, Clock, ChefHat, Leaf, Flame, Zap, Package, Star, Filter } f
 import { products } from '../data/products'
 import Footer from '../components/Footer'
 
-const DARK_BG = 'linear-gradient(160deg, #030A04 0%, #071408 55%, #0A1E0D 100%)'
+const DARK_BG = 'linear-gradient(160deg, #050902 0%, #0b1606 55%, #142405 100%)'
 const DOT_GRID = {
-  backgroundImage: 'radial-gradient(circle, rgba(74,222,128,0.1) 1px, transparent 1px)',
+  backgroundImage: 'radial-gradient(circle, rgba(193,255,114,0.1) 1px, transparent 1px)',
   backgroundSize: '28px 28px',
 }
 
@@ -40,19 +40,19 @@ export default function Products() {
 
   return (
     <>
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#F8F9F7' }}>
+      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
 
         {/* ── Hero ── */}
         <section className="relative overflow-hidden py-16 sm:py-24" style={{ background: DARK_BG }}>
           <div className="absolute inset-0 pointer-events-none" style={DOT_GRID} />
 
           <motion.div className="absolute pointer-events-none rounded-full"
-            style={{ width: 520, height: 520, top: '-20%', right: '-5%', background: 'radial-gradient(circle, rgba(34,197,94,0.12), transparent 70%)' }}
+            style={{ width: 520, height: 520, top: '-20%', right: '-5%', background: 'radial-gradient(circle, rgba(154,187,80,0.12), transparent 70%)' }}
             animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
           <motion.div className="absolute pointer-events-none rounded-full"
-            style={{ width: 360, height: 360, bottom: '-15%', left: '-5%', background: 'radial-gradient(circle, rgba(74,222,128,0.07), transparent 70%)' }}
+            style={{ width: 360, height: 360, bottom: '-15%', left: '-5%', background: 'radial-gradient(circle, rgba(193,255,114,0.07), transparent 70%)' }}
             animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
           />
@@ -88,7 +88,7 @@ export default function Products() {
               transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
             >
               Authentic South Indian{' '}
-              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
                 Meal Kits
               </span>
             </motion.h1>
@@ -98,7 +98,7 @@ export default function Products() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
             >
-              Five dish-specific packs, each containing exactly what you need. No prep, no waste — authentic flavour ready in minutes.
+              Four dish-specific packs, each containing exactly what you need. No prep, no waste — authentic flavour ready in minutes.
             </motion.p>
 
             {/* Stats row */}
@@ -108,9 +108,9 @@ export default function Products() {
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               {[
-                { val: '5', label: 'Authentic Recipes' },
+                { val: '4', label: 'Authentic Recipes' },
                 { val: '0', label: 'Preservatives' },
-                { val: '10–30', label: 'Min Cook Time' },
+                { val: '10–15', label: 'Min Cook Time' },
                 { val: '100%', label: 'Farm Fresh' },
               ].map((s, i) => (
                 <motion.div key={i} className="text-center"
@@ -216,7 +216,7 @@ export default function Products() {
 
                     {/* Hover overlay with quick action */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
-                      style={{ background: 'rgba(5,14,7,0.5)', backdropFilter: 'blur(3px)' }}>
+                      style={{ background: 'rgba(7,13,3,0.5)', backdropFilter: 'blur(3px)' }}>
                       <Link
                         to={`/products/${product.id}`}
                         className="flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-400 text-white font-700 rounded-xl text-sm transition-all shadow-lg shadow-green-900/40"
@@ -229,7 +229,7 @@ export default function Products() {
                     <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
                       {product.isOnePort ? (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-xs font-700 text-green-700 shadow-sm"
-                          style={{ border: '1px solid rgba(134,197,94,0.35)' }}>
+                          style={{ border: '1px solid rgba(154,187,80,0.35)' }}>
                           <ChefHat size={10} /> One-Pot
                         </div>
                       ) : <div />}
@@ -293,9 +293,9 @@ export default function Products() {
                     <Link
                       to={`/products/${product.id}`}
                       className="group/btn flex items-center justify-between w-full px-5 py-3.5 bg-green-600 hover:bg-green-700 text-white font-700 rounded-2xl text-sm transition-all duration-250 hover:shadow-lg"
-                      style={{ boxShadow: '0 4px 14px rgba(22,163,74,0.25)' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(22,163,74,0.38)' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 14px rgba(22,163,74,0.25)' }}
+                      style={{ boxShadow: '0 4px 14px rgba(73,138,12,0.25)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(73,138,12,0.38)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 14px rgba(73,138,12,0.25)' }}
                     >
                       <span>View Recipe</span>
                       <ArrowRight size={15} className="group-hover/btn:translate-x-1 transition-transform duration-200" />
@@ -324,7 +324,7 @@ export default function Products() {
           <div className="absolute inset-0 pointer-events-none" style={DOT_GRID} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <motion.div className="w-96 h-96 rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.09), transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(154,187,80,0.09), transparent 70%)' }}
               animate={{ scale: [1, 1.12, 1] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -342,17 +342,17 @@ export default function Products() {
               <h2 className="font-display font-black text-white tracking-tighter mb-4 leading-[1.05]"
                 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)' }}>
                 Start with our{' '}
-                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
+                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
                   Sambar Pack
                 </span>
               </h2>
               <p className="text-green-100/45 leading-relaxed mb-8 text-base sm:text-lg">
-                Our best-seller and the perfect introduction to Samachify. Farm-fresh vegetables, semi-cooked dal, and authentic sambar powder — ready in 30 minutes.
+                Our best-seller and the perfect introduction to Samachify. Farm-fresh vegetables, semi-cooked dal, and authentic sambar powder — ready in 10–15 minutes.
               </p>
               <Link
                 to="/products/sambar-pack"
                 className="inline-flex items-center gap-2.5 px-7 sm:px-9 py-3.5 sm:py-4 text-white font-700 rounded-2xl text-sm transition-all duration-250 hover:-translate-y-1 w-full sm:w-auto justify-center"
-                style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)', boxShadow: '0 0 35px rgba(34,197,94,0.28), 0 4px 16px rgba(0,0,0,0.35)' }}
+                style={{ background: 'linear-gradient(135deg, #498a0c, #3a6c09)', boxShadow: '0 0 35px rgba(154,187,80,0.28), 0 4px 16px rgba(0,0,0,0.35)' }}
               >
                 Try Sambar Pack <ArrowRight size={15} />
               </Link>

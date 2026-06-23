@@ -30,7 +30,7 @@ const processSteps = [
 const techHighlights = [
   { icon: Shield,      title: 'HACCP Certified',         desc: 'International food safety standard applied at every production stage', color: '#f59e0b', iconBg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.25)',  glow: 'rgba(245,158,11,0.09)'  },
   { icon: Thermometer, title: 'Cold Chain 2–8°C',        desc: 'Maintained from processing through last-mile delivery',                color: '#3b82f6', iconBg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.25)',  glow: 'rgba(59,130,246,0.09)'  },
-  { icon: Package,     title: 'MAP Technology',          desc: 'Modified atmosphere preserves freshness without preservatives',         color: '#22c55e', iconBg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.25)',   glow: 'rgba(34,197,94,0.09)'   },
+  { icon: Package,     title: 'MAP Technology',          desc: 'Modified atmosphere preserves freshness without preservatives',         color: '#9abb50', iconBg: 'rgba(154,187,80,0.12)',   border: 'rgba(154,187,80,0.25)',   glow: 'rgba(154,187,80,0.09)'   },
   { icon: CheckCircle, title: 'Zero Compromise Quality', desc: 'Multi-point inspection before every single pack ships',                color: '#a855f7', iconBg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.25)', glow: 'rgba(168,85,247,0.09)' },
 ]
 
@@ -43,10 +43,10 @@ const mapBenefits = [
 
 const sustainability = [
   { text: 'Packaging designed to minimise plastic waste',              icon: Recycle, color: '#14b8a6' },
-  { text: 'Perfectly portioned packs reduce food waste by up to 90%', icon: Leaf,    color: '#22c55e' },
+  { text: 'Perfectly portioned packs reduce food waste by up to 90%', icon: Leaf,    color: '#9abb50' },
   { text: 'Direct farm sourcing eliminates long supply chains',        icon: Sprout,  color: '#f59e0b' },
   { text: 'Short-distance delivery reduces carbon footprint',          icon: Zap,     color: '#3b82f6' },
-  { text: 'Vegetable offcuts composted, not discarded',               icon: Leaf,    color: '#84cc16' },
+  { text: 'Vegetable offcuts composted, not discarded',               icon: Leaf,    color: '#c1ff72' },
   { text: 'FSSAI approved packaging materials only',                  icon: Shield,  color: '#a855f7' },
 ]
 
@@ -57,9 +57,9 @@ const heroStats = [
   { value: '100%', label: 'HACCP Compliant' },
 ]
 
-const DARK_BG = 'linear-gradient(160deg, #030A04 0%, #071408 55%, #0A1E0D 100%)'
+const DARK_BG = 'linear-gradient(160deg, #050902 0%, #0b1606 55%, #142405 100%)'
 const DOT_GRID = {
-  backgroundImage: 'radial-gradient(circle, rgba(74,222,128,0.1) 1px, transparent 1px)',
+  backgroundImage: 'radial-gradient(circle, rgba(193,255,114,0.1) 1px, transparent 1px)',
   backgroundSize: '28px 28px',
 }
 
@@ -77,7 +77,7 @@ export default function Technology() {
   return (
     <>
       {/* Dark bg on main fills the ~10px gap between navbar bottom and first section */}
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#030A04' }}>
+      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
 
         {/* ── Hero ── */}
         <section
@@ -88,7 +88,7 @@ export default function Technology() {
 
           <motion.div
             className="absolute pointer-events-none rounded-full"
-            style={{ width: 520, height: 520, top: '10%', left: '5%', background: 'radial-gradient(circle, rgba(34,197,94,0.1), transparent 70%)' }}
+            style={{ width: 520, height: 520, top: '10%', left: '5%', background: 'radial-gradient(circle, rgba(154,187,80,0.1), transparent 70%)' }}
             animate={{ scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -135,7 +135,7 @@ export default function Technology() {
               Science-Backed<br />
               <span
                 className="text-transparent bg-clip-text"
-                style={{ backgroundImage: 'linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #86efac 100%)' }}
+                style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72 0%, #9abb50 50%, #aee75d 100%)' }}
               >
                 Freshness Technology
               </span>
@@ -173,7 +173,7 @@ export default function Technology() {
         <section
           ref={highlightsRef}
           className="py-14 sm:py-16"
-          style={{ background: '#FAFAF8' }}
+          style={{ background: '#f7fbef' }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -216,7 +216,7 @@ export default function Technology() {
         </section>
 
         {/* ── Process Flow ── */}
-        <section ref={processRef} className="py-14 sm:py-28" style={{ background: '#FAFAF8' }}>
+        <section ref={processRef} className="py-14 sm:py-28" style={{ background: '#f7fbef' }}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 24 }} animate={processInView ? { opacity: 1, y: 0 } : {}}
@@ -241,7 +241,7 @@ export default function Technology() {
             <div className="relative">
               <motion.div
                 className="absolute top-7 bottom-7 w-0.5 origin-top hidden sm:block"
-                style={{ left: 27, background: 'linear-gradient(to bottom, #bbf7d0, #22c55e 40%, #86efac)' }}
+                style={{ left: 27, background: 'linear-gradient(to bottom, #c1ff72, #9abb50 40%, #aee75d)' }}
                 initial={{ scaleY: 0 }}
                 animate={processInView ? { scaleY: 1 } : { scaleY: 0 }}
                 transition={{ duration: 1.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
@@ -312,7 +312,7 @@ export default function Technology() {
         >
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(circle at 18% 55%, rgba(20,83,45,0.22), transparent 58%)' }}
+            style={{ background: 'radial-gradient(circle at 18% 55%, rgba(42,79,7,0.22), transparent 58%)' }}
           />
           <div
             className="absolute inset-0 pointer-events-none"
@@ -337,7 +337,7 @@ export default function Technology() {
                   Modified Atmosphere<br />
                   <span
                     className="text-transparent bg-clip-text"
-                    style={{ backgroundImage: 'linear-gradient(135deg, #4ade80, #22c55e)' }}
+                    style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}
                   >
                     Packaging
                   </span>
@@ -382,15 +382,15 @@ export default function Technology() {
                       transition={{ duration: 0.55, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
                       whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.2 } }}
                       className="relative p-5 rounded-2xl border overflow-hidden group cursor-default"
-                      style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(74,222,128,0.15)' }}
+                      style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(193,255,114,0.15)' }}
                     >
                       <div
                         className="absolute top-0 left-4 right-4 h-px pointer-events-none"
-                        style={{ background: 'linear-gradient(90deg, transparent, rgba(74,222,128,0.45), transparent)' }}
+                        style={{ background: 'linear-gradient(90deg, transparent, rgba(193,255,114,0.45), transparent)' }}
                       />
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl pointer-events-none"
-                        style={{ background: 'radial-gradient(circle at 50% 0%, rgba(34,197,94,0.08), transparent 70%)' }}
+                        style={{ background: 'radial-gradient(circle at 50% 0%, rgba(154,187,80,0.08), transparent 70%)' }}
                       />
                       <div className="relative z-10">
                         <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-400/20 flex items-center justify-center mb-4">
@@ -473,7 +473,7 @@ export default function Technology() {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <motion.div
               className="w-[500px] h-[500px] rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.1), transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(154,187,80,0.1), transparent 70%)' }}
               animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -497,7 +497,7 @@ export default function Technology() {
               Taste the difference<br />
               <span
                 className="text-transparent bg-clip-text"
-                style={{ backgroundImage: 'linear-gradient(135deg, #4ade80, #22c55e)' }}
+                style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}
               >
                 technology makes
               </span>
@@ -516,8 +516,8 @@ export default function Technology() {
                 onClick={() => window.scrollTo(0, 0)}
                 className="inline-flex items-center gap-2.5 px-9 py-4 text-white font-700 rounded-2xl"
                 style={{
-                  background: 'linear-gradient(135deg, #16a34a, #15803d)',
-                  boxShadow: '0 0 35px rgba(34,197,94,0.28), 0 4px 16px rgba(0,0,0,0.35)',
+                  background: 'linear-gradient(135deg, #498a0c, #3a6c09)',
+                  boxShadow: '0 0 35px rgba(154,187,80,0.28), 0 4px 16px rgba(0,0,0,0.35)',
                 }}
               >
                 Explore Our Products <ArrowRight size={16} />

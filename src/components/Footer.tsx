@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
-import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf } from 'lucide-react'
 
 const quickLinks = [
   { label: 'Home', href: '/' },
   { label: 'About Us', href: '/about' },
   { label: 'Products', href: '/products' },
   { label: 'Technology', href: '/technology' },
+  { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -14,12 +15,11 @@ const productLinks = [
   { label: 'Kara Kuzhambu Pack', href: '/products/kara-kuzhambu-pack' },
   { label: 'Coconut Chutney Pack', href: '/products/coconut-chutney-pack' },
   { label: 'Tomato Chutney Pack', href: '/products/tomato-chutney-pack' },
-  { label: 'Mint Chutney Pack', href: '/products/mint-chutney-pack' },
 ]
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0b1712] text-gray-300 border-t border-[#1a3328]">
+    <footer className="bg-[#0b1606] text-gray-300 border-t border-[#1c3309]">
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12">
@@ -42,8 +42,8 @@ export default function Footer() {
               <a href="mailto:samachifydotin@gmail.com" className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors">
                 <Mail size={14} className="text-green-600" /> samachifydotin@gmail.com
               </a>
-              <a href="tel:+917305264055" className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors">
-                <Phone size={14} className="text-green-600" /> +91 73052 64055
+              <a href="tel:+919025115657" className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors">
+                <Phone size={14} className="text-green-600" /> +91 90251 15657
               </a>
               <div className="flex items-center gap-2 text-gray-400">
                 <MapPin size={14} className="text-green-600" /> Kanchipuram, Tamil Nadu
@@ -96,22 +96,22 @@ export default function Footer() {
         </div>
 
         {/* Trust Band */}
-        <div className="border-t border-[#162d22] py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-400">
-          <div className="flex items-center gap-3 bg-[#11231a] p-4 rounded-2xl border border-[#1e3a2e]">
+        <div className="border-t border-[#192e09] py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-3 bg-[#142405] p-4 rounded-2xl border border-[#23440c]">
             <ShieldCheck className="text-green-500 flex-shrink-0" size={24} />
             <div>
               <div className="text-white font-600 text-xs uppercase tracking-wider">FSSAI Certified</div>
               <div className="text-[11px] text-gray-400 mt-0.5">License: 22426421000333</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-[#11231a] p-4 rounded-2xl border border-[#1e3a2e]">
+          <div className="flex items-center gap-3 bg-[#142405] p-4 rounded-2xl border border-[#23440c]">
             <Sprout className="text-green-500 flex-shrink-0" size={24} />
             <div>
               <div className="text-white font-600 text-xs uppercase tracking-wider">100% Farm Fresh</div>
               <div className="text-[11px] text-gray-400 mt-0.5">Sourced local, prepped same-day</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-[#11231a] p-4 rounded-2xl border border-[#1e3a2e]">
+          <div className="flex items-center gap-3 bg-[#142405] p-4 rounded-2xl border border-[#23440c]">
             <Leaf className="text-green-500 flex-shrink-0" size={24} />
             <div>
               <div className="text-white font-600 text-xs uppercase tracking-wider">Zero Waste Kitchen</div>
@@ -121,14 +121,14 @@ export default function Footer() {
         </div>
 
         {/* Social and copyright */}
-        <div className="border-t border-[#162d22] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-[#192e09] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-500 font-600 uppercase tracking-wider">Follow us:</span>
             {[
-              { icon: Instagram, href: '#', label: 'Instagram' },
-              { icon: Facebook, href: '#', label: 'Facebook' },
-              { icon: Youtube, href: '#', label: 'YouTube' },
-              { icon: MessageCircle, href: 'https://wa.me/917305264055', label: 'WhatsApp' },
+              { icon: Instagram, href: 'https://www.instagram.com/samachify.in/', label: 'Instagram' },
+              { icon: Linkedin, href: 'https://www.linkedin.com/company/samachify-foods-pvt-ltd/', label: 'LinkedIn' },
+              { icon: Youtube, href: 'https://www.youtube.com/@samachifydotin', label: 'YouTube' },
+              { icon: MessageCircle, href: 'https://wa.me/919025115657', label: 'WhatsApp' },
             ].map((social) => {
               const Icon = social.icon
               return (
@@ -138,7 +138,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-2xl bg-[#11231a] hover:bg-green-700 border border-[#1e3a2e] hover:border-green-600 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:-translate-y-0.5"
+                  className="w-10 h-10 rounded-2xl bg-[#142405] hover:bg-green-700 border border-[#23440c] hover:border-green-600 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Icon size={16} />
                 </a>
@@ -154,7 +154,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom strip */}
-      <div className="bg-[#060c09] py-3 text-center border-t border-[#11231a]">
+      <div className="bg-[#050902] py-3 text-center border-t border-[#142405]">
         <p className="text-green-500/70 text-[10px] sm:text-xs font-600 tracking-[0.2em] uppercase">
           Fresh · Pre-Cut · Hygienic · Zero Waste · Local Farmers · Authentic South Indian Taste
         </p>

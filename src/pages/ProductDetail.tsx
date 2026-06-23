@@ -65,7 +65,7 @@ export default function ProductDetail() {
 
   if (!product || !recipe) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF8' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f7fbef' }}>
         <div className="text-center">
           <div className="font-display font-black text-4xl text-gray-900 mb-4">Product not found</div>
           <Link to="/products" className="inline-flex items-center gap-2 text-green-600 font-700 hover:text-green-700">
@@ -91,10 +91,10 @@ export default function ProductDetail() {
 
   return (
     <>
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#F8F9F7' }}>
+      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
 
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden" style={{ minHeight: '78vh', background: '#050e07' }}>
+        <section className="relative overflow-hidden" style={{ minHeight: '78vh', background: '#070d03' }}>
           <div className="absolute inset-0">
             <img
               src={product.image}
@@ -102,10 +102,10 @@ export default function ProductDetail() {
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0" style={{
-              background: 'linear-gradient(100deg, rgba(5,14,7,1) 0%, rgba(5,14,7,1) 30%, rgba(5,14,7,0.92) 48%, rgba(5,14,7,0.55) 65%, rgba(5,14,7,0.15) 85%, rgba(5,14,7,0.05) 100%)',
+              background: 'linear-gradient(100deg, rgba(7,13,3,1) 0%, rgba(7,13,3,1) 30%, rgba(7,13,3,0.92) 48%, rgba(7,13,3,0.55) 65%, rgba(7,13,3,0.15) 85%, rgba(7,13,3,0.05) 100%)',
             }} />
             <div className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
-              style={{ background: 'linear-gradient(to top, rgba(5,14,7,0.85), transparent)' }} />
+              style={{ background: 'linear-gradient(to top, rgba(7,13,3,0.85), transparent)' }} />
           </div>
 
           <div className="relative z-10 flex items-end min-h-[78vh] w-full">
@@ -160,7 +160,7 @@ export default function ProductDetail() {
                       <div key={i} className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-sm"
                         style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.25)' }}>
+                          style={{ background: 'rgba(154,187,80,0.15)', border: '1px solid rgba(154,187,80,0.25)' }}>
                           <Icon size={14} className="text-green-400" />
                         </div>
                         <div>
@@ -217,7 +217,7 @@ export default function ProductDetail() {
                   <img src={product.image} alt={product.name}
                     className="w-full h-full object-cover object-center" />
                   <div className="absolute inset-0"
-                    style={{ background: 'linear-gradient(to top, rgba(5,14,7,0.93) 0%, rgba(5,14,7,0.4) 60%, transparent 100%)' }} />
+                    style={{ background: 'linear-gradient(to top, rgba(7,13,3,0.93) 0%, rgba(7,13,3,0.4) 60%, transparent 100%)' }} />
                   <div className="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between">
                     <div>
                       <div className="text-green-400/70 text-[10px] font-700 tracking-widest uppercase mb-1">Ingredients</div>
@@ -226,7 +226,7 @@ export default function ProductDetail() {
                       </div>
                     </div>
                     <span className="text-xs font-700 px-3 py-1.5 rounded-full text-green-300 border border-green-400/30"
-                      style={{ background: 'rgba(34,197,94,0.12)' }}>
+                      style={{ background: 'rgba(154,187,80,0.12)' }}>
                       Pre-Measured
                     </span>
                   </div>
@@ -246,9 +246,9 @@ export default function ProductDetail() {
                         className="flex flex-col items-center text-center p-4 rounded-2xl border cursor-default transition-all duration-300"
                         style={{ background: '#fafff9', borderColor: '#e8f5e9' }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#f0fdf4'
-                          e.currentTarget.style.borderColor = '#86efac'
-                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(22,163,74,0.1)'
+                          e.currentTarget.style.background = '#f6ffe9'
+                          e.currentTarget.style.borderColor = '#aee75d'
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(73,138,12,0.1)'
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = '#fafff9'
@@ -262,8 +262,8 @@ export default function ProductDetail() {
                             ? 'relative w-[4.5rem] h-[4.5rem] rounded-full mb-3 flex-shrink-0 overflow-hidden'
                             : 'relative w-[4.5rem] h-[4.5rem] rounded-full flex items-center justify-center mb-3 flex-shrink-0'}
                           style={ing.image
-                            ? { border: '2.5px solid #86efac', boxShadow: '0 0 0 3px rgba(134,239,172,0.15)' }
-                            : { background: 'linear-gradient(145deg, #f8fffe, #f0fdf4)', border: '2.5px dashed #86efac' }}
+                            ? { border: '2.5px solid #aee75d', boxShadow: '0 0 0 3px rgba(174,231,93,0.15)' }
+                            : { background: 'linear-gradient(145deg, #f9fff0, #f6ffe9)', border: '2.5px dashed #aee75d' }}
                         >
                           {ing.image ? (
                             <img
@@ -275,17 +275,14 @@ export default function ProductDetail() {
                             <>
                               <span className="text-[1.75rem] leading-none">{ing.icon}</span>
                               <div className="absolute -bottom-1.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
-                                style={{ background: '#dcfce7', border: '1px solid #86efac' }}>
+                                style={{ background: '#daffaa', border: '1px solid #aee75d' }}>
                                 <Camera size={7} className="text-green-600" />
                                 <span className="text-[8px] font-700 text-green-700">soon</span>
                               </div>
                             </>
                           )}
                         </div>
-                        <div className="text-green-600 text-[10px] font-700 tracking-wide uppercase mt-1.5 mb-1">
-                          {ing.amount}
-                        </div>
-                        <div className="font-700 text-gray-900 text-[0.8rem] leading-tight">{ing.name}</div>
+                        <div className="font-700 text-gray-900 text-[0.8rem] leading-tight mt-1.5">{ing.name}</div>
                         {ing.note && (
                           <div className="text-gray-400 text-[9.5px] mt-1 font-500 leading-snug">{ing.note}</div>
                         )}
@@ -298,7 +295,7 @@ export default function ProductDetail() {
                     className="mt-5 flex items-center gap-2.5 px-4 py-3 rounded-2xl"
                     initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
                     transition={{ delay: 0.4 }}
-                    style={{ background: '#f0fdf4', border: '1.5px dashed #86efac' }}
+                    style={{ background: '#f6ffe9', border: '1.5px dashed #aee75d' }}
                   >
                     <Sprout size={14} className="text-green-600 flex-shrink-0" />
                     <p className="text-green-700 text-xs font-600 leading-snug">
@@ -321,7 +318,7 @@ export default function ProductDetail() {
                     <p className="text-gray-400 text-sm mt-0.5">{recipe.steps.length} steps · {recipe.cookTime} total</p>
                   </div>
                   <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 4px 14px rgba(22,163,74,0.35)' }}>
+                    style={{ background: 'linear-gradient(135deg, #498a0c, #9abb50)', boxShadow: '0 4px 14px rgba(73,138,12,0.35)' }}>
                     <ChefHat size={18} className="text-white" />
                   </div>
                 </div>
@@ -361,8 +358,8 @@ export default function ProductDetail() {
                         <div className="flex items-center gap-2.5 mb-3">
                           <div className="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-800 text-white flex-shrink-0"
                             style={{
-                              background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-                              boxShadow: '0 3px 10px rgba(22,163,74,0.3)',
+                              background: 'linear-gradient(135deg, #498a0c, #9abb50)',
+                              boxShadow: '0 3px 10px rgba(73,138,12,0.3)',
                             }}>
                             {i + 1}
                           </div>
@@ -382,7 +379,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}
                 className="rounded-3xl overflow-hidden shadow-lg relative"
-                style={{ background: 'linear-gradient(145deg, #040d06, #071208, #0a1a0c)' }}
+                style={{ background: 'linear-gradient(145deg, #070d03, #0b1606, #0f1c07)' }}
               >
                 {/* Film-strip perforations — top */}
                 <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
@@ -416,9 +413,9 @@ export default function ProductDetail() {
                     <motion.button
                       className="relative w-20 h-20 rounded-full flex items-center justify-center cursor-default"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(34,197,94,0.25), rgba(16,185,129,0.18))',
-                        border: '2px solid rgba(74,222,128,0.4)',
-                        boxShadow: '0 0 32px rgba(74,222,128,0.2)',
+                        background: 'linear-gradient(135deg, rgba(154,187,80,0.25), rgba(154,187,80,0.18))',
+                        border: '2px solid rgba(193,255,114,0.4)',
+                        boxShadow: '0 0 32px rgba(193,255,114,0.2)',
                       }}
                       animate={{ scale: [1, 1.04, 1] }}
                       transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -429,11 +426,11 @@ export default function ProductDetail() {
 
                   {/* Radial glow behind */}
                   <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(34,197,94,0.1) 0%, transparent 65%)' }} />
+                    style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(154,187,80,0.1) 0%, transparent 65%)' }} />
 
                   <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4"
-                      style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)' }}>
+                      style={{ background: 'rgba(193,255,114,0.1)', border: '1px solid rgba(193,255,114,0.2)' }}>
                       <ChefHat size={11} className="text-green-400" />
                       <span className="text-green-400 text-[10px] font-700 tracking-widest uppercase">Video Tutorial</span>
                     </div>
@@ -465,7 +462,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.55 }}
                 className="rounded-3xl p-8 border border-green-100"
-                style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #f6ffe9 0%, #daffaa 100%)' }}
               >
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 border border-green-200 rounded-full mb-5">
                   <Sprout size={12} className="text-green-700" />
@@ -483,24 +480,24 @@ export default function ProductDetail() {
 
                 {/* Calorie hero */}
                 <div className="relative overflow-hidden text-center px-6 pt-7 pb-6"
-                  style={{ background: 'linear-gradient(145deg, #071408 0%, #0d2416 100%)' }}>
+                  style={{ background: 'linear-gradient(145deg, #0b1606 0%, #152708 100%)' }}>
                   <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: 'radial-gradient(circle at 50% 80%, rgba(34,197,94,0.14), transparent 68%)' }} />
+                    style={{ background: 'radial-gradient(circle at 50% 80%, rgba(154,187,80,0.14), transparent 68%)' }} />
                   <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-4"
-                      style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)' }}>
+                      style={{ background: 'rgba(154,187,80,0.12)', border: '1px solid rgba(154,187,80,0.25)' }}>
                       <Flame size={11} className="text-green-400" />
                       <span className="text-green-400 text-[10px] font-700 tracking-widest uppercase">Per Serving</span>
                     </div>
                     <div className="font-display font-black leading-none mb-2"
-                      style={{ fontSize: '4.2rem', color: '#4ade80', textShadow: '0 0 40px rgba(74,222,128,0.3)' }}>
+                      style={{ fontSize: '4.2rem', color: '#c1ff72', textShadow: '0 0 40px rgba(193,255,114,0.3)' }}>
                       {calories}
                     </div>
                     <div className="text-green-200/35 text-sm font-600 tracking-widest uppercase">Calories · kcal</div>
                     <div className="flex items-center gap-3 mt-5">
-                      <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(74,222,128,0.2))' }} />
+                      <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(193,255,114,0.2))' }} />
                       <Leaf size={12} className="text-green-500/40" />
-                      <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, rgba(74,222,128,0.2))' }} />
+                      <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, rgba(193,255,114,0.2))' }} />
                     </div>
                   </div>
                 </div>
@@ -513,7 +510,7 @@ export default function ProductDetail() {
                       { label: 'Carbs',   val: recipe.nutrition.carbs,   color: '#f59e0b', bg: 'rgba(245,158,11,0.07)',  border: 'rgba(245,158,11,0.22)'  },
                       { label: 'Protein', val: recipe.nutrition.protein, color: '#3b82f6', bg: 'rgba(59,130,246,0.07)',  border: 'rgba(59,130,246,0.22)'  },
                       { label: 'Fat',     val: recipe.nutrition.fat,     color: '#f97316', bg: 'rgba(249,115,22,0.07)',  border: 'rgba(249,115,22,0.22)'  },
-                      { label: 'Fiber',   val: recipe.nutrition.fiber,   color: '#22c55e', bg: 'rgba(34,197,94,0.07)',   border: 'rgba(34,197,94,0.22)'   },
+                      { label: 'Fiber',   val: recipe.nutrition.fiber,   color: '#9abb50', bg: 'rgba(154,187,80,0.07)',   border: 'rgba(154,187,80,0.22)'   },
                     ].map((n, i) => (
                       <motion.div
                         key={n.label}
@@ -595,7 +592,7 @@ export default function ProductDetail() {
                       to={`/products/${p.id}`}
                       onClick={() => window.scrollTo(0, 0)}
                       className="group/btn flex items-center justify-between w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-700 rounded-xl text-xs transition-all"
-                      style={{ boxShadow: '0 3px 10px rgba(22,163,74,0.22)' }}
+                      style={{ boxShadow: '0 3px 10px rgba(73,138,12,0.22)' }}
                     >
                       <span>View Recipe</span>
                       <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />

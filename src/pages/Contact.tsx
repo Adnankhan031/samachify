@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Mail, Phone, MapPin, MessageCircle, Send, Instagram, Facebook, Youtube,
+  Mail, Phone, MapPin, MessageCircle, Send, Instagram, Linkedin, Youtube,
   Leaf, ArrowRight, Clock, Shield, Zap, CheckCircle,
 } from 'lucide-react'
 import Footer from '../components/Footer'
@@ -36,28 +36,28 @@ export default function Contact() {
     const msg = encodeURIComponent(
       `Hi Samachify! I am ${form.name}.\n\nQuery: ${form.subject}\n\n${form.message}\n\nPhone: ${form.phone}`
     )
-    window.open(`https://wa.me/917305264055?text=${msg}`, '_blank')
+    window.open(`https://wa.me/919025115657?text=${msg}`, '_blank')
     setSubmitted(true)
   }
 
   const handleQuickQuery = (query: string) => {
     const msg = encodeURIComponent(`Hi Samachify! ${query}`)
-    window.open(`https://wa.me/917305264055?text=${msg}`, '_blank')
+    window.open(`https://wa.me/919025115657?text=${msg}`, '_blank')
   }
 
   return (
     <>
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#030A04' }}>
+      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
 
         {/* ── Hero ── */}
         <section
           className="py-14 sm:py-20 relative overflow-hidden"
-          style={{ background: 'linear-gradient(160deg, #040C06, #071408 60%, #0A1E0D)' }}
+          style={{ background: 'linear-gradient(160deg, #070d03, #0b1606 60%, #142405)' }}
         >
           <div className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: 'radial-gradient(circle, rgba(74,222,128,0.08) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+            style={{ backgroundImage: 'radial-gradient(circle, rgba(193,255,114,0.08) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
           <motion.div className="absolute pointer-events-none rounded-full"
-            style={{ width: 420, height: 420, top: '-15%', right: '5%', background: 'radial-gradient(circle, rgba(34,197,94,0.09), transparent 70%)' }}
+            style={{ width: 420, height: 420, top: '-15%', right: '5%', background: 'radial-gradient(circle, rgba(154,187,80,0.09), transparent 70%)' }}
             animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -89,7 +89,7 @@ export default function Contact() {
               transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
             >
               Contact{' '}
-              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
                 Samachify
               </span>
             </motion.h1>
@@ -108,9 +108,9 @@ export default function Contact() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
               {[
-                { icon: Mail,   title: 'Email Us',           value: 'samachifydotin@gmail.com', sub: 'Reply within 24 hours',     href: 'mailto:samachifydotin@gmail.com', accent: '#22c55e' },
-                { icon: Phone,  title: 'Call or WhatsApp',   value: '+91 73052 64055',          sub: 'Mon–Sat, 9 AM – 7 PM',       href: 'tel:+917305264055',              accent: '#16a34a' },
-                { icon: MapPin, title: 'Our Location',       value: 'Kanchipuram, Tamil Nadu',  sub: 'Processing facility & HQ',   href: '#map',                           accent: '#4ade80' },
+                { icon: Mail,   title: 'Email Us',           value: 'samachifydotin@gmail.com', sub: 'Reply within 24 hours',     href: 'mailto:samachifydotin@gmail.com', accent: '#9abb50' },
+                { icon: Phone,  title: 'Call or WhatsApp',   value: '+91 90251 15657',          sub: 'Mon–Sat, 9 AM – 7 PM',       href: 'tel:+919025115657',              accent: '#498a0c' },
+                { icon: MapPin, title: 'Our Location',       value: 'Sathya Nagar, Kanchipuram', sub: 'Orikkai, Kanchipuram – 631502', href: '#map',                        accent: '#c1ff72' },
               ].map((c, i) => {
                 const Icon = c.icon
                 return (
@@ -132,33 +132,11 @@ export default function Contact() {
                 )
               })}
             </div>
-
-            {/* Response promise strip */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-8 pt-8 border-t border-gray-100"
-            >
-              {[
-                { icon: Clock,    text: 'Replies within 24 hours' },
-                { icon: Shield,   text: 'FSSAI Certified Brand' },
-                { icon: Zap,      text: 'WhatsApp for instant response' },
-                { icon: CheckCircle, text: 'No login or signup needed' },
-              ].map((item, i) => {
-                const Icon = item.icon
-                return (
-                  <div key={i} className="flex items-center gap-2 text-gray-500 text-sm">
-                    <Icon size={14} className="text-green-600 flex-shrink-0" />
-                    <span className="font-500">{item.text}</span>
-                  </div>
-                )
-              })}
-            </motion.div>
           </div>
         </section>
 
         {/* ── Main content grid ── */}
-        <section className="py-12 sm:py-16" style={{ background: '#FAFAF8' }}>
+        <section className="py-12 sm:py-16" style={{ background: '#f7fbef' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6 sm:gap-10">
 
@@ -216,10 +194,10 @@ export default function Contact() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { icon: Instagram,    label: 'Instagram',  sub: '@samachify',        href: '#',                            color: 'from-pink-500 to-orange-400' },
-                      { icon: Facebook,    label: 'Facebook',   sub: 'Samachify Foods',   href: '#',                            color: 'from-blue-600 to-blue-500' },
-                      { icon: Youtube,     label: 'YouTube',    sub: 'Recipe Videos',     href: '#',                            color: 'from-red-600 to-red-500' },
-                      { icon: MessageCircle, label: 'WhatsApp', sub: '+91 73052 64055',   href: 'https://wa.me/917305264055',   color: 'from-green-500 to-green-600' },
+                      { icon: Instagram,    label: 'Instagram',  sub: '@samachify.in',           href: 'https://www.instagram.com/samachify.in/',                       color: 'from-pink-500 to-orange-400' },
+                      { icon: Linkedin,     label: 'LinkedIn',   sub: 'Samachify Foods Pvt Ltd', href: 'https://www.linkedin.com/company/samachify-foods-pvt-ltd/',     color: 'from-blue-600 to-blue-500' },
+                      { icon: Youtube,      label: 'YouTube',    sub: 'Recipe Videos',           href: 'https://www.youtube.com/@samachifydotin',                       color: 'from-red-600 to-red-500' },
+                      { icon: MessageCircle, label: 'WhatsApp', sub: '+91 90251 15657',          href: 'https://wa.me/919025115657',                                    color: 'from-green-500 to-green-600' },
                     ].map((s, si) => {
                       const Icon = s.icon
                       return (
@@ -264,8 +242,8 @@ export default function Contact() {
                       <MapPin size={15} className="text-green-600" />
                     </div>
                     <div>
-                      <div className="font-700 text-gray-900 text-sm">Kanchipuram, Tamil Nadu</div>
-                      <div className="text-gray-400 text-xs">Processing facility & registered office</div>
+                      <div className="font-700 text-gray-900 text-sm">73, Karmari Amman Kovil Street, Sathya Nagar</div>
+                      <div className="text-gray-400 text-xs">Orikkai, Kanchipuram – 631502, Tamil Nadu</div>
                     </div>
                   </div>
                 </motion.div>
@@ -381,7 +359,7 @@ export default function Contact() {
                       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 hover:bg-green-500 text-white font-700 rounded-xl transition-all text-sm"
-                      style={{ boxShadow: '0 4px 18px rgba(22,163,74,0.28)' }}
+                      style={{ boxShadow: '0 4px 18px rgba(73,138,12,0.28)' }}
                     >
                       <MessageCircle size={16} /> Send via WhatsApp
                     </motion.button>
