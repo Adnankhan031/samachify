@@ -106,17 +106,21 @@ a { color: inherit; text-decoration: none; }
   50%       { transform: translate3d(24px, -28px, 0) scale(1.08); }
 }
 
-/* Hero slider — slow Ken Burns zoom on the active slide only */
+/* Hero slider — gentle Ken Burns drift on the active slide only.
+   Kept subtle (max 1.05) so the product shots are never heavily cropped. */
 @keyframes hero-kenburns {
-  0%   { transform: scale(1.02); }
-  100% { transform: scale(1.13); }
+  0%   { transform: scale(1.005); }
+  100% { transform: scale(1.05); }
 }
+.hero-swiper,
+.hero-swiper .swiper-wrapper,
+.hero-swiper .swiper-slide { height: 100%; }
 .hero-swiper .swiper-slide .hero-kenburns {
-  transform: scale(1.02);
-  transition: transform 0.6s ease;
+  transform: scale(1.005);
+  transition: transform 0.8s ease;
 }
 .hero-swiper .swiper-slide-active .hero-kenburns {
-  animation: hero-kenburns 7s ease-out forwards;
+  animation: hero-kenburns 9s ease-out forwards;
 }
 
 @keyframes soft-drift-reverse {

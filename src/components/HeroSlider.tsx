@@ -9,12 +9,14 @@ import 'swiper/css/effect-fade'
  * Full-bleed hero background: crossfades through the lifestyle shots with a
  * slow Ken Burns zoom on the active slide. Sits behind the cream overlay + text.
  */
+// objectPosition is tuned per image so the key subject (dishes / packs) stays
+// in the visible right-hand zone, clear of the cream text overlay on the left.
 const HERO_IMAGES = [
-  { src: '/assets/hero-all-products.webp', pos: '55% center' },
-  { src: '/assets/hero-sambar-meal.webp', pos: '60% center' },
-  { src: '/assets/hero-kara-meal.webp', pos: '60% center' },
-  { src: '/assets/hero-chutney-breakfast.webp', pos: '55% center' },
-  { src: '/assets/hero-all-products-2.webp', pos: '55% center' },
+  { src: '/assets/hero-all-products.webp', pos: '72% center' },
+  { src: '/assets/hero-sambar-meal.webp', pos: '68% center' },
+  { src: '/assets/hero-kara-meal.webp', pos: '70% center' },
+  { src: '/assets/hero-chutney-breakfast.webp', pos: '65% center' },
+  { src: '/assets/hero-all-products-2.webp', pos: '72% center' },
 ]
 
 export default function HeroSlider() {

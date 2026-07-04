@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag, MapPin, Phone, Mail, User, Truck, Wallet, CreditCard,
   CheckCircle2, ArrowRight, Loader2, ShieldCheck, ArrowLeft,
+  Home, Briefcase, LogIn, ChevronDown,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
@@ -46,9 +47,13 @@ export default function CheckoutView() {
     name: user?.name ?? '',
     email: user?.email ?? '',
     phone: '',
-    address: '',
-    city: '',
     pincode: '',
+    houseNo: '',
+    area: '',
+    landmark: '',
+    city: '',
+    state: '',
+    addressType: 'Home',
   })
   const [pay, setPay] = useState<PayMethod>('cod')
   const [placing, setPlacing] = useState(false)
@@ -59,22 +64,36 @@ export default function CheckoutView() {
   const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
   const grandTotal = totalPrice + deliveryFee
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }))
+  const set = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const validate = () => {
     const e: Record<string, string> = {}
     if (!form.name.trim()) e.name = 'Required'
+    if (!/^[0-9]{10}$/.test(form.phone.replace(/\D/g, ''))) e.phone = 'Enter a 10-digit mobile number'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email'
-    if (!/^[0-9]{10}$/.test(form.phone.replace(/\D/g, ''))) e.phone = 'Enter a 10-digit phone number'
-    if (!form.address.trim()) e.address = 'Required'
-    if (!form.city.trim()) e.city = 'Required'
     if (!/^[0-9]{6}$/.test(form.pincode)) e.pincode = 'Enter a 6-digit pincode'
+    if (!form.houseNo.trim()) e.houseNo = 'Required'
+    if (!form.area.trim()) e.area = 'Required'
+    if (!form.city.trim()) e.city = 'Required'
+    if (!form.state.trim()) e.state = 'Select a state'
     setErrors(e)
     return Object.keys(e).length === 0
   }
 
   const cartPayload = () => items.map((i) => ({ productId: i.productId, quantity: i.quantity }))
+
+  // Map the detailed Amazon-style fields to the API's customer shape.
+  const customerPayload = () => ({
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    address: `[${form.addressType}] ${form.houseNo}, ${form.area}` +
+      `${form.landmark ? `, Landmark: ${form.landmark}` : ''}, ${form.state}`,
+    city: form.city,
+    pincode: form.pincode,
+  })
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,7 +112,7 @@ export default function CheckoutView() {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer: form, items: cartPayload(), paymentMethod: 'cod' }),
+        body: JSON.stringify({ customer: customerPayload(), items: cartPayload(), paymentMethod: 'cod' }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -121,7 +140,7 @@ export default function CheckoutView() {
       const res = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer: form, items: cartPayload() }),
+        body: JSON.stringify({ customer: customerPayload(), items: cartPayload() }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -149,7 +168,7 @@ export default function CheckoutView() {
           const vres = await fetch('/api/razorpay/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...response, customer: form, items: cartPayload() }),
+            body: JSON.stringify({ ...response, customer: customerPayload(), items: cartPayload() }),
           })
           const vdata = await vres.json()
           if (!vres.ok) {
@@ -241,9 +260,30 @@ export default function CheckoutView() {
         <Link to="/products" className="inline-flex items-center gap-2 text-sm font-600 text-gray-500 hover:text-gray-800 mb-6 transition-colors">
           <ArrowLeft size={15} /> Continue shopping
         </Link>
-        <h1 className="font-display font-900 text-gray-900 tracking-tight mb-8" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)' }}>
+        <h1 className="font-display font-900 text-gray-900 tracking-tight mb-6" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)' }}>
           Checkout
         </h1>
+
+        {/* Gentle sign-in prompt — optional, guest checkout still allowed */}
+        {user ? (
+          <div className="flex items-center gap-2.5 mb-6 px-4 py-3 rounded-2xl bg-green-50/70 border border-green-100 text-sm">
+            <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800 flex-shrink-0">
+              {user.name.charAt(0).toUpperCase()}
+            </span>
+            <span className="text-green-800 font-600">Signed in as <span className="font-800">{user.email}</span> — your order will be saved to your account.</span>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 px-4 py-3.5 rounded-2xl bg-white border border-gray-100 shadow-sm">
+            <LogIn size={18} className="text-green-600 flex-shrink-0" />
+            <span className="flex-1 text-sm text-gray-600">
+              <span className="font-800 text-gray-900">Have an account?</span> Sign in for faster checkout &amp; to track your order.
+            </span>
+            <div className="flex items-center gap-2">
+              <Link to="/login" className="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-700 transition-colors whitespace-nowrap">Log in</Link>
+              <span className="text-xs text-gray-400 whitespace-nowrap">or continue as guest ↓</span>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={placeOrder} className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
           {/* ── Left: details ── */}
@@ -256,17 +296,53 @@ export default function CheckoutView() {
                 </div>
                 <h2 className="font-display font-800 text-gray-900 text-lg">Delivery details</h2>
               </div>
+              {/* Contact */}
+              <p className="text-[11px] font-700 uppercase tracking-wider text-gray-400 mb-3">Contact</p>
               <div className="grid sm:grid-cols-2 gap-4">
                 <TextField icon={User} label="Full name" value={form.name} onChange={set('name')} error={errors.name} placeholder="Your name" />
-                <TextField icon={Phone} label="Phone" value={form.phone} onChange={set('phone')} error={errors.phone} placeholder="10-digit mobile" />
+                <TextField icon={Phone} label="Mobile number" value={form.phone} onChange={set('phone')} error={errors.phone} placeholder="10-digit mobile" inputMode="numeric" maxLength={10} />
                 <div className="sm:col-span-2">
-                  <TextField icon={Mail} label="Email" value={form.email} onChange={set('email')} error={errors.email} placeholder="you@example.com" />
+                  <TextField icon={Mail} label="Email address" value={form.email} onChange={set('email')} error={errors.email} placeholder="you@example.com" />
                 </div>
-                <div className="sm:col-span-2">
-                  <TextField icon={MapPin} label="Address" value={form.address} onChange={set('address')} error={errors.address} placeholder="House no, street, area" />
+              </div>
+
+              <div className="h-px bg-gray-100 my-6" />
+
+              {/* Address */}
+              <p className="text-[11px] font-700 uppercase tracking-wider text-gray-400 mb-3">Delivery address</p>
+              <div className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <TextField label="Pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
                 </div>
-                <TextField label="City" value={form.city} onChange={set('city')} error={errors.city} placeholder="City" />
-                <TextField label="Pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" />
+                <TextField icon={MapPin} label="Flat, House no., Building, Company" value={form.houseNo} onChange={set('houseNo')} error={errors.houseNo} placeholder="e.g. 12A, Green Residency" />
+                <TextField label="Area, Street, Sector, Village" value={form.area} onChange={set('area')} error={errors.area} placeholder="e.g. Anna Nagar, 2nd Main Road" />
+                <TextField label="Landmark (optional)" value={form.landmark} onChange={set('landmark')} placeholder="e.g. Near Apollo Hospital" />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <TextField label="Town / City" value={form.city} onChange={set('city')} error={errors.city} placeholder="City" />
+                  <SelectField label="State" value={form.state} onChange={set('state')} error={errors.state} options={INDIAN_STATES} />
+                </div>
+
+                {/* Address type */}
+                <div>
+                  <span className="block text-xs font-700 text-gray-600 mb-2">Address type</span>
+                  <div className="flex gap-2">
+                    {(['Home', 'Work'] as const).map((t) => {
+                      const Icon = t === 'Home' ? Home : Briefcase
+                      const activeType = form.addressType === t
+                      return (
+                        <button
+                          type="button" key={t}
+                          onClick={() => setForm((f) => ({ ...f, addressType: t }))}
+                          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-700 border transition-all ${
+                            activeType ? 'border-green-500 bg-green-50 text-green-700 ring-2 ring-green-100' : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                          }`}
+                        >
+                          <Icon size={15} /> {t}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -373,7 +449,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 }
 
 function TextField({
-  icon: Icon, label, value, onChange, error, placeholder,
+  icon: Icon, label, value, onChange, error, placeholder, inputMode, maxLength,
 }: {
   icon?: React.ElementType
   label: string
@@ -381,6 +457,8 @@ function TextField({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   error?: string
   placeholder?: string
+  inputMode?: 'text' | 'numeric' | 'tel' | 'email'
+  maxLength?: number
 }) {
   return (
     <label className="block">
@@ -389,8 +467,45 @@ function TextField({
         {Icon && <Icon size={16} className="text-gray-400 flex-shrink-0" />}
         <input
           value={value} onChange={onChange} placeholder={placeholder}
+          inputMode={inputMode} maxLength={maxLength}
           className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400 text-sm"
         />
+      </div>
+      {error && <span className="text-xs text-red-500 mt-1 block">{error}</span>}
+    </label>
+  )
+}
+
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
+  'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
+  'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh',
+  'Uttarakhand', 'West Bengal', 'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Puducherry',
+  'Chandigarh', 'Andaman & Nicobar', 'Dadra & Nagar Haveli and Daman & Diu', 'Lakshadweep',
+]
+
+function SelectField({
+  label, value, onChange, error, options,
+}: {
+  label: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  error?: string
+  options: string[]
+}) {
+  return (
+    <label className="block">
+      <span className="block text-xs font-700 text-gray-600 mb-1.5">{label}</span>
+      <div className={`relative flex items-center px-4 py-3 bg-white border rounded-2xl transition-all focus-within:ring-2 focus-within:ring-green-100 ${error ? 'border-red-300' : 'border-gray-200 focus-within:border-green-400'}`}>
+        <select
+          value={value} onChange={onChange}
+          className={`w-full bg-transparent outline-none text-sm appearance-none pr-6 ${value ? 'text-gray-900' : 'text-gray-400'}`}
+        >
+          <option value="" disabled>Select state</option>
+          {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <ChevronDown size={16} className="text-gray-400 absolute right-4 pointer-events-none" />
       </div>
       {error && <span className="text-xs text-red-500 mt-1 block">{error}</span>}
     </label>

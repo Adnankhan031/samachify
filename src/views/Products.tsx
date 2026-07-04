@@ -131,35 +131,42 @@ export default function Products() {
         </section>
 
         {/* ── Sticky filter bar ── */}
-        <div className="sticky top-[4.4rem] z-30 bg-white/96 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div className="sticky top-[4.4rem] z-30 bg-white/90 backdrop-blur-md border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2 py-3.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-              <span className="flex-shrink-0 flex items-center gap-1.5 text-gray-400 text-xs font-600 uppercase tracking-wide mr-1">
+            <div className="flex items-center justify-center gap-1 py-2.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+              <span className="flex-shrink-0 hidden sm:flex items-center gap-1.5 text-gray-400 text-[11px] font-600 uppercase tracking-wider mr-2">
                 <Filter size={11} /> Filter
               </span>
-              {filterConfig.map((tab) => {
-                const count = getCount(tab.id)
-                const isActive = active === tab.id
-                const TabIcon = tab.icon
-                return (
-                  <motion.button
-                    key={tab.id}
-                    onClick={() => setActive(tab.id)}
-                    whileTap={{ scale: 0.97 }}
-                    className={`relative flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-600 border transition-all duration-250 ${
-                      isActive
-                        ? 'bg-green-600 text-white border-green-600 shadow-md shadow-green-500/25'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-green-300 hover:text-green-700 hover:bg-green-50/50'
-                    }`}
-                  >
-                    <TabIcon size={12} className={isActive ? 'text-green-200' : 'text-gray-400'} />
-                    {tab.label}
-                    <span className={`text-[9px] font-800 px-1.5 py-0.5 rounded-full leading-none ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-                    }`}>{count}</span>
-                  </motion.button>
-                )
-              })}
+              <div className="flex items-center gap-1 flex-shrink-0 bg-gray-50/80 rounded-full p-1 border border-gray-100">
+                {filterConfig.map((tab) => {
+                  const count = getCount(tab.id)
+                  const isActive = active === tab.id
+                  const TabIcon = tab.icon
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActive(tab.id)}
+                      className={`relative flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-600 transition-colors duration-200 ${
+                        isActive ? 'text-white' : 'text-gray-500 hover:text-gray-800'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="filter-pill"
+                          className="absolute inset-0 rounded-full bg-green-600"
+                          style={{ boxShadow: '0 4px 12px rgba(73,138,12,0.28)' }}
+                          transition={{ type: 'spring', damping: 30, stiffness: 380 }}
+                        />
+                      )}
+                      <span className="relative flex items-center gap-1.5">
+                        <TabIcon size={12} className={isActive ? 'text-green-200' : 'text-gray-400'} />
+                        <span className="whitespace-nowrap">{tab.label}</span>
+                        <span className={`text-[10px] font-700 ${isActive ? 'text-green-200' : 'text-gray-400'}`}>{count}</span>
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>

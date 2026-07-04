@@ -1,14 +1,16 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Plus, Minus, ShoppingBag, Trash2, ArrowRight } from 'lucide-react'
+import { X, Plus, Minus, ShoppingBag, Trash2, ArrowRight, User, Truck } from 'lucide-react'
 import { Link } from '@/lib/nav'
 import { useCart } from '@/context/CartContext'
+import { useAuth } from '@/context/AuthContext'
 
 const FREE_DELIVERY_THRESHOLD = 299
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
+  const { user } = useAuth()
 
   const remainingForFreeDelivery = Math.max(0, FREE_DELIVERY_THRESHOLD - totalPrice)
   const progress = Math.min(100, (totalPrice / FREE_DELIVERY_THRESHOLD) * 100)
@@ -33,8 +35,8 @@ export default function CartDrawer() {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-            className="fixed top-0 right-0 bottom-0 z-[101] w-full sm:w-[420px] bg-white flex flex-col shadow-2xl"
+            transition={{ type: 'tween', duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
+            className="fixed top-0 right-0 bottom-0 z-[101] w-full sm:w-[430px] bg-white flex flex-col shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -147,20 +149,40 @@ export default function CartDrawer() {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-gray-100 px-5 py-4 space-y-3">
+                <div className="border-t border-gray-100 px-5 pt-4 pb-5 space-y-3.5 bg-white">
+                  {/* Gentle sign-in nudge (not forceful) */}
+                  {!user && (
+                    <Link
+                      to="/login"
+                      onClick={closeCart}
+                      className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-green-50/70 border border-green-100 hover:bg-green-50 transition-colors group/nudge"
+                    >
+                      <span className="w-7 h-7 rounded-lg bg-green-600 text-white flex items-center justify-center flex-shrink-0">
+                        <User size={14} />
+                      </span>
+                      <span className="flex-1 text-xs font-600 text-green-800 leading-snug">
+                        <span className="font-800">Sign in</span> for faster checkout &amp; order tracking
+                      </span>
+                      <ArrowRight size={14} className="text-green-500 group-hover/nudge:translate-x-0.5 transition-transform" />
+                    </Link>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <span className="text-gray-500 font-600 text-sm">Subtotal</span>
                     <span className="font-display font-800 text-gray-900 text-xl">₹{totalPrice}</span>
                   </div>
-                  <p className="text-xs text-gray-400">Taxes &amp; delivery calculated at checkout.</p>
+
                   <Link
                     to="/checkout"
                     onClick={closeCart}
-                    className="flex items-center justify-center gap-2 w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-800 rounded-2xl transition-colors"
-                    style={{ boxShadow: '0 8px 22px rgba(73,138,12,0.32)' }}
+                    className="flex items-center justify-center gap-2 w-full py-4 bg-green-600 hover:bg-green-700 text-white font-800 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ boxShadow: '0 10px 26px rgba(73,138,12,0.32)' }}
                   >
                     Checkout · ₹{totalPrice} <ArrowRight size={16} />
                   </Link>
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400">
+                    <Truck size={13} className="text-green-500" /> Taxes &amp; delivery calculated at checkout
+                  </div>
                   <button
                     onClick={closeCart}
                     className="w-full text-center text-sm font-700 text-gray-500 hover:text-gray-800 transition-colors"
