@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@/lib/nav'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useCart } from '@/context/CartContext'
+import { useAuth } from '@/context/AuthContext'
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -16,7 +18,10 @@ const navLinks = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const location = useLocation()
+  const { totalItems, openCart } = useCart()
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -83,14 +88,83 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA + hamburger — flex-1 justify-end */}
-        <div className="flex items-center gap-3 flex-1 justify-end">
-          <Link
-            to="/products"
-            className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-700 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/25"
+        {/* Actions — flex-1 justify-end */}
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-1 justify-end">
+          {/* Account */}
+          <div className="relative hidden sm:block">
+            {user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen((v) => !v)}
+                  className="flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800 flex-shrink-0">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="text-sm font-700 max-w-[110px] truncate">{user.name.split(' ')[0]}</span>
+                </button>
+                <AnimatePresence>
+                  {accountOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setAccountOpen(false)} />
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                        transition={{ duration: 0.16 }}
+                        className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-1.5 z-50"
+                      >
+                        <div className="px-3 py-2.5 border-b border-gray-100 mb-1">
+                          <p className="text-sm font-800 text-gray-900 truncate">{user.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                        </div>
+                        <Link to="/account" onClick={() => setAccountOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50 transition-colors">
+                          <User size={15} /> My Account
+                        </Link>
+                        <button
+                          onClick={() => { signOut(); setAccountOpen(false) }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                          <LogOut size={15} /> Sign out
+                        </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-700 text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <User size={16} /> Login
+              </Link>
+            )}
+          </div>
+
+          {/* Cart */}
+          <button
+            type="button"
+            aria-label="Open cart"
+            onClick={openCart}
+            className="relative p-2.5 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
           >
-            Explore Products
-          </Link>
+            <ShoppingBag size={21} />
+            {totalItems > 0 && (
+              <motion.span
+                key={totalItems}
+                initial={{ scale: 0.4 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', damping: 12, stiffness: 400 }}
+                className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-green-600 text-white text-[10px] font-800 flex items-center justify-center"
+              >
+                {totalItems}
+              </motion.span>
+            )}
+          </button>
+
+          {/* Hamburger */}
           <button
             type="button"
             aria-label="Toggle menu"
@@ -127,6 +201,20 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {user ? (
+                <>
+                  <Link to="/account" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50">
+                    <User size={16} /> {user.name}
+                  </Link>
+                  <button onClick={() => signOut()} className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-red-500 hover:bg-red-50">
+                    <LogOut size={16} /> Sign out
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50">
+                  <User size={16} /> Login / Sign up
+                </Link>
+              )}
               <Link
                 to="/products"
                 className="flex items-center justify-center px-4 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-700 mt-2 transition-colors"

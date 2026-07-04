@@ -5,9 +5,10 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import {
   ArrowLeft, Clock, Users, Flame, ChefHat, Share2, CheckCircle,
-  ArrowRight, Leaf, Timer, Sprout, Camera,
+  ArrowRight, Leaf, Timer, Sprout, Camera, ShoppingBag, Plus, Minus, Check,
 } from 'lucide-react'
 import { products, recipes } from '../data/products'
+import { useCart } from '@/context/CartContext'
 import Footer from '../components/Footer'
 
 const spiceBadge: Record<string, string> = {
@@ -56,6 +57,16 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
   const product = products.find((p) => p.id === id)
   const recipe = recipes.find((r) => r.productId === id)
+  const { addItem } = useCart()
+  const [qty, setQty] = useState(1)
+  const [justAdded, setJustAdded] = useState(false)
+
+  const handleAddToCart = () => {
+    if (!product) return
+    addItem({ productId: product.id, name: product.name, price: product.price, image: product.image }, qty)
+    setJustAdded(true)
+    setTimeout(() => setJustAdded(false), 1800)
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -172,6 +183,52 @@ export default function ProductDetail() {
                       </div>
                     )
                   })}
+                </div>
+
+                {/* ── Price + Add to cart ── */}
+                <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-black text-white" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)' }}>
+                      ₹{product.price}
+                    </span>
+                    <span className="text-white/45 text-sm font-600">/ {product.servings}-person pack</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* Quantity stepper */}
+                    <div className="flex items-center rounded-2xl overflow-hidden backdrop-blur-sm"
+                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)' }}>
+                      <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity"
+                        className="w-11 h-12 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                        <Minus size={16} />
+                      </button>
+                      <span className="w-10 text-center text-white font-800 text-lg">{qty}</span>
+                      <button onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity"
+                        className="w-11 h-12 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+
+                    {/* Add to cart */}
+                    <button
+                      onClick={handleAddToCart}
+                      className={`group/cart inline-flex items-center gap-2.5 px-6 sm:px-8 h-12 rounded-2xl font-800 transition-all duration-300 ${
+                        justAdded ? 'bg-green-400 text-green-950' : 'bg-green-500 hover:bg-green-400 text-white'
+                      }`}
+                      style={{ boxShadow: '0 10px 30px rgba(122,168,58,0.4)' }}
+                    >
+                      {justAdded ? (
+                        <>
+                          <Check size={18} /> Added to Cart
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag size={18} className="group-hover/cart:scale-110 transition-transform" />
+                          Add to Cart · ₹{product.price * qty}
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </div>

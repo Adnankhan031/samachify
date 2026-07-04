@@ -1,24 +1,27 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
-interface CartItem {
+export interface CartItem {
   productId: string
   name: string
-  packSize: string
-  price: string
+  price: number // INR per unit
   quantity: number
   image: string
 }
 
 interface CartContextType {
   items: CartItem[]
-  addItem: (item: CartItem) => void
-  removeItem: (productId: string, packSize: string) => void
-  updateQuantity: (productId: string, packSize: string, quantity: number) => void
+  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void
+  removeItem: (productId: string) => void
+  updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  // Drawer UI state
+  isOpen: boolean
+  openCart: () => void
+  closeCart: () => void
 }
 
 const CartContext = createContext<CartContextType | null>(null)
@@ -35,61 +38,86 @@ const loadFromStorage = (): CartItem[] => {
 }
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>(loadFromStorage)
+  const [items, setItems] = useState<CartItem[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
-  // Persist to localStorage on every change
+  // Hydrate from localStorage after mount (avoids SSR/client mismatch)
   useEffect(() => {
+    setItems(loadFromStorage())
+    setHydrated(true)
+  }, [])
+
+  // Persist to localStorage on every change (only after hydration)
+  useEffect(() => {
+    if (!hydrated) return
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
     } catch {
       // Silently ignore storage errors
     }
-  }, [items])
+  }, [items, hydrated])
 
-  const addItem = (item: CartItem) => {
-    setItems(prev => {
-      const existing = prev.find(i => i.productId === item.productId && i.packSize === item.packSize)
+  // Lock body scroll while the drawer is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  const addItem = useCallback((item: Omit<CartItem, 'quantity'>, quantity = 1) => {
+    setItems((prev) => {
+      const existing = prev.find((i) => i.productId === item.productId)
       if (existing) {
-        return prev.map(i =>
-          i.productId === item.productId && i.packSize === item.packSize
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
+        return prev.map((i) =>
+          i.productId === item.productId ? { ...i, quantity: i.quantity + quantity } : i
         )
       }
-      return [...prev, item]
+      return [...prev, { ...item, quantity }]
     })
-  }
+    setIsOpen(true)
+  }, [])
 
-  const removeItem = (productId: string, packSize: string) => {
-    setItems(prev => prev.filter(i => !(i.productId === productId && i.packSize === packSize)))
-  }
+  const removeItem = useCallback((productId: string) => {
+    setItems((prev) => prev.filter((i) => i.productId !== productId))
+  }, [])
 
-  const updateQuantity = (productId: string, packSize: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(productId, packSize)
-      return
-    }
-    setItems(prev =>
-      prev.map(i =>
-        i.productId === productId && i.packSize === packSize ? { ...i, quantity } : i
-      )
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
+    setItems((prev) =>
+      quantity <= 0
+        ? prev.filter((i) => i.productId !== productId)
+        : prev.map((i) => (i.productId === productId ? { ...i, quantity } : i))
     )
-  }
+  }, [])
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([])
-    localStorage.removeItem(CART_STORAGE_KEY)
-  }
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY)
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
-
-  const totalPrice = items.reduce((sum, item) => {
-    const price = parseInt(item.price.replace('₹', '').replace(',', '')) || 0
-    return sum + price * item.quantity
-  }, 0)
+  const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider
+      value={{
+        items,
+        addItem,
+        removeItem,
+        updateQuantity,
+        clearCart,
+        totalItems,
+        totalPrice,
+        isOpen,
+        openCart: () => setIsOpen(true),
+        closeCart: () => setIsOpen(false),
+      }}
+    >
       {children}
     </CartContext.Provider>
   )

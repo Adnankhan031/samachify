@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Link } from '@/lib/nav'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Clock, ChefHat, Leaf, Flame, Zap, Package, Star, Filter } from 'lucide-react'
+import { ArrowRight, Clock, ChefHat, Leaf, Flame, Zap, Package, Star, Filter, ShoppingBag } from 'lucide-react'
 import { products } from '../data/products'
+import { useCart } from '@/context/CartContext'
 import Footer from '../components/Footer'
 
 const DARK_BG = 'linear-gradient(160deg, #050902 0%, #0b1606 55%, #142405 100%)'
@@ -28,6 +29,7 @@ const spiceBadge: Record<string, string> = {
 
 export default function Products() {
   const [active, setActive] = useState('All')
+  const { addItem } = useCart()
 
   const getFiltered = (tab: string) => {
     if (tab === 'All') return products
@@ -297,16 +299,25 @@ export default function Products() {
                       )}
                     </div>
 
-                    <Link
-                      to={`/products/${product.id}`}
-                      className="group/btn flex items-center justify-between w-full px-5 py-3.5 bg-green-600 hover:bg-green-700 text-white font-700 rounded-2xl text-sm transition-all duration-250 hover:shadow-lg"
-                      style={{ boxShadow: '0 4px 14px rgba(73,138,12,0.25)' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(73,138,12,0.38)' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 14px rgba(73,138,12,0.25)' }}
-                    >
-                      <span>View Recipe</span>
-                      <ArrowRight size={15} className="group-hover/btn:translate-x-1 transition-transform duration-200" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => addItem({ productId: product.id, name: product.name, price: product.price, image: product.image })}
+                        className="group/btn flex items-center justify-center gap-2 flex-1 px-5 py-3.5 bg-green-600 hover:bg-green-700 text-white font-700 rounded-2xl text-sm transition-all duration-250"
+                        style={{ boxShadow: '0 4px 14px rgba(73,138,12,0.25)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(73,138,12,0.38)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 14px rgba(73,138,12,0.25)' }}
+                      >
+                        <ShoppingBag size={15} className="group-hover/btn:scale-110 transition-transform" />
+                        Add to Cart
+                      </button>
+                      <Link
+                        to={`/products/${product.id}`}
+                        aria-label={`View ${product.name} recipe`}
+                        className="flex items-center justify-center w-12 h-12 flex-shrink-0 border border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-500 hover:text-green-600 rounded-2xl transition-all duration-250"
+                      >
+                        <ArrowRight size={16} />
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
               ))}

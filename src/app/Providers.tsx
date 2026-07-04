@@ -4,13 +4,16 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import { usePathname } from 'next/navigation'
 import { CartProvider } from '@/context/CartContext'
+import { AuthProvider } from '@/context/AuthContext'
+import CartDrawer from '@/components/CartDrawer'
 
 /**
  * Client-side providers + global behaviours.
  * - Lenis smooth scroll (was in the old App.tsx)
  * - Scroll-to-top on route change (replaces the old <ScrollToTop /> component,
  *   coordinated with Lenis so it doesn't fight the smooth-scroll engine)
- * - CartProvider (was defined but never mounted in the Vite app)
+ * - AuthProvider + CartProvider (cart was defined but never mounted in the Vite app)
+ * - Global CartDrawer overlay
  */
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -33,5 +36,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   }, [pathname])
 
-  return <CartProvider>{children}</CartProvider>
+  return (
+    <AuthProvider>
+      <CartProvider>
+        {children}
+        <CartDrawer />
+      </CartProvider>
+    </AuthProvider>
+  )
 }
