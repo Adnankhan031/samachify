@@ -43,7 +43,7 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
         transparent
           ? 'py-3.5 bg-transparent border-b border-transparent'
-          : `bg-white border-b border-green-100 ${scrolled ? 'py-2 shadow-lg shadow-black/[0.06] backdrop-blur-xl' : 'py-3'}`
+          : `bg-white border-b border-transparent ${scrolled ? 'py-2 shadow-lg shadow-black/[0.06] backdrop-blur-xl' : 'py-3'}`
       }`}
     >
       <nav className="relative flex items-center justify-between" style={{ paddingLeft: 'max(1.25rem, 5vw)', paddingRight: 'max(1.25rem, 5vw)' }}>
@@ -81,7 +81,7 @@ export default function Navbar() {
             >
               {link.label}
               <span
-                className="absolute bottom-1.5 left-1/2 h-[3px] w-5 rounded-full bg-green-600 transition-opacity duration-200"
+                className="absolute bottom-1.5 left-1/2 h-[3px] w-7 rounded-full bg-green-600 transition-opacity duration-200"
                 style={{ transform: 'translateX(-50%)', opacity: isActive(link.href) ? 1 : 0 }}
               />
             </Link>

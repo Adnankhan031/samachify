@@ -79,7 +79,7 @@ export default function Technology() {
   return (
     <>
       {/* Dark bg on main fills the ~10px gap between navbar bottom and first section */}
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
+      <main className="pt-[68px] overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
 
         {/* ── Hero ── */}
         <section

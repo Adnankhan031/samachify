@@ -49,7 +49,7 @@ export default function Contact() {
 
   return (
     <>
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
+      <main className="pt-[68px] overflow-x-hidden min-h-screen" style={{ background: '#050902' }}>
 
         {/* ── Hero ── */}
         <section

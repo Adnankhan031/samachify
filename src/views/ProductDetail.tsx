@@ -104,7 +104,7 @@ export default function ProductDetail() {
 
   return (
     <>
-      <main className="pt-20 overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
+      <main className="pt-[68px] overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
 
         {/* ── Hero ── */}
         <section className="relative overflow-hidden" style={{ minHeight: '78vh', background: '#070d03' }}>
