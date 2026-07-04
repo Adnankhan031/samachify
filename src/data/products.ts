@@ -3,6 +3,8 @@ export interface Product {
   name: string;
   emoji: string;
   subtitle: string;
+  /** Price in INR (rupees) for the standard pack. */
+  price: number;
   cookTime: string;
   tags: string[];
   description: string;
@@ -23,16 +25,15 @@ export const products: Product[] = [
     name: 'Sambar Pack',
     emoji: '🍲',
     subtitle: 'The heart of every South Indian meal',
+    price: 79,
     cookTime: '10-15 mins',
     tags: ['One-Pot', 'Farm Fresh', 'Pre-Cut', 'Zero Waste'],
     description:
       'A traditional South Indian staple made effortless. Our Sambar Pack includes farm-fresh pre-cut vegetables, semi-cooked dal, and tamarind extract — everything you need to cook authentic sambar in 10–15 minutes, no prep required.',
-    image: '/assets/Sambar.png',
+    image: '/assets/product-sambar.webp',
     gallery: [
-      '/assets/Sambar.png',
-      '/assets/sambar-label.png',
-      '/assets/sambar-pack-2.png',
-      '/assets/product-photo.jpg',
+      '/assets/product-sambar.webp',
+      '/assets/hero-sambar-meal.webp',
     ],
     category: 'sambar',
     servings: 4,
@@ -57,14 +58,15 @@ export const products: Product[] = [
     name: 'Kara Kuzhambu Pack',
     emoji: '🌶',
     subtitle: 'Bold, tangy and fiery South Indian gravy',
+    price: 79,
     cookTime: '10-15 mins',
     tags: ['One-Pot', 'Farm Fresh', 'Spicy'],
     description:
       'Kara Kuzhambu is a robust, tamarind-based spicy gravy that pairs perfectly with rice. Our pack includes pre-measured shallots, tomatoes, fresh curry leaves, and authentic kuzhambu powder — ready to simmer and serve.',
-    image: '/assets/Kara%20Kulambu.png',
+    image: '/assets/product-kara-kuzhambu.webp',
     gallery: [
-      '/assets/Kara%20Kulambu.png',
-      '/assets/Sambar.png',
+      '/assets/product-kara-kuzhambu.webp',
+      '/assets/hero-kara-meal.webp',
     ],
     category: 'kuzhambu',
     servings: 4,
@@ -89,14 +91,15 @@ export const products: Product[] = [
     name: 'Coconut Chutney Pack',
     emoji: '🥥',
     subtitle: 'Fresh coconut chutney — the perfect side',
+    price: 35,
     cookTime: '10-15 mins',
     tags: ['Quick', 'Side Dish', 'Farm Fresh'],
     description:
       'Nothing complements South Indian breakfasts like fresh coconut chutney. Our pack contains freshly grated coconut, green chillies, ginger, and tempering ingredients — blended and ready in 10 minutes.',
-    image: '/assets/Coconut%20Chutney.png',
+    image: '/assets/product-coconut-chutney.webp',
     gallery: [
-      '/assets/Coconut%20Chutney.png',
-      '/assets/sambar-pack-2.png',
+      '/assets/product-coconut-chutney.webp',
+      '/assets/hero-chutney-breakfast.webp',
     ],
     category: 'chutney',
     servings: 4,
@@ -119,14 +122,15 @@ export const products: Product[] = [
     name: 'Tomato Chutney Pack',
     emoji: '🍅',
     subtitle: 'Tangy roasted tomato chutney',
+    price: 35,
     cookTime: '10-15 mins',
     tags: ['Quick', 'Side Dish', 'Farm Fresh'],
     description:
       'A tangy, slightly smoky tomato chutney made from farm-fresh tomatoes and onions. This pack includes everything pre-measured for a rich, authentic chutney that pairs beautifully with any South Indian dish.',
-    image: '/assets/Tomato%20Chutney.png',
+    image: '/assets/product-tomato-chutney.webp',
     gallery: [
-      '/assets/Tomato%20Chutney.png',
-      '/assets/product-photo.jpg',
+      '/assets/product-tomato-chutney.webp',
+      '/assets/gallery-tomato-chutney.webp',
     ],
     category: 'chutney',
     servings: 4,
@@ -193,7 +197,7 @@ export const recipes: Recipe[] = [
     difficulty: 'Beginner',
     spiceLevel: 'Medium',
     servings: 4,
-    image: '/assets/Sambar.png',
+    image: '/assets/product-sambar.webp',
     description:
       'Sambar is the soul of South Indian cooking — a rich lentil and vegetable stew simmered with tamarind and aromatic spices. Our pack eliminates all prep work, letting you focus only on the joy of cooking and eating.',
     tags: ['One Pot', 'Lunch', 'Dinner', 'Comfort Food'],
@@ -243,7 +247,7 @@ export const recipes: Recipe[] = [
     difficulty: 'Beginner',
     spiceLevel: 'Hot',
     servings: 4,
-    image: '/assets/Kara%20Kulambu.png',
+    image: '/assets/product-kara-kuzhambu.webp',
     description:
       'Kara Kuzhambu is a bold, spicy, tangy gravy that is beloved across Tamil Nadu. Made with shallots, tomatoes, and generous tamarind, it pairs perfectly with steamed rice and a side of papad.',
     tags: ['One Pot', 'Spicy', 'Lunch', 'Dinner'],
@@ -293,7 +297,7 @@ export const recipes: Recipe[] = [
     difficulty: 'Beginner',
     spiceLevel: 'Mild',
     servings: 4,
-    image: '/assets/Coconut%20Chutney.png',
+    image: '/assets/product-coconut-chutney.webp',
     description:
       'No South Indian breakfast is complete without fresh coconut chutney. Smooth, creamy, and mildly spiced — our pack makes it effortless to prepare the perfect chutney for idli, dosa, vada, or upma.',
     tags: ['Quick', 'Side Dish', 'Breakfast', 'Vegetarian'],
@@ -337,7 +341,7 @@ export const recipes: Recipe[] = [
     difficulty: 'Beginner',
     spiceLevel: 'Medium',
     servings: 4,
-    image: '/assets/Tomato%20Chutney.png',
+    image: '/assets/product-tomato-chutney.webp',
     description:
       'A rich, smoky-tangy tomato chutney made from ripe farm-fresh tomatoes. The perfect complement to idli, dosa, and rice — our pack includes pre-measured tomatoes, onions, red chilli, and tempering ingredients.',
     tags: ['Quick', 'Side Dish', 'Breakfast', 'Lunch'],

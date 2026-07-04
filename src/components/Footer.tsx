@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+'use client'
+
+import { Link } from '@/lib/nav'
 import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf } from 'lucide-react'
 
 const quickLinks = [

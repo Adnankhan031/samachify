@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Next.js
+.next/
+out/
+next-env.d.ts
+.vercel
+
+# Raw source photos (originals kept locally; optimized WebP live in public/assets)
+/Photos/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
