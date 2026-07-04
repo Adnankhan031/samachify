@@ -81,8 +81,8 @@ export default function Navbar() {
             >
               {link.label}
               <span
-                className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-green-600 transition-all duration-200"
-                style={{ opacity: isActive(link.href) ? 1 : 0, transform: isActive(link.href) ? 'scaleX(1)' : 'scaleX(0)' }}
+                className="absolute bottom-1.5 left-1/2 h-[3px] w-5 rounded-full bg-green-600 transition-opacity duration-200"
+                style={{ transform: 'translateX(-50%)', opacity: isActive(link.href) ? 1 : 0 }}
               />
             </Link>
           ))}
