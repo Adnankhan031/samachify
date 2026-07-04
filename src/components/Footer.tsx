@@ -85,8 +85,10 @@ export default function Footer() {
           <div>
             <h4 className="font-700 text-white text-sm mb-5 uppercase tracking-wider">Legal</h4>
             <ul className="space-y-3">
-              <li><Link to="/contact" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/contact" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/legal/terms" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Terms &amp; Conditions</Link></li>
+              <li><Link to="/legal/privacy" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/legal/refunds" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Refund &amp; Cancellation</Link></li>
+              <li><Link to="/legal/shipping" className="text-gray-400 hover:text-green-400 text-sm transition-colors">Shipping &amp; Delivery</Link></li>
               <li>
                 <div className="flex items-center gap-2 text-gray-400 text-sm mt-4">
                   <ShieldCheck size={14} className="text-green-500" />
