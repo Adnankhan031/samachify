@@ -13,7 +13,29 @@ import { useAuth } from '@/context/AuthContext'
 const FREE_DELIVERY_THRESHOLD = 299
 const DELIVERY_FEE = 39
 
+// Online payments show up only when the Razorpay public key is configured.
+const RAZORPAY_ENABLED = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
+
 type PayMethod = 'cod' | 'razorpay'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare global {
+  interface Window {
+    Razorpay?: any
+  }
+}
+
+/** Loads the Razorpay checkout script once. */
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && window.Razorpay) return resolve(true)
+    const s = document.createElement('script')
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    s.onload = () => resolve(true)
+    s.onerror = () => resolve(false)
+    document.body.appendChild(s)
+  })
+}
 
 export default function CheckoutView() {
   const { items, totalPrice, totalItems, clearCart } = useCart()
@@ -52,26 +74,30 @@ export default function CheckoutView() {
     return Object.keys(e).length === 0
   }
 
+  const cartPayload = () => items.map((i) => ({ productId: i.productId, quantity: i.quantity }))
+
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
     if (!validate()) return
     setPlacing(true)
-    // Phase 4 will add Razorpay (open checkout + verify signature server-side).
+    if (pay === 'razorpay') {
+      await payWithRazorpay()
+    } else {
+      await payWithCOD()
+    }
+  }
+
+  const payWithCOD = async () => {
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customer: form,
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-          paymentMethod: pay,
-        }),
+        body: JSON.stringify({ customer: form, items: cartPayload(), paymentMethod: 'cod' }),
       })
       const data = await res.json()
       if (!res.ok) {
         setSubmitError(data.error || 'Something went wrong. Please try again.')
-        setPlacing(false)
         return
       }
       setOrderId(data.orderId)
@@ -79,6 +105,71 @@ export default function CheckoutView() {
     } catch {
       setSubmitError('Network error. Please check your connection and try again.')
     } finally {
+      setPlacing(false)
+    }
+  }
+
+  const payWithRazorpay = async () => {
+    try {
+      const ok = await loadRazorpayScript()
+      if (!ok) {
+        setSubmitError('Could not load the payment window. Please try again.')
+        setPlacing(false)
+        return
+      }
+      // 1. Create a Razorpay order on the server (amount priced server-side)
+      const res = await fetch('/api/razorpay/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer: form, items: cartPayload() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSubmitError(data.error || 'Could not start payment.')
+        setPlacing(false)
+        return
+      }
+      // 2. Open Razorpay checkout
+      const rzp = new window.Razorpay({
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        order_id: data.razorpayOrderId,
+        name: 'Samachify',
+        description: 'Fresh ready-to-cook packs',
+        image: '/assets/logo.png',
+        prefill: { name: form.name, email: form.email, contact: form.phone },
+        theme: { color: '#4d8b14' },
+        handler: async (response: {
+          razorpay_order_id: string
+          razorpay_payment_id: string
+          razorpay_signature: string
+        }) => {
+          // 3. Verify signature + record the paid order
+          const vres = await fetch('/api/razorpay/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...response, customer: form, items: cartPayload() }),
+          })
+          const vdata = await vres.json()
+          if (!vres.ok) {
+            setSubmitError(vdata.error || 'Payment could not be confirmed.')
+            setPlacing(false)
+            return
+          }
+          setOrderId(vdata.orderId)
+          clearCart()
+          setPlacing(false)
+        },
+        modal: { ondismiss: () => setPlacing(false) },
+      })
+      rzp.on('payment.failed', () => {
+        setSubmitError('Payment failed. Please try again.')
+        setPlacing(false)
+      })
+      rzp.open()
+    } catch {
+      setSubmitError('Something went wrong starting the payment.')
       setPlacing(false)
     }
   }
@@ -194,8 +285,9 @@ export default function CheckoutView() {
                 />
                 <PayOption
                   active={pay === 'razorpay'} onClick={() => setPay('razorpay')}
-                  icon={CreditCard} title="Pay online (Razorpay)" desc="UPI, cards & netbanking — enabling soon."
-                  badge="Coming soon" disabled
+                  icon={CreditCard} title="Pay online (Razorpay)"
+                  desc={RAZORPAY_ENABLED ? 'UPI, cards & netbanking — pay securely.' : 'UPI, cards & netbanking — enabling soon.'}
+                  badge={RAZORPAY_ENABLED ? undefined : 'Coming soon'} disabled={!RAZORPAY_ENABLED}
                 />
               </div>
               <div className="flex items-center gap-2 mt-5 text-xs text-gray-400">
@@ -256,7 +348,7 @@ export default function CheckoutView() {
                   </motion.span>
                 ) : (
                   <motion.span key="p" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
-                    Place order · ₹{grandTotal} <ArrowRight size={17} />
+                    {pay === 'razorpay' ? 'Pay' : 'Place order'} · ₹{grandTotal} <ArrowRight size={17} />
                   </motion.span>
                 )}
               </AnimatePresence>

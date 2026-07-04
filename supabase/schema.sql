@@ -17,7 +17,9 @@ create table if not exists public.orders (
   subtotal       integer not null,
   delivery_fee   integer not null default 0,
   total          integer not null,
-  status         text not null default 'pending'
+  status         text not null default 'pending',
+  razorpay_payment_id text,
+  razorpay_order_id   text
 );
 
 create table if not exists public.order_items (
