@@ -1,18 +1,45 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion } from 'framer-motion'
-import { User, Mail, Package, LogOut, ShoppingBag, ChevronRight, Heart } from 'lucide-react'
+import { Mail, Package, LogOut, ShoppingBag, ChevronRight, Heart } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { createClient } from '@/lib/supabase/client'
+
+interface OrderItem {
+  id: string
+  product_name: string
+  price: number
+  quantity: number
+}
+interface Order {
+  id: string
+  created_at: string
+  total: number
+  status: string
+  payment_method: string
+  order_items: OrderItem[]
+}
 
 export default function AccountView() {
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
+  const [orders, setOrders] = useState<Order[] | null>(null)
 
   useEffect(() => {
     if (!loading && !user) navigate('/login')
   }, [loading, user, navigate])
+
+  useEffect(() => {
+    if (!user) return
+    const supabase = createClient()
+    supabase
+      .from('orders')
+      .select('id, created_at, total, status, payment_method, order_items(id, product_name, price, quantity)')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => setOrders((data as Order[]) ?? []))
+  }, [user])
 
   if (loading || !user) {
     return (
@@ -49,16 +76,47 @@ export default function AccountView() {
               </div>
               <h2 className="font-display font-800 text-gray-900 text-lg">Order history</h2>
             </div>
-            <div className="text-center py-10">
-              <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag size={26} className="text-gray-300" />
+            {orders === null ? (
+              <div className="py-10 flex justify-center">
+                <div className="w-8 h-8 rounded-full border-2 border-green-100 border-t-green-600 animate-spin" />
               </div>
-              <p className="text-gray-500 font-600 mb-1">No orders yet</p>
-              <p className="text-gray-400 text-sm mb-5">Your past orders will appear here once the store is live.</p>
-              <Link to="/products" className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 hover:bg-green-700 text-white font-700 rounded-xl text-sm transition-colors">
-                Start shopping <ChevronRight size={15} />
-              </Link>
-            </div>
+            ) : orders.length === 0 ? (
+              <div className="text-center py-10">
+                <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                  <ShoppingBag size={26} className="text-gray-300" />
+                </div>
+                <p className="text-gray-500 font-600 mb-1">No orders yet</p>
+                <p className="text-gray-400 text-sm mb-5">Your past orders will appear here.</p>
+                <Link to="/products" className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 hover:bg-green-700 text-white font-700 rounded-xl text-sm transition-colors">
+                  Start shopping <ChevronRight size={15} />
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {orders.map((o) => (
+                  <div key={o.id} className="rounded-2xl border border-gray-100 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="font-800 text-gray-900 text-sm">#{o.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-xs text-gray-400">
+                          {new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {' · '}{o.payment_method === 'cod' ? 'Cash on Delivery' : 'Online'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block text-[10px] font-800 uppercase tracking-wide px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                          {o.status}
+                        </span>
+                        <p className="font-900 text-gray-900 mt-1">₹{o.total}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      {o.order_items.map((it) => `${it.quantity}× ${it.product_name}`).join(', ')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quick links */}

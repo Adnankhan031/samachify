@@ -1,6 +1,8 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
+import type { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/client'
 
 export interface AuthUser {
   id: string
@@ -10,6 +12,8 @@ export interface AuthUser {
 
 interface AuthResult {
   error?: string
+  /** Set when the action succeeded but needs a follow-up (e.g. email confirmation). */
+  message?: string
 }
 
 interface AuthContextType {
@@ -23,70 +27,86 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-const SESSION_KEY = 'samachify_session'
+/** Map a Supabase user to our lightweight shape. */
+function toAuthUser(u: User | null): AuthUser | null {
+  if (!u) return null
+  const name =
+    (u.user_metadata?.name as string) ||
+    (u.user_metadata?.full_name as string) ||
+    (u.email ? u.email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Friend')
+  return { id: u.id, email: u.email ?? '', name }
+}
 
-/**
- * ⚠️ PLACEHOLDER AUTH — Phase 2 (UI only).
- *
- * This simulates a session so the full login → account → logout flow is
- * navigable and "logically correct" end to end. It does NOT verify credentials
- * and never stores passwords.
- *
- * Phase 3 swap: replace the bodies of signUp / signIn / signInWithGoogle /
- * signOut with Supabase Auth calls (supabase.auth.signUp, signInWithPassword,
- * signInWithOAuth({ provider: 'google' }), signOut). The public interface here
- * is intentionally shaped to match Supabase so the components don't change.
- */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const supabase = useMemo(() => createClient(), [])
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SESSION_KEY)
-      if (stored) setUser(JSON.parse(stored))
-    } catch {
-      /* ignore */
+    let active = true
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active) return
+      setUser(toAuthUser(data.user))
+      setLoading(false)
+    })
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(toAuthUser(session?.user ?? null))
+      setLoading(false)
+    })
+
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
     }
-    setLoading(false)
-  }, [])
+  }, [supabase])
 
-  const persist = (u: AuthUser | null) => {
-    setUser(u)
-    try {
-      if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u))
-      else localStorage.removeItem(SESSION_KEY)
-    } catch {
-      /* ignore */
-    }
-  }
+  const signUp = useCallback(
+    async (name: string, email: string, password: string): Promise<AuthResult> => {
+      if (!name.trim()) return { error: 'Please enter your name.' }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Please enter a valid email address.' }
+      if (password.length < 8) return { error: 'Password must be at least 8 characters.' }
 
-  const signUp = useCallback(async (name: string, email: string, password: string): Promise<AuthResult> => {
-    if (!name.trim()) return { error: 'Please enter your name.' }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Please enter a valid email address.' }
-    if (password.length < 8) return { error: 'Password must be at least 8 characters.' }
-    await new Promise((r) => setTimeout(r, 500)) // simulate network
-    persist({ id: crypto.randomUUID(), email: email.toLowerCase(), name: name.trim() })
-    return {}
-  }, [])
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+        options: { data: { name: name.trim() } },
+      })
+      if (error) return { error: error.message }
+      // If email confirmation is enabled, there's no active session yet.
+      if (data.user && !data.session) {
+        return { message: 'Check your email to confirm your account, then sign in.' }
+      }
+      return {}
+    },
+    [supabase]
+  )
 
-  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Please enter a valid email address.' }
-    if (password.length < 1) return { error: 'Please enter your password.' }
-    await new Promise((r) => setTimeout(r, 500))
-    const name = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-    persist({ id: crypto.randomUUID(), email: email.toLowerCase(), name })
-    return {}
-  }, [])
+  const signIn = useCallback(
+    async (email: string, password: string): Promise<AuthResult> => {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase(),
+        password,
+      })
+      if (error) return { error: error.message }
+      return {}
+    },
+    [supabase]
+  )
 
   const signInWithGoogle = useCallback(async (): Promise<AuthResult> => {
-    // Phase 3: supabase.auth.signInWithOAuth({ provider: 'google' })
-    return { error: 'Google sign-in will be enabled once the backend is connected.' }
-  }, [])
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    })
+    if (error) return { error: error.message }
+    return {}
+  }, [supabase])
 
   const signOut = useCallback(async () => {
-    persist(null)
-  }, [])
+    await supabase.auth.signOut()
+    setUser(null)
+  }, [supabase])
 
   return (
     <AuthContext.Provider value={{ user, loading, signUp, signIn, signInWithGoogle, signOut }}>

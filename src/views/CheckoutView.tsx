@@ -31,6 +31,7 @@ export default function CheckoutView() {
   const [pay, setPay] = useState<PayMethod>('cod')
   const [placing, setPlacing] = useState(false)
   const [orderId, setOrderId] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
@@ -53,14 +54,33 @@ export default function CheckoutView() {
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
     if (!validate()) return
     setPlacing(true)
-    // Phase 3/4: persist order to Supabase; for Razorpay, open checkout + verify signature server-side.
-    await new Promise((r) => setTimeout(r, 900))
-    const id = 'SM' + Date.now().toString().slice(-8)
-    setOrderId(id)
-    clearCart()
-    setPlacing(false)
+    // Phase 4 will add Razorpay (open checkout + verify signature server-side).
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer: form,
+          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+          paymentMethod: pay,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSubmitError(data.error || 'Something went wrong. Please try again.')
+        setPlacing(false)
+        return
+      }
+      setOrderId(data.orderId)
+      clearCart()
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.')
+    } finally {
+      setPlacing(false)
+    }
   }
 
   // ── Success screen ──
@@ -87,7 +107,7 @@ export default function CheckoutView() {
           <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-left">
             <div className="flex justify-between py-1.5 text-sm">
               <span className="text-gray-500">Order ID</span>
-              <span className="font-800 text-gray-900">{orderId}</span>
+              <span className="font-800 text-gray-900">#{orderId.slice(0, 8).toUpperCase()}</span>
             </div>
             <div className="flex justify-between py-1.5 text-sm">
               <span className="text-gray-500">Payment</span>
@@ -216,6 +236,13 @@ export default function CheckoutView() {
                 <span className="font-display font-900 text-gray-900 text-2xl">₹{grandTotal}</span>
               </div>
             </div>
+
+            {submitError && (
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+                className="mt-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">
+                {submitError}
+              </motion.p>
+            )}
 
             <button
               type="submit" disabled={placing}
