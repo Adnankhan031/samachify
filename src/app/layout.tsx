@@ -4,7 +4,7 @@ import Providers from './Providers'
 import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://samachify.com'),
+  metadataBase: new URL('https://samachify.in'),
   title: {
     default: 'Samachify — From Farm To Pan | Fresh South Indian Meal Kits',
     template: '%s | Samachify',
@@ -25,10 +25,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Samachify',
+    url: 'https://samachify.in',
     title: 'Samachify — From Farm To Pan',
     description:
       "South India's first fresh ingredient meal kit. Authentic South Indian meals in 10–15 minutes.",
-    images: ['/assets/hero_1.png'],
+    images: ['/assets/hero-all-products.webp'],
   },
   twitter: {
     card: 'summary_large_image',

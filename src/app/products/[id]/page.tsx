@@ -25,6 +25,37 @@ export async function generateMetadata({
   }
 }
 
-export default function Page() {
-  return <ProductDetail />
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const product = products.find((p) => p.id === id)
+
+  // Product structured data for rich results in Google.
+  const jsonLd = product && {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description,
+    image: `https://samachify.in${product.image}`,
+    brand: { '@type': 'Brand', name: 'Samachify' },
+    category: 'Ready-to-cook meal kit',
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'INR',
+      price: product.price,
+      availability: 'https://schema.org/InStock',
+      url: `https://samachify.in/products/${product.id}`,
+    },
+  }
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ProductDetail />
+    </>
+  )
 }
