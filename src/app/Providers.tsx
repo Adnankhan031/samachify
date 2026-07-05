@@ -5,8 +5,10 @@ import Lenis from 'lenis'
 import { usePathname } from 'next/navigation'
 import { CartProvider } from '@/context/CartContext'
 import { AuthProvider } from '@/context/AuthContext'
+import { ActiveOrderProvider } from '@/context/ActiveOrderContext'
 import CartDrawer from '@/components/CartDrawer'
 import CartToast from '@/components/CartToast'
+import ActiveOrderPill from '@/components/ActiveOrderPill'
 
 /**
  * Client-side providers + global behaviours.
@@ -39,11 +41,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
-      <CartProvider>
-        {children}
-        <CartDrawer />
-        <CartToast />
-      </CartProvider>
+      <ActiveOrderProvider>
+        <CartProvider>
+          {children}
+          <CartDrawer />
+          <CartToast />
+          <ActiveOrderPill />
+        </CartProvider>
+      </ActiveOrderProvider>
     </AuthProvider>
   )
 }

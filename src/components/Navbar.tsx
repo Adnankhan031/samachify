@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@/lib/nav'
-import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, LogOut, Truck } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
+import { useActiveOrder } from '@/context/ActiveOrderContext'
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -22,6 +23,7 @@ export default function Navbar() {
   const location = useLocation()
   const { totalItems, openCart } = useCart()
   const { user, signOut } = useAuth()
+  const { activeOrder } = useActiveOrder()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -99,8 +101,16 @@ export default function Navbar() {
                   onClick={() => setAccountOpen((v) => !v)}
                   className="flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800 flex-shrink-0">
-                    {user.name.charAt(0).toUpperCase()}
+                  <span className="relative flex-shrink-0">
+                    <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                    {activeOrder && (
+                      <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5" aria-label="Order in progress">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 ring-2 ring-white" />
+                      </span>
+                    )}
                   </span>
                   <span className="text-sm font-700 max-w-[110px] truncate">{user.name.split(' ')[0]}</span>
                 </button>
@@ -119,6 +129,11 @@ export default function Navbar() {
                           <p className="text-sm font-800 text-gray-900 truncate">{user.name}</p>
                           <p className="text-xs text-gray-400 truncate">{user.email}</p>
                         </div>
+                        {activeOrder && (
+                          <Link to="/account" onClick={() => setAccountOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-700 text-green-700 bg-green-50/70 hover:bg-green-50 transition-colors mb-1">
+                            <Truck size={15} /> Track your order
+                          </Link>
+                        )}
                         <Link to="/account" onClick={() => setAccountOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50 transition-colors">
                           <User size={15} /> My Account
                         </Link>

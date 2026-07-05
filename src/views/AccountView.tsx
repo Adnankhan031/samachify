@@ -9,7 +9,8 @@ import { createClient } from '@/lib/supabase/client'
 import AddressBook from '@/components/AddressBook'
 import OrderTracker from '@/components/OrderTracker'
 import StatusBadge from '@/components/StatusBadge'
-import type { OrderStatus } from '@/lib/orderStatus'
+import { STATUS_META, type OrderStatus } from '@/lib/orderStatus'
+import { Truck } from 'lucide-react'
 
 interface OrderItem {
   id: string
@@ -81,10 +82,41 @@ export default function AccountView() {
     )
   }
 
+  const currentOrder = (orders ?? []).find(
+    (o) => o.order_status && o.order_status !== 'delivered' && o.order_status !== 'cancelled'
+  )
+
   return (
     <main className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--cream)' }}>
       <div className="max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          {/* Active delivery banner */}
+          {currentOrder && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              className="rounded-3xl border border-green-100 shadow-sm p-6 sm:p-7 mb-6"
+              style={{ background: 'linear-gradient(135deg, #f6ffe9 0%, #ffffff 60%)' }}
+            >
+              <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <span className="w-11 h-11 rounded-2xl bg-green-600 text-white flex items-center justify-center flex-shrink-0">
+                    <Truck size={20} />
+                  </span>
+                  <div>
+                    <p className="font-display font-900 text-gray-900 text-lg leading-tight">
+                      {STATUS_META[currentOrder.order_status].customer}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Order #{currentOrder.id.slice(0, 8).toUpperCase()} · ₹{currentOrder.total}
+                    </p>
+                  </div>
+                </div>
+                <StatusBadge status={currentOrder.order_status} size="md" />
+              </div>
+              <OrderTracker status={currentOrder.order_status} />
+            </motion.div>
+          )}
+
           {/* Profile header */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 sm:p-9 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
