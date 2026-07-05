@@ -21,7 +21,7 @@ interface AuthContextType {
   loading: boolean
   signUp: (name: string, email: string, password: string) => Promise<AuthResult>
   signIn: (email: string, password: string) => Promise<AuthResult>
-  signInWithGoogle: () => Promise<AuthResult>
+  signInWithGoogle: (next?: string) => Promise<AuthResult>
   signOut: () => Promise<void>
 }
 
@@ -94,10 +94,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [supabase]
   )
 
-  const signInWithGoogle = useCallback(async (): Promise<AuthResult> => {
+  const signInWithGoogle = useCallback(async (next?: string): Promise<AuthResult> => {
+    // Carry the post-login destination through the OAuth round-trip so the
+    // user lands back where they started (e.g. /checkout).
+    const safeNext = next && next.startsWith('/') ? next : undefined
+    const callback = `${window.location.origin}/auth/callback${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ''}`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callback },
     })
     if (error) return { error: error.message }
     return {}

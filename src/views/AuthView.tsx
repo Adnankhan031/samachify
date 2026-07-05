@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion } from 'framer-motion'
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, Leaf } from 'lucide-react'
@@ -19,6 +19,14 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
   const [notice, setNotice] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // Where to send the user after a successful sign-in. Defaults to /account,
+  // but e.g. the checkout flow sends ?redirect=/checkout to bounce them back.
+  const [redirectTo, setRedirectTo] = useState('/account')
+  useEffect(() => {
+    const target = new URLSearchParams(window.location.search).get('redirect')
+    if (target && target.startsWith('/')) setRedirectTo(target)
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -34,12 +42,12 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
       setNotice(res.message)
       return
     }
-    navigate('/account')
+    navigate(redirectTo)
   }
 
   const handleGoogle = async () => {
     setError(null)
-    const res = await signInWithGoogle()
+    const res = await signInWithGoogle(redirectTo)
     if (res.error) setError(res.error)
   }
 
@@ -174,7 +182,7 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             {isSignup ? 'Already have an account? ' : "Don't have an account? "}
-            <Link to={isSignup ? '/login' : '/signup'} className="font-800 text-green-700 hover:text-green-800">
+            <Link to={`${isSignup ? '/login' : '/signup'}${redirectTo !== '/account' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`} className="font-800 text-green-700 hover:text-green-800">
               {isSignup ? 'Sign in' : 'Sign up'}
             </Link>
           </p>

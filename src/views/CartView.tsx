@@ -4,12 +4,14 @@ import { Link } from '@/lib/nav'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, Plus, Minus, Trash2, ArrowRight, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
+import { useAuth } from '@/context/AuthContext'
 
 const FREE_DELIVERY_THRESHOLD = 299
 const DELIVERY_FEE = 39
 
 export default function CartView() {
   const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
+  const { user } = useAuth()
 
   const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
   const grandTotal = totalPrice + deliveryFee
@@ -112,7 +114,7 @@ export default function CartView() {
                 <span className="font-display font-900 text-gray-900 text-2xl">₹{grandTotal}</span>
               </div>
             </div>
-            <Link to="/checkout"
+            <Link to={user ? '/checkout' : '/login?redirect=/checkout'}
               className="flex items-center justify-center gap-2 w-full mt-6 py-4 bg-green-600 hover:bg-green-700 text-white font-800 rounded-2xl transition-colors"
               style={{ boxShadow: '0 10px 26px rgba(73,138,12,0.32)' }}>
               Proceed to checkout <ArrowRight size={16} />

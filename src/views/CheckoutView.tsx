@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag, MapPin, Phone, Mail, User, Truck, Wallet, CreditCard,
   CheckCircle2, ArrowRight, Loader2, ShieldCheck, ArrowLeft,
-  Home, Briefcase, LogIn, ChevronDown,
+  Home, Briefcase, ChevronDown,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
@@ -40,8 +40,14 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export default function CheckoutView() {
   const { items, totalPrice, totalItems, clearCart } = useCart()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
+
+  // Checkout requires an account (for order history & tracking). Guests are
+  // sent to sign in, then bounced straight back here.
+  useEffect(() => {
+    if (!authLoading && !user) navigate('/login?redirect=/checkout')
+  }, [authLoading, user, navigate])
 
   const [form, setForm] = useState({
     name: user?.name ?? '',
@@ -193,6 +199,18 @@ export default function CheckoutView() {
     }
   }
 
+  // ── Auth gate: block checkout until we know the user is signed in ──
+  if (authLoading || !user) {
+    return (
+      <main className="min-h-screen flex items-center justify-center px-5 py-24" style={{ background: 'var(--cream)' }}>
+        <div className="flex flex-col items-center gap-3 text-gray-500">
+          <Loader2 size={28} className="animate-spin text-green-600" />
+          <p className="text-sm font-600">Taking you to sign in…</p>
+        </div>
+      </main>
+    )
+  }
+
   // ── Success screen ──
   if (orderId) {
     return (
@@ -264,26 +282,13 @@ export default function CheckoutView() {
           Checkout
         </h1>
 
-        {/* Gentle sign-in prompt — optional, guest checkout still allowed */}
-        {user ? (
-          <div className="flex items-center gap-2.5 mb-6 px-4 py-3 rounded-2xl bg-green-50/70 border border-green-100 text-sm">
-            <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800 flex-shrink-0">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-            <span className="text-green-800 font-600">Signed in as <span className="font-800">{user.email}</span> — your order will be saved to your account.</span>
-          </div>
-        ) : (
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 px-4 py-3.5 rounded-2xl bg-white border border-gray-100 shadow-sm">
-            <LogIn size={18} className="text-green-600 flex-shrink-0" />
-            <span className="flex-1 text-sm text-gray-600">
-              <span className="font-800 text-gray-900">Have an account?</span> Sign in for faster checkout &amp; to track your order.
-            </span>
-            <div className="flex items-center gap-2">
-              <Link to="/login" className="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-700 transition-colors whitespace-nowrap">Log in</Link>
-              <span className="text-xs text-gray-400 whitespace-nowrap">or continue as guest ↓</span>
-            </div>
-          </div>
-        )}
+        {/* Signed-in confirmation — checkout always requires an account. */}
+        <div className="flex items-center gap-2.5 mb-6 px-4 py-3 rounded-2xl bg-green-50/70 border border-green-100 text-sm">
+          <span className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-800 flex-shrink-0">
+            {user.name.charAt(0).toUpperCase()}
+          </span>
+          <span className="text-green-800 font-600">Signed in as <span className="font-800">{user.email}</span> — your order will be saved to your account.</span>
+        </div>
 
         <form onSubmit={placeOrder} className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
           {/* ── Left: details ── */}
