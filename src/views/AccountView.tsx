@@ -7,6 +7,9 @@ import { Mail, Phone, Package, LogOut, ShoppingBag, ChevronRight, Heart, Pencil,
 import { useAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import AddressBook from '@/components/AddressBook'
+import OrderTracker from '@/components/OrderTracker'
+import StatusBadge from '@/components/StatusBadge'
+import type { OrderStatus } from '@/lib/orderStatus'
 
 interface OrderItem {
   id: string
@@ -19,6 +22,7 @@ interface Order {
   created_at: string
   total: number
   status: string
+  order_status: OrderStatus
   payment_method: string
   order_items: OrderItem[]
 }
@@ -56,11 +60,17 @@ export default function AccountView() {
   useEffect(() => {
     if (!user) return
     const supabase = createClient()
-    supabase
+    const load = () => supabase
       .from('orders')
-      .select('id, created_at, total, status, payment_method, order_items(id, product_name, price, quantity)')
+      .select('id, created_at, total, status, order_status, payment_method, order_items(id, product_name, price, quantity)')
       .order('created_at', { ascending: false })
       .then(({ data }) => setOrders((data as Order[]) ?? []))
+    load()
+    // Live updates: reflect admin status changes on the customer's screen.
+    const ch = supabase.channel('my-orders')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` }, load)
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
   }, [user])
 
   if (loading || !user) {
@@ -166,15 +176,16 @@ export default function AccountView() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <span className="inline-block text-[10px] font-800 uppercase tracking-wide px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
-                          {o.status}
-                        </span>
+                        <StatusBadge status={o.order_status ?? 'placed'} />
                         <p className="font-900 text-gray-900 mt-1">₹{o.total}</p>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 mb-4">
                       {o.order_items.map((it) => `${it.quantity}× ${it.product_name}`).join(', ')}
                     </p>
+                    <div className="pt-3 border-t border-gray-100">
+                      <OrderTracker status={o.order_status ?? 'placed'} />
+                    </div>
                   </div>
                 ))}
               </div>
