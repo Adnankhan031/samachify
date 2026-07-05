@@ -22,6 +22,8 @@ interface CartContextType {
   isOpen: boolean
   openCart: () => void
   closeCart: () => void
+  // Transient "just added" signal for the toast (null when idle)
+  flash: { name: string; image: string; key: number } | null
 }
 
 const CartContext = createContext<CartContextType | null>(null)
@@ -41,6 +43,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [flash, setFlash] = useState<{ name: string; image: string; key: number } | null>(null)
 
   // Hydrate from localStorage after mount (avoids SSR/client mismatch)
   useEffect(() => {
@@ -76,7 +79,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return [...prev, { ...item, quantity }]
     })
-    setIsOpen(true)
+    // Don't fling the drawer open on every add — just flash a small toast.
+    setFlash({ name: item.name, image: item.image, key: Date.now() })
   }, [])
 
   const removeItem = useCallback((productId: string) => {
@@ -116,6 +120,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isOpen,
         openCart: () => setIsOpen(true),
         closeCart: () => setIsOpen(false),
+        flash,
       }}
     >
       {children}

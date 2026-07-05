@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { CartProvider } from '@/context/CartContext'
 import { AuthProvider } from '@/context/AuthContext'
 import CartDrawer from '@/components/CartDrawer'
+import CartToast from '@/components/CartToast'
 
 /**
  * Client-side providers + global behaviours.
@@ -41,6 +42,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <CartProvider>
         {children}
         <CartDrawer />
+        <CartToast />
       </CartProvider>
     </AuthProvider>
   )
