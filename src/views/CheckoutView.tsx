@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag, MapPin, Phone, Mail, User, Truck, Wallet, CreditCard,
   CheckCircle2, ArrowRight, Loader2, ShieldCheck, ArrowLeft,
-  Home, Briefcase, ChevronDown,
+  Home, Briefcase, ChevronDown, Plus,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
+import { listAddresses, createAddress, type Address } from '@/lib/addresses'
 
 const FREE_DELIVERY_THRESHOLD = 299
 const DELIVERY_FEE = 39
@@ -67,6 +68,55 @@ export default function CheckoutView() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Saved addresses: load once the user is known, prefill from the default.
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([])
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+  const [saveAddress, setSaveAddress] = useState(true)
+
+  // Prefill contact name/phone from the account (email comes from the account too).
+  useEffect(() => {
+    if (!user) return
+    setForm((f) => ({
+      ...f,
+      name: f.name || user.name,
+      email: f.email || user.email,
+      phone: f.phone || user.phone,
+    }))
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
+    listAddresses().then((rows) => {
+      setSavedAddresses(rows)
+      const def = rows.find((r) => r.is_default) ?? rows[0]
+      if (def) { applyAddress(def); setSaveAddress(false) }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  const applyAddress = (a: Address) => {
+    setSelectedAddressId(a.id)
+    setForm((f) => ({
+      ...f,
+      name: a.name || f.name,
+      phone: a.phone || f.phone,
+      pincode: a.pincode,
+      houseNo: a.house_no,
+      area: a.area,
+      landmark: a.landmark,
+      city: a.city,
+      state: a.state,
+      addressType: a.label || 'Home',
+    }))
+  }
+
+  // Switch to entering a brand-new address.
+  const useNewAddress = () => {
+    setSelectedAddressId(null)
+    setSaveAddress(true)
+    setForm((f) => ({ ...f, pincode: '', houseNo: '', area: '', landmark: '', city: '', state: '', addressType: 'Home' }))
+  }
+
   const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
   const grandTotal = totalPrice + deliveryFee
 
@@ -101,6 +151,25 @@ export default function CheckoutView() {
     pincode: form.pincode,
   })
 
+  // Save the just-used address to the account, if it's new and the user opted in.
+  const persistAddressIfNeeded = async () => {
+    if (!user || !saveAddress || selectedAddressId) return
+    try {
+      await createAddress({
+        label: form.addressType,
+        name: form.name,
+        phone: form.phone,
+        pincode: form.pincode,
+        house_no: form.houseNo,
+        area: form.area,
+        landmark: form.landmark,
+        city: form.city,
+        state: form.state,
+        is_default: savedAddresses.length === 0, // first address becomes default
+      })
+    } catch { /* non-blocking: never fail an order over address saving */ }
+  }
+
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
@@ -125,6 +194,7 @@ export default function CheckoutView() {
         setSubmitError(data.error || 'Something went wrong. Please try again.')
         return
       }
+      await persistAddressIfNeeded()
       setOrderId(data.orderId)
       clearCart()
     } catch {
@@ -182,6 +252,7 @@ export default function CheckoutView() {
             setPlacing(false)
             return
           }
+          await persistAddressIfNeeded()
           setOrderId(vdata.orderId)
           clearCart()
           setPlacing(false)
@@ -315,6 +386,36 @@ export default function CheckoutView() {
 
               {/* Address */}
               <p className="text-[11px] font-700 uppercase tracking-wider text-gray-400 mb-3">Delivery address</p>
+
+              {/* Saved-address picker */}
+              {savedAddresses.length > 0 && (
+                <div className="grid sm:grid-cols-2 gap-2.5 mb-4">
+                  {savedAddresses.map((a) => {
+                    const active = selectedAddressId === a.id
+                    return (
+                      <button
+                        type="button" key={a.id} onClick={() => applyAddress(a)}
+                        className={`text-left p-3.5 rounded-2xl border transition-all ${active ? 'border-green-500 bg-green-50/60 ring-2 ring-green-100' : 'border-gray-200 hover:border-gray-300'}`}
+                      >
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-[11px] font-800 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{a.label}</span>
+                          {a.is_default && <span className="text-[10px] font-700 text-green-700">Default</span>}
+                          {active && <CheckCircle2 size={14} className="text-green-600 ml-auto" />}
+                        </div>
+                        <p className="text-sm font-700 text-gray-900 truncate">{a.name} · {a.phone}</p>
+                        <p className="text-xs text-gray-500 truncate">{a.house_no}, {a.area}, {a.city} — {a.pincode}</p>
+                      </button>
+                    )
+                  })}
+                  <button
+                    type="button" onClick={useNewAddress}
+                    className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-dashed text-sm font-700 transition-all ${selectedAddressId === null ? 'border-green-500 bg-green-50/60 text-green-700' : 'border-gray-300 text-gray-500 hover:border-gray-400'}`}
+                  >
+                    <Plus size={16} /> Deliver to a new address
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <TextField label="Pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
@@ -348,6 +449,18 @@ export default function CheckoutView() {
                     })}
                   </div>
                 </div>
+
+                {/* Offer to save a newly-entered address */}
+                {selectedAddressId === null && (
+                  <label className="flex items-center gap-2.5 pt-1 cursor-pointer select-none">
+                    <input
+                      type="checkbox" checked={saveAddress}
+                      onChange={(e) => setSaveAddress(e.target.checked)}
+                      className="w-4 h-4 accent-green-600"
+                    />
+                    <span className="text-sm text-gray-600 font-600">Save this address to my account for next time</span>
+                  </label>
+                )}
               </div>
             </section>
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion } from 'framer-motion'
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, Leaf } from 'lucide-react'
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, Loader2, Leaf } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
@@ -12,6 +12,7 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
   const { signIn, signUp, signInWithGoogle } = useAuth()
 
   const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
@@ -33,7 +34,7 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
     setError(null)
     setNotice(null)
     setLoading(true)
-    const res = isSignup ? await signUp(name, email, password) : await signIn(email, password)
+    const res = isSignup ? await signUp(name, email, password, phone) : await signIn(email, password)
     setLoading(false)
     if (res.error) {
       setError(res.error)
@@ -138,6 +139,16 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
                 />
               </Field>
             )}
+            {isSignup && (
+              <Field icon={Phone} label="Mobile number (optional)">
+                <input
+                  type="tel" value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  placeholder="10-digit mobile" autoComplete="tel" inputMode="numeric" maxLength={10}
+                  className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400"
+                />
+              </Field>
+            )}
             <Field icon={Mail} label="Email">
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
@@ -156,6 +167,14 @@ export default function AuthView({ mode }: { mode: 'login' | 'signup' }) {
                 {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </Field>
+
+            {!isSignup && (
+              <div className="flex justify-end -mt-1">
+                <Link to="/forgot-password" className="text-sm font-700 text-green-700 hover:text-green-800">
+                  Forgot password?
+                </Link>
+              </div>
+            )}
 
             {error && (
               <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}

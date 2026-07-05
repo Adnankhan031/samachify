@@ -7,6 +7,7 @@ import {
   getCurrentUserId,
   insertOrder,
 } from '@/lib/orders'
+import { sendOrderConfirmation } from '@/lib/email'
 
 /**
  * POST /api/razorpay/verify
@@ -61,6 +62,9 @@ export async function POST(request: Request) {
       razorpayPaymentId: razorpay_payment_id,
       razorpayOrderId: razorpay_order_id,
     })
+
+    // Confirmation email — non-blocking, no-op until Resend is configured.
+    await sendOrderConfirmation({ orderId, customer: validCustomer, cart, paymentMethod: 'razorpay' })
 
     return NextResponse.json({ orderId, total: cart.total })
   } catch (err) {

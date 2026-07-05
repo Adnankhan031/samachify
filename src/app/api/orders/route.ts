@@ -6,6 +6,7 @@ import {
   getCurrentUserId,
   insertOrder,
 } from '@/lib/orders'
+import { sendOrderConfirmation } from '@/lib/email'
 
 /**
  * POST /api/orders — Cash-on-Delivery orders.
@@ -34,6 +35,9 @@ export async function POST(request: Request) {
       status: 'pending',
       userId,
     })
+
+    // Confirmation email — non-blocking, no-op until Resend is configured.
+    await sendOrderConfirmation({ orderId, customer: validCustomer, cart, paymentMethod: 'cod' })
 
     return NextResponse.json({
       orderId,

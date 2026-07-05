@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion } from 'framer-motion'
-import { Mail, Package, LogOut, ShoppingBag, ChevronRight, Heart } from 'lucide-react'
+import { Mail, Phone, Package, LogOut, ShoppingBag, ChevronRight, Heart, Pencil, Check, X, Loader2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
+import AddressBook from '@/components/AddressBook'
 
 interface OrderItem {
   id: string
@@ -23,9 +24,30 @@ interface Order {
 }
 
 export default function AccountView() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading, signOut, updateProfile } = useAuth()
   const navigate = useNavigate()
   const [orders, setOrders] = useState<Order[] | null>(null)
+
+  // Inline profile editing (name + phone)
+  const [editing, setEditing] = useState(false)
+  const [nameDraft, setNameDraft] = useState('')
+  const [phoneDraft, setPhoneDraft] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+
+  const startEdit = () => {
+    setNameDraft(user?.name ?? '')
+    setPhoneDraft(user?.phone ?? '')
+    setProfileError(null)
+    setEditing(true)
+  }
+  const saveProfile = async () => {
+    setSavingProfile(true)
+    const res = await updateProfile({ name: nameDraft, phone: phoneDraft })
+    setSavingProfile(false)
+    if (res.error) { setProfileError(res.error); return }
+    setEditing(false)
+  }
 
   useEffect(() => {
     if (!loading && !user) navigate('/login')
@@ -54,19 +76,59 @@ export default function AccountView() {
       <div className="max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           {/* Profile header */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 sm:p-9 mb-6 flex flex-col sm:flex-row sm:items-center gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-green-600 text-white flex items-center justify-center text-3xl font-900 flex-shrink-0">
-              {user.name.charAt(0).toUpperCase()}
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 sm:p-9 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <div className="w-20 h-20 rounded-2xl bg-green-600 text-white flex items-center justify-center text-3xl font-900 flex-shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+
+              {editing ? (
+                <div className="flex-1 space-y-3 w-full">
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} placeholder="Full name"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-gray-900 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100" />
+                    <input value={phoneDraft} onChange={(e) => setPhoneDraft(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="10-digit mobile" inputMode="numeric" maxLength={10}
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-gray-900 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100" />
+                  </div>
+                  {profileError && <p className="text-xs text-red-600">{profileError}</p>}
+                  <div className="flex gap-2">
+                    <button onClick={saveProfile} disabled={savingProfile}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-70 text-white font-700 rounded-xl text-sm transition-colors">
+                      {savingProfile ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />} Save
+                    </button>
+                    <button onClick={() => setEditing(false)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 font-700 rounded-xl text-sm transition-colors">
+                      <X size={14} /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1">
+                  <h1 className="font-display font-900 text-gray-900 text-2xl tracking-tight">{user.name}</h1>
+                  <p className="text-gray-500 flex items-center gap-1.5 mt-1"><Mail size={14} /> {user.email}</p>
+                  <p className="text-gray-500 flex items-center gap-1.5 mt-0.5">
+                    <Phone size={14} /> {user.phone ? user.phone : <span className="text-gray-400 italic">No phone added</span>}
+                  </p>
+                </div>
+              )}
+
+              {!editing && (
+                <div className="flex flex-col gap-2">
+                  <button onClick={startEdit}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-600 hover:text-green-700 font-700 rounded-xl text-sm transition-all">
+                    <Pencil size={14} /> Edit profile
+                  </button>
+                  <button onClick={() => { signOut(); navigate('/') }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-600 hover:text-red-500 font-700 rounded-xl text-sm transition-all">
+                    <LogOut size={15} /> Sign out
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="flex-1">
-              <h1 className="font-display font-900 text-gray-900 text-2xl tracking-tight">{user.name}</h1>
-              <p className="text-gray-500 flex items-center gap-1.5 mt-1"><Mail size={14} /> {user.email}</p>
-            </div>
-            <button onClick={() => { signOut(); navigate('/') }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-600 hover:text-red-500 font-700 rounded-xl text-sm transition-all">
-              <LogOut size={15} /> Sign out
-            </button>
           </div>
+
+          {/* Saved addresses */}
+          <AddressBook />
 
           {/* Orders */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 sm:p-9 mb-6">
