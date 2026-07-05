@@ -36,10 +36,32 @@ export const metadata: Metadata = {
     title: 'Samachify — From Farm To Pan',
     description: "South India's first fresh ingredient meal kit.",
   },
-  icons: {
-    icon: '/assets/logo.png',
-    apple: '/assets/logo.png',
-  },
+  // Icons are provided by app/icon.png + app/apple-icon.png (square badge crop).
+}
+
+// Brand structured data — helps Google show the logo & understand the business.
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Samachify',
+  legalName: 'Samachify Foods Pvt Ltd',
+  url: 'https://samachify.in',
+  logo: 'https://samachify.in/assets/logo-square.png',
+  image: 'https://samachify.in/assets/logo-square.png',
+  description:
+    "South India's first fresh ingredient meal kit — farm-fresh, pre-cut vegetables and ready-to-cook packs for authentic South Indian dishes.",
+  sameAs: [
+    'https://www.instagram.com/samachify.in/',
+    'https://www.youtube.com/@samachifydotin',
+    'https://www.linkedin.com/company/samachify-foods-pvt-ltd/',
+  ],
+}
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Samachify',
+  url: 'https://samachify.in',
 }
 
 export const viewport: Viewport = {
@@ -52,6 +74,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Providers>
           <Navbar />
           {children}
