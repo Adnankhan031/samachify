@@ -40,6 +40,10 @@ export default function Navbar() {
   const isHome = location.pathname === '/'
   const transparent = isHome && !scrolled
 
+  // Auth pages have their own branding — no store navbar there.
+  const AUTH_PAGES = ['/login', '/signup', '/forgot-password', '/reset-password']
+  if (AUTH_PAGES.includes(location.pathname)) return null
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
