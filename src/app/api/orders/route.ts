@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     const validCustomer = validateCustomer(customer)
     const cart = priceCart(items)
-    const userId = await getCurrentUserId()
+    const userId = await getCurrentUserId(request)
 
     const orderId = await insertOrder({
       customer: validCustomer,

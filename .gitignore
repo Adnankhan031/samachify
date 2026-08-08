@@ -18,6 +18,9 @@ out/
 next-env.d.ts
 .vercel
 
+# TypeScript build cache
+*.tsbuildinfo
+
 # Raw source photos (originals kept locally; optimized WebP live in public/assets)
 /Photos/
 
