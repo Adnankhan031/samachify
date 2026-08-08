@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Samachify",
+    "slug": "samachify",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo-square.png",
+    "scheme": "samachify",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FDFFF5",
+    "android": {
+      "package": "in.samachify.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#F6FFE9",
+        "foregroundImage": "./assets/images/logo-square.png",
+        "monochromeImage": "./assets/images/logo-square.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "ios": {
+      "bundleIdentifier": "in.samachify.app",
+      "supportsTablet": true
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FDFFF5",
+          "image": "./assets/images/logo-square.png",
+          "imageWidth": 160
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
