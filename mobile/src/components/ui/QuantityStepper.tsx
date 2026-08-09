@@ -1,13 +1,14 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 
 interface QuantityStepperProps {
   quantity: number;
   onChange: (next: number) => void;
-  /** Below this the minus button reads as "remove" instead of "decrease". */
+  /** Below this the minus button removes rather than decrements. */
   min?: number;
   max?: number;
   size?: 'sm' | 'md';
@@ -15,8 +16,9 @@ interface QuantityStepperProps {
 }
 
 /**
- * The −/qty/+ control used on product cards, the product page and the cart.
- * Going below `min` calls `onChange(0)`, which the cart treats as a removal.
+ * The −/qty/+ control on product cards, the product page and the cart.
+ * Dropping below `min` calls `onChange(0)`, which the cart reads as a removal —
+ * so the trash icon appears at that boundary instead of a dead minus.
  */
 export function QuantityStepper({
   quantity,
@@ -26,15 +28,16 @@ export function QuantityStepper({
   size = 'md',
   label = 'item',
 }: QuantityStepperProps) {
+  const small = size === 'sm';
+  const removing = quantity <= min;
+
   const tap = () => {
-    if (Platform.OS !== 'web') {
-      void Haptics.selectionAsync().catch(() => {});
-    }
+    if (Platform.OS !== 'web') void Haptics.selectionAsync().catch(() => {});
   };
 
   const dec = () => {
     tap();
-    onChange(quantity - 1 < min ? 0 : quantity - 1);
+    onChange(removing ? 0 : quantity - 1);
   };
 
   const inc = () => {
@@ -43,23 +46,27 @@ export function QuantityStepper({
     onChange(quantity + 1);
   };
 
-  const box = size === 'sm' ? styles.boxSm : styles.boxMd;
-  const glyph = size === 'sm' ? styles.glyphSm : styles.glyphMd;
+  const box = small ? styles.boxSm : styles.boxMd;
+  const glyph = small ? 15 : 18;
 
   return (
-    <View style={[styles.wrapper, size === 'sm' && styles.wrapperSm]}>
+    <View style={[styles.wrap, small && styles.wrapSm]}>
       <Pressable
         onPress={dec}
-        accessibilityRole="button"
-        accessibilityLabel={quantity <= min ? `Remove ${label}` : `Decrease ${label} quantity`}
         hitSlop={6}
-        style={({ pressed }) => [styles.button, box, pressed && styles.pressed]}
+        accessibilityRole="button"
+        accessibilityLabel={removing ? `Remove ${label}` : `Decrease ${label} quantity`}
+        style={({ pressed }) => [styles.btn, box, pressed && styles.pressed]}
       >
-        <Text style={[styles.buttonText, glyph]}>−</Text>
+        <Ionicons
+          name={removing ? 'trash-outline' : 'remove'}
+          size={glyph}
+          color={colors.onDark}
+        />
       </Pressable>
 
       <Text
-        style={[styles.count, size === 'sm' && styles.countSm]}
+        style={[styles.count, small && styles.countSm]}
         accessibilityLabel={`Quantity ${quantity}`}
       >
         {quantity}
@@ -68,48 +75,44 @@ export function QuantityStepper({
       <Pressable
         onPress={inc}
         disabled={quantity >= max}
+        hitSlop={6}
         accessibilityRole="button"
         accessibilityLabel={`Increase ${label} quantity`}
         accessibilityState={{ disabled: quantity >= max }}
-        hitSlop={6}
         style={({ pressed }) => [
-          styles.button,
+          styles.btn,
           box,
           pressed && styles.pressed,
-          quantity >= max && styles.disabled,
+          quantity >= max && styles.off,
         ]}
       >
-        <Text style={[styles.buttonText, glyph]}>+</Text>
+        <Ionicons name="add" size={glyph} color={colors.onDark} />
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  wrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.green700,
+    backgroundColor: colors.leaf,
     borderRadius: radius.sm,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
+    padding: 3,
   },
-  wrapperSm: { borderRadius: radius.sm - 2 },
-  button: { alignItems: 'center', justifyContent: 'center' },
+  wrapSm: { borderRadius: radius.xs + 2 },
+  btn: { alignItems: 'center', justifyContent: 'center' },
   boxMd: { width: 34, height: 34 },
-  boxSm: { width: 28, height: 28 },
-  buttonText: { color: colors.white, fontWeight: '700', lineHeight: 22 },
-  glyphMd: { fontSize: 19 },
-  glyphSm: { fontSize: 16 },
-  pressed: { opacity: 0.6 },
-  disabled: { opacity: 0.4 },
+  boxSm: { width: 27, height: 27 },
+  pressed: { opacity: 0.55 },
+  off: { opacity: 0.35 },
   count: {
-    color: colors.white,
-    fontWeight: '800',
-    fontSize: 15,
+    ...type.h3,
+    color: colors.onDark,
     minWidth: 26,
     textAlign: 'center',
     paddingHorizontal: spacing.xs,
+    includeFontPadding: false,
   },
   countSm: { fontSize: 13, minWidth: 22 },
 });

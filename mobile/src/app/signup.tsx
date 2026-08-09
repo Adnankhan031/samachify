@@ -147,5 +147,5 @@ const styles = StyleSheet.create({
   submit: { marginTop: spacing.sm },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: spacing.xxl },
   footerText: { ...type.small, color: colors.muted },
-  footerLink: { ...type.small, fontWeight: '800', color: colors.green700 },
+  footerLink: { ...type.small, fontWeight: '800', color: colors.leaf },
 });

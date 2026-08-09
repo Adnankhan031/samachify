@@ -4,9 +4,10 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View, type ColorValue } from 'react-native';
 
 import { useCart } from '@/store/cart';
-import { colors, spacing } from '@/theme';
+import { colors, spacing, type } from '@/theme';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+type TabName = 'home' | 'grid' | 'cart' | 'receipt' | 'person';
 
 export default function TabsLayout() {
   const { totalItems } = useCart();
@@ -15,8 +16,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.green700,
-        tabBarInactiveTintColor: colors.mutedLight,
+        tabBarActiveTintColor: colors.leaf,
+        tabBarInactiveTintColor: colors.faint,
         tabBarStyle: styles.bar,
         tabBarLabelStyle: styles.label,
         tabBarItemStyle: styles.item,
@@ -24,48 +25,36 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: (props) => <TabIcon name="home" {...props} />,
-        }}
+        options={{ title: 'Home', tabBarIcon: (p) => <TabIcon name="home" {...p} /> }}
       />
       <Tabs.Screen
         name="categories"
-        options={{
-          title: 'Categories',
-          tabBarIcon: (props) => <TabIcon name="grid" {...props} />,
-        }}
+        options={{ title: 'Categories', tabBarIcon: (p) => <TabIcon name="grid" {...p} /> }}
       />
       <Tabs.Screen
         name="cart"
         options={{
           title: 'Cart',
-          tabBarIcon: (props) => <TabIcon name="cart" badge={totalItems} {...props} />,
+          tabBarIcon: (p) => <TabIcon name="cart" badge={totalItems} {...p} />,
           tabBarAccessibilityLabel:
             totalItems > 0 ? `Cart, ${totalItems} item${totalItems === 1 ? '' : 's'}` : 'Cart, empty',
         }}
       />
       <Tabs.Screen
         name="orders"
-        options={{
-          title: 'Orders',
-          tabBarIcon: (props) => <TabIcon name="receipt" {...props} />,
-        }}
+        options={{ title: 'Orders', tabBarIcon: (p) => <TabIcon name="receipt" {...p} /> }}
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: (props) => <TabIcon name="person" {...props} />,
-        }}
+        options={{ title: 'Profile', tabBarIcon: (p) => <TabIcon name="person" {...p} /> }}
       />
     </Tabs>
   );
 }
 
 /**
- * Outline when inactive, filled when active — the standard mobile idiom, and it
- * reads at a glance without relying on colour alone.
+ * Outline when idle, solid when active — the standard idiom, and it reads
+ * without relying on colour alone.
  */
 function TabIcon({
   name,
@@ -73,8 +62,7 @@ function TabIcon({
   focused,
   badge = 0,
 }: {
-  name: 'home' | 'grid' | 'cart' | 'receipt' | 'person';
-  /** react-navigation hands us a ColorValue, not a plain string. */
+  name: TabName;
   color: ColorValue;
   focused: boolean;
   badge?: number;
@@ -82,8 +70,8 @@ function TabIcon({
   const icon = (focused ? name : `${name}-outline`) as IoniconName;
 
   return (
-    <View>
-      <Ionicons name={icon} size={23} color={color} />
+    <View style={styles.iconWrap}>
+      <Ionicons name={icon} size={22} color={color} />
       {badge > 0 ? (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badge > 9 ? '9+' : badge}</Text>
@@ -95,31 +83,38 @@ function TabIcon({
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.paper,
     borderTopWidth: 1,
     borderTopColor: colors.line,
-    // Android draws no shadow from borderTop alone; lift the bar off the content.
+    // Android draws no shadow from a top border alone; lift the bar instead.
     ...Platform.select({
-      android: { elevation: 12, height: 62 },
-      default: { height: 84 },
+      android: { elevation: 16, height: 64 },
+      default: { height: 86 },
     }),
     paddingTop: spacing.sm,
   },
   item: { paddingVertical: 2 },
-  label: { fontSize: 10.5, fontWeight: '700', marginTop: -2 },
+  label: { ...type.tiny, fontSize: 10, marginTop: -1 },
+  iconWrap: { width: 34, alignItems: 'center' },
   badge: {
     position: 'absolute',
     top: -5,
-    right: -9,
+    right: 0,
     minWidth: 17,
     height: 17,
     borderRadius: 9,
     paddingHorizontal: 4,
-    backgroundColor: colors.green700,
+    backgroundColor: colors.leaf,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.paper,
   },
-  badgeText: { color: colors.white, fontSize: 9.5, fontWeight: '800' },
+  badgeText: {
+    ...type.tiny,
+    fontSize: 9,
+    lineHeight: 12,
+    color: colors.onDark,
+    includeFontPadding: false,
+  },
 });

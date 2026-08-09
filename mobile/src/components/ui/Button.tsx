@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import {
@@ -11,9 +12,11 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { colors, radius, shadow, spacing, MIN_TOUCH } from '@/theme';
+import { colors, radius, shadow, spacing, type, MIN_TOUCH } from '@/theme';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onDark' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -23,16 +26,17 @@ interface ButtonProps {
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
-  /** Rendered before the label — pass an icon element, not a string. */
-  icon?: React.ReactNode;
+  icon?: IoniconName;
+  /** Put the icon after the label — for "continue"-style actions. */
+  iconRight?: IoniconName;
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   accessibilityHint?: string;
 }
 
 /**
- * The only button in the app. Every call-to-action goes through this so that
- * padding, radius, pressed state and disabled treatment stay identical everywhere.
+ * The only button in the app. Everything tappable-and-labelled routes through
+ * here so padding, radius, pressed state and disabled treatment never drift.
  */
 export function Button({
   label,
@@ -42,14 +46,15 @@ export function Button({
   disabled = false,
   loading = false,
   icon,
+  iconRight,
   fullWidth = false,
   style,
   accessibilityHint,
 }: ButtonProps) {
   const inert = disabled || loading;
+  const tint = CONTENT_COLOR[variant];
 
   const handlePress = () => {
-    // Light tap on Android/iOS only — a no-op on web, where it would throw.
     if (Platform.OS !== 'web') {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     }
@@ -66,9 +71,9 @@ export function Button({
       accessibilityState={{ disabled: inert, busy: loading }}
       style={({ pressed }) => [
         styles.base,
-        sizeStyles[size],
-        variantStyles[variant],
-        variant === 'primary' && !inert && shadow.green,
+        SIZE[size],
+        VARIANT[variant],
+        variant === 'primary' && !inert && shadow.action,
         fullWidth && styles.fullWidth,
         pressed && !inert && styles.pressed,
         inert && styles.inert,
@@ -76,16 +81,14 @@ export function Button({
       ]}
     >
       {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={variant === 'primary' || variant === 'danger' ? colors.white : colors.green700}
-        />
+        <ActivityIndicator size="small" color={tint} />
       ) : (
-        <View style={styles.content}>
-          {icon}
-          <Text style={[styles.label, labelSizes[size], labelColors[variant]]} numberOfLines={1}>
+        <View style={styles.row}>
+          {icon ? <Ionicons name={icon} size={ICON[size]} color={tint} /> : null}
+          <Text style={[LABEL[size], { color: tint }]} numberOfLines={1}>
             {label}
           </Text>
+          {iconRight ? <Ionicons name={iconRight} size={ICON[size]} color={tint} /> : null}
         </View>
       )}
     </Pressable>
@@ -100,37 +103,41 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  content: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   fullWidth: { alignSelf: 'stretch' },
-  // Scale rather than opacity: a translucent button over the cream background
-  // washes out instead of reading as pressed.
-  pressed: { transform: [{ scale: 0.975 }] },
-  inert: { opacity: 0.45 },
-  label: { fontWeight: '700', letterSpacing: 0.1 },
+  // Scale, not opacity: a translucent button over cream washes out instead of
+  // reading as pressed.
+  pressed: { transform: [{ scale: 0.972 }] },
+  inert: { opacity: 0.4 },
 });
 
-const sizeStyles: Record<ButtonSize, ViewStyle> = {
-  sm: { paddingVertical: spacing.sm, paddingHorizontal: spacing.lg },
-  md: { paddingVertical: spacing.md, paddingHorizontal: spacing.xl },
-  lg: { paddingVertical: spacing.lg, paddingHorizontal: spacing.xxl },
+const SIZE: Record<ButtonSize, ViewStyle> = {
+  sm: { paddingVertical: spacing.sm + 1, paddingHorizontal: spacing.lg, borderRadius: radius.sm },
+  md: { paddingVertical: spacing.md + 1, paddingHorizontal: spacing.xl },
+  lg: { paddingVertical: spacing.lg, paddingHorizontal: spacing.xxl, borderRadius: radius.lg },
 };
 
-const labelSizes = StyleSheet.create({
-  sm: { fontSize: 13 },
-  md: { fontSize: 15 },
-  lg: { fontSize: 16 },
+const ICON: Record<ButtonSize, number> = { sm: 15, md: 17, lg: 19 };
+
+const LABEL = StyleSheet.create({
+  sm: { ...type.smallStrong },
+  md: { ...type.h3 },
+  lg: { fontFamily: type.h2.fontFamily, fontSize: 16, lineHeight: 22, letterSpacing: -0.1 },
 });
 
-const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  primary: { backgroundColor: colors.green700 },
-  secondary: { backgroundColor: colors.white, borderWidth: 1.5, borderColor: colors.line },
+const VARIANT: Record<ButtonVariant, ViewStyle> = {
+  primary: { backgroundColor: colors.leaf },
+  secondary: { backgroundColor: colors.paper, borderWidth: 1.5, borderColor: colors.lineStrong },
   ghost: { backgroundColor: 'transparent' },
-  danger: { backgroundColor: colors.danger },
+  // For dark bands — lime on bark is the brand's highest-contrast pairing.
+  onDark: { backgroundColor: colors.sprout },
+  danger: { backgroundColor: colors.chilli },
 };
 
-const labelColors = StyleSheet.create({
-  primary: { color: colors.white },
-  secondary: { color: colors.ink },
-  ghost: { color: colors.green700 },
-  danger: { color: colors.white },
-});
+const CONTENT_COLOR: Record<ButtonVariant, string> = {
+  primary: colors.onDark,
+  secondary: colors.ink,
+  ghost: colors.leaf,
+  onDark: colors.bark,
+  danger: colors.onDark,
+};

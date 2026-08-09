@@ -132,7 +132,7 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.green950 },
+  container: { flex: 1, backgroundColor: colors.bark },
   slideBody: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -143,14 +143,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 1.4,
     textTransform: 'uppercase',
-    color: colors.lime,
+    color: colors.sprout,
     marginBottom: spacing.md,
   },
   title: {
     fontSize: 32,
     lineHeight: 38,
     fontWeight: '800',
-    color: colors.white,
+    color: colors.paper,
     letterSpacing: -0.8,
   },
   body: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  skipText: { fontSize: 14, fontWeight: '700', color: colors.white },
+  skipText: { fontSize: 14, fontWeight: '700', color: colors.paper },
   footer: {
     position: 'absolute',
     left: 0,
@@ -175,5 +175,5 @@ const styles = StyleSheet.create({
   },
   dots: { flexDirection: 'row', gap: 6, marginBottom: spacing.xl },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.32)' },
-  dotActive: { width: 22, backgroundColor: colors.lime },
+  dotActive: { width: 22, backgroundColor: colors.sprout },
 });

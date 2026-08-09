@@ -67,7 +67,7 @@ export default function Orders() {
       <Screen>
         <Text style={styles.title}>Your orders</Text>
         <EmptyState
-          emoji="📦"
+          icon="cube-outline"
           title="Sign in to see your orders"
           message="Your order history and live tracking appear here once you're signed in."
           actionLabel="Sign in"
@@ -109,7 +109,7 @@ export default function Orders() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.green700} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.leaf} />
         }
         ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
         renderItem={({ item }) => (
@@ -142,7 +142,7 @@ export default function Orders() {
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="🍛"
+            icon="restaurant-outline"
             title="No orders yet"
             message="When you place your first Samachify order it'll show up here with live tracking."
             actionLabel="Browse packs"
@@ -175,5 +175,5 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   total: { ...type.h3, color: colors.ink },
-  track: { ...type.small, fontWeight: '700', color: colors.green700 },
+  track: { ...type.small, fontWeight: '700', color: colors.leaf },
 });

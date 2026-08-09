@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 23,
     backgroundColor: colors.success,
-    color: colors.white,
+    color: colors.paper,
     fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   section: { marginTop: spacing.xxl },
 
   item: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md },
-  itemQty: { ...type.small, fontWeight: '800', color: colors.green700, minWidth: 26 },
+  itemQty: { ...type.small, fontWeight: '800', color: colors.leaf, minWidth: 26 },
   itemName: { ...type.small, color: colors.ink, flex: 1 },
   itemPrice: { ...type.bodyStrong, color: colors.ink },
 

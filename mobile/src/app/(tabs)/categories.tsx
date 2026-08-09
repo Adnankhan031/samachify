@@ -72,7 +72,7 @@ export default function Categories() {
           renderItem={({ item }) => <ProductCard product={item} />}
           ListEmptyComponent={
             <EmptyState
-              emoji="🍲"
+              icon="restaurant-outline"
               title="Nothing here yet"
               message="No packs in this category right now. Try another one."
               actionLabel="Show all packs"
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 
   footnote: {
     ...type.small,
-    color: colors.green700,
+    color: colors.leaf,
     fontWeight: '600',
     textAlign: 'center',
     marginTop: spacing.xxl,

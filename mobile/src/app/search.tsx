@@ -65,7 +65,7 @@ export default function Search() {
             value={query}
             onChangeText={setQuery}
             placeholder="Search meal kits, chutneys…"
-            placeholderTextColor={colors.mutedLight}
+            placeholderTextColor={colors.faint}
             autoFocus
             returnKeyType="search"
             onSubmitEditing={Keyboard.dismiss}
@@ -126,7 +126,7 @@ export default function Search() {
           ListEmptyComponent={
             searching ? (
               <EmptyState
-                emoji="🔍"
+                icon="search-outline"
                 title={`No match for "${query.trim()}"`}
                 message="We currently make four packs — sambar, kara kuzhambu and two chutneys. Try one of those."
                 actionLabel="Clear search"
@@ -157,27 +157,27 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     height: MIN_TOUCH + 4,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.white,
+    backgroundColor: colors.paper,
     borderWidth: 1.5,
     borderColor: colors.line,
     borderRadius: radius.md,
   },
-  glyph: { fontSize: 19, color: colors.green700, fontWeight: '700' },
+  glyph: { fontSize: 19, color: colors.leaf, fontWeight: '700' },
   input: { flex: 1, fontSize: 15, color: colors.ink },
-  clear: { fontSize: 22, lineHeight: 24, color: colors.mutedLight, paddingHorizontal: 2 },
+  clear: { fontSize: 22, lineHeight: 24, color: colors.faint, paddingHorizontal: 2 },
 
   suggestBlock: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md },
-  suggestLabel: { ...type.caption, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.8 },
+  suggestLabel: { ...type.tiny, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.8 },
   suggestions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
   suggestion: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
-    backgroundColor: colors.green50,
+    backgroundColor: colors.wash,
     borderWidth: 1,
     borderColor: colors.line,
   },
-  suggestionText: { ...type.small, fontWeight: '700', color: colors.green800 },
+  suggestionText: { ...type.small, fontWeight: '700', color: colors.moss },
   allLabel: { ...type.h3, color: colors.ink, marginTop: spacing.xxl },
 
   count: { ...type.small, color: colors.muted, paddingHorizontal: spacing.lg, paddingBottom: spacing.md },

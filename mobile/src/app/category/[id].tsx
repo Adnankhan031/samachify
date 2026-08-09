@@ -53,7 +53,7 @@ export default function CategoryProducts() {
           renderItem={({ item }) => <ProductCard product={item} />}
           ListEmptyComponent={
             <EmptyState
-              emoji="🍲"
+              icon="restaurant-outline"
               title="Nothing in this category"
               message="We're not making packs in this category right now."
               actionLabel="See all packs"

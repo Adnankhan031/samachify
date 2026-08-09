@@ -175,7 +175,7 @@ export default function Checkout() {
       <Screen>
         <ScreenHeader title="Checkout" />
         <EmptyState
-          emoji="🛒"
+          icon="cart-outline"
           title="Nothing to check out"
           message="Your cart is empty."
           actionLabel="Browse packs"
@@ -320,23 +320,23 @@ const styles = StyleSheet.create({
 
   section: { marginTop: spacing.xxl },
 
-  payMethod: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderColor: colors.green600 },
+  payMethod: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderColor: colors.fern },
   radio: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: colors.green700,
+    borderColor: colors.leaf,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.green700 },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.leaf },
   payTitle: { ...type.bodyStrong, color: colors.ink },
   payBody: { ...type.small, color: colors.muted, marginTop: 2 },
-  payNote: { ...type.caption, fontWeight: '400', color: colors.mutedLight, marginTop: spacing.md, lineHeight: 16 },
+  payNote: { ...type.tiny, fontWeight: '400', color: colors.faint, marginTop: spacing.md, lineHeight: 16 },
 
   summaryTitle: { ...type.h3, color: colors.ink, marginBottom: spacing.sm },
-  disclaimer: { ...type.small, color: colors.mutedLight, textAlign: 'center', marginTop: spacing.lg },
+  disclaimer: { ...type.small, color: colors.faint, textAlign: 'center', marginTop: spacing.lg },
 
   bar: {
     position: 'absolute',
@@ -349,10 +349,10 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    backgroundColor: colors.white,
+    backgroundColor: colors.paper,
     borderTopWidth: 1,
     borderTopColor: colors.line,
-    ...shadow.md,
+    ...shadow.lifted,
   },
   barLabel: { ...type.small, color: colors.muted },
   barTotal: { ...type.h2, color: colors.ink },

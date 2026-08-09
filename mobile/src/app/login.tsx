@@ -140,9 +140,9 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.section },
   lede: { ...type.body, color: colors.muted, marginBottom: spacing.xxl, lineHeight: 21 },
   forgot: { alignSelf: 'flex-end', marginTop: -spacing.sm, marginBottom: spacing.lg },
-  forgotText: { ...type.small, fontWeight: '700', color: colors.green700 },
+  forgotText: { ...type.small, fontWeight: '700', color: colors.leaf },
   submit: { marginTop: spacing.sm },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: spacing.xxl },
   footerText: { ...type.small, color: colors.muted },
-  footerLink: { ...type.small, fontWeight: '800', color: colors.green700 },
+  footerLink: { ...type.small, fontWeight: '800', color: colors.leaf },
 });

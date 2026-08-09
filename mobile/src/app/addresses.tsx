@@ -83,7 +83,7 @@ export default function Addresses() {
       <Screen>
         <ScreenHeader title="My addresses" />
         <EmptyState
-          emoji="📍"
+          icon="location-outline"
           title="Sign in to manage addresses"
           message="Saved addresses are shared with samachify.in."
           actionLabel="Sign in"
@@ -109,7 +109,7 @@ export default function Addresses() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {addresses && addresses.length === 0 ? (
           <EmptyState
-            emoji="📍"
+            icon="location-outline"
             title="No saved addresses"
             message="Addresses you enter at checkout are saved here for next time."
             actionLabel="Browse packs"
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg },
   card: { marginBottom: spacing.md },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  label: { ...type.caption, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.8 },
+  label: { ...type.tiny, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.8 },
   name: { ...type.bodyStrong, color: colors.ink, marginTop: spacing.sm },
   line: { ...type.small, color: colors.muted, marginTop: 2 },
   actions: {
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.line,
   },
-  action: { ...type.small, fontWeight: '700', color: colors.green700 },
-  destructive: { color: colors.danger },
-  hint: { ...type.small, color: colors.mutedLight, textAlign: 'center', marginTop: spacing.md },
+  action: { ...type.small, fontWeight: '700', color: colors.leaf },
+  destructive: { color: colors.chilli },
+  hint: { ...type.small, color: colors.faint, textAlign: 'center', marginTop: spacing.md },
   back: { marginTop: spacing.xxl },
 });

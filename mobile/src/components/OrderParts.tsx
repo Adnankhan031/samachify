@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   stageBody: { flex: 1, paddingBottom: spacing.xl },
   stageLabel: { ...type.bodyStrong },
   stageDone: { color: colors.ink },
-  stagePending: { color: colors.mutedLight },
-  stageNow: { ...type.small, color: colors.green700, fontWeight: '700', marginTop: 2 },
+  stagePending: { color: colors.faint },
+  stageNow: { ...type.small, color: colors.leaf, fontWeight: '700', marginTop: 2 },
 
   row: {
     flexDirection: 'row',

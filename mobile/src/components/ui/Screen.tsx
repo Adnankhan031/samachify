@@ -1,28 +1,37 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, spacing, type } from '@/theme';
+import { colors, radius, spacing, type, MIN_TOUCH } from '@/theme';
 
 /**
- * Page chrome. Handles the status-bar inset so no screen has to think about it,
- * and paints the cream brand background edge to edge.
+ * Page chrome. Owns the status-bar inset and the cream background so no screen
+ * has to think about either.
  */
 export function Screen({
   children,
   style,
   edges = 'top',
+  tone = 'cream',
 }: {
-  /** Optional so a screen can render bare chrome while it decides what to show. */
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  /** 'top' for tab screens, 'none' when a native stack header already insets. */
+  /** 'top' for tab screens; 'none' when a parent already insets. */
   edges?: 'top' | 'none';
+  tone?: 'cream' | 'dark';
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.screen, edges === 'top' && { paddingTop: insets.top }, style]}>
+    <View
+      style={[
+        styles.screen,
+        { backgroundColor: tone === 'dark' ? colors.bark : colors.cream },
+        edges === 'top' && { paddingTop: insets.top },
+        style,
+      ]}
+    >
       {children}
     </View>
   );
@@ -30,21 +39,26 @@ export function Screen({
 
 /**
  * In-app header for stack screens. Used instead of the native header so the back
- * affordance, title weight and spacing match the rest of the app on both platforms.
+ * affordance, title weight and spacing are identical on both platforms.
  */
 export function ScreenHeader({
   title,
   subtitle,
   right,
   onBack,
+  tone = 'cream',
+  borderless = false,
 }: {
   title: string;
   subtitle?: string;
   right?: React.ReactNode;
-  /** Defaults to router.back(); pass a custom handler to override. */
+  /** Defaults to router.back(), falling back to Home when there's no stack. */
   onBack?: () => void;
+  tone?: 'cream' | 'dark';
+  borderless?: boolean;
 }) {
   const router = useRouter();
+  const dark = tone === 'dark';
 
   const handleBack = () => {
     if (onBack) return onBack();
@@ -53,23 +67,34 @@ export function ScreenHeader({
   };
 
   return (
-    <View style={styles.header}>
+    <View
+      style={[
+        styles.header,
+        dark && { backgroundColor: colors.bark },
+        !borderless && styles.headerBorder,
+        !borderless && dark && { borderBottomColor: 'rgba(255,255,255,0.08)' },
+      ]}
+    >
       <Pressable
         onPress={handleBack}
         hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Go back"
-        style={({ pressed }) => [styles.back, pressed && { opacity: 0.5 }]}
+        style={({ pressed }) => [
+          styles.back,
+          dark ? styles.backDark : styles.backLight,
+          pressed && { opacity: 0.55 },
+        ]}
       >
-        <Text style={styles.backGlyph}>‹</Text>
+        <Ionicons name="chevron-back" size={21} color={dark ? colors.onDark : colors.ink} />
       </Pressable>
 
       <View style={styles.headerText}>
-        <Text style={styles.headerTitle} numberOfLines={1}>
+        <Text style={[styles.title, dark && { color: colors.onDark }]} numberOfLines={1}>
           {title}
         </Text>
         {subtitle ? (
-          <Text style={styles.headerSubtitle} numberOfLines={1}>
+          <Text style={[styles.subtitle, dark && { color: colors.onDarkMuted }]} numberOfLines={1}>
             {subtitle}
           </Text>
         ) : null}
@@ -80,8 +105,30 @@ export function ScreenHeader({
   );
 }
 
+/** Large screen title for tab roots, where there's no back button. */
+export function PageTitle({
+  title,
+  subtitle,
+  right,
+}: {
+  title: string;
+  subtitle?: string;
+  right?: React.ReactNode;
+}) {
+  return (
+    <View style={styles.pageTitle}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.pageTitleText}>{title}</Text>
+        {subtitle ? <Text style={styles.pageSubtitle}>{subtitle}</Text> : null}
+      </View>
+      {right}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cream },
+  screen: { flex: 1 },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -89,10 +136,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  back: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  // The chevron glyph sits high in its line box; nudge it down to look centred.
-  backGlyph: { fontSize: 32, lineHeight: 34, color: colors.ink, marginTop: -4 },
+  headerBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
+  back: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backLight: { backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line },
+  backDark: { backgroundColor: 'rgba(255,255,255,0.12)' },
   headerText: { flex: 1 },
-  headerTitle: { ...type.h2, color: colors.ink },
-  headerSubtitle: { ...type.small, color: colors.muted, marginTop: 1 },
+  title: { ...type.h2, color: colors.ink },
+  subtitle: { ...type.tiny, color: colors.muted, marginTop: 1 },
+
+  pageTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+    minHeight: MIN_TOUCH,
+  },
+  pageTitleText: { ...type.display, color: colors.ink },
+  pageSubtitle: { ...type.small, color: colors.muted, marginTop: 2 },
 });

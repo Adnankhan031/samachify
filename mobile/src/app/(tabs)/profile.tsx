@@ -174,7 +174,7 @@ function Row({
       accessibilityLabel={label}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.cream2 }]}
     >
-      <Ionicons name={icon} size={19} color={colors.green700} />
+      <Ionicons name={icon} size={19} color={colors.leaf} />
       <Text style={styles.rowLabel}>{label}</Text>
       {value ? <Text style={styles.rowValue}>{value}</Text> : null}
       <Text style={styles.chevron}>›</Text>
@@ -191,11 +191,11 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: colors.green700,
+    backgroundColor: colors.leaf,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontSize: 22, fontWeight: '800', color: colors.white },
+  avatarText: { fontSize: 22, fontWeight: '800', color: colors.paper },
   identityBody: { flex: 1 },
   name: { ...type.h2, color: colors.ink },
   email: { ...type.small, color: colors.muted, marginTop: 1 },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   signedOutActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xs },
 
   groupLabel: {
-    ...type.caption,
+    ...type.tiny,
     color: colors.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   },
   rowLabel: { ...type.body, color: colors.ink, flex: 1 },
   rowValue: { ...type.small, color: colors.muted },
-  chevron: { fontSize: 20, color: colors.mutedLight },
+  chevron: { fontSize: 20, color: colors.faint },
 
   about: { gap: spacing.sm },
   aboutTagline: {
@@ -231,12 +231,12 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 1.6,
     textTransform: 'uppercase',
-    color: colors.green700,
+    color: colors.leaf,
   },
   aboutBody: { ...type.small, lineHeight: 20, color: colors.muted },
   aboutMeta: {
-    ...type.caption,
-    color: colors.mutedLight,
+    ...type.tiny,
+    color: colors.faint,
     marginTop: spacing.xs,
     borderTopWidth: 1,
     borderTopColor: colors.line,
@@ -244,5 +244,5 @@ const styles = StyleSheet.create({
   },
 
   signOut: { marginTop: spacing.lg },
-  version: { ...type.caption, color: colors.mutedLight, textAlign: 'center', marginTop: spacing.lg },
+  version: { ...type.tiny, color: colors.faint, textAlign: 'center', marginTop: spacing.lg },
 });

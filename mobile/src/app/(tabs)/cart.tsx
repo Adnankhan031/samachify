@@ -35,7 +35,7 @@ export default function Cart() {
       <Screen>
         <Text style={styles.title}>Your cart</Text>
         <EmptyState
-          emoji="🛒"
+          icon="cart-outline"
           title="Your cart is empty"
           message="Add a meal kit and you'll be cooking in 10–15 minutes."
           actionLabel="Browse packs"
@@ -136,18 +136,18 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.md },
 
   nudge: {
-    backgroundColor: colors.green50,
+    backgroundColor: colors.wash,
     borderWidth: 1,
     borderColor: colors.line,
     borderRadius: radius.sm,
     padding: spacing.md,
   },
   nudgeEarned: { backgroundColor: colors.successBg, borderColor: '#bbf7d0' },
-  nudgeText: { ...type.small, fontWeight: '700', color: colors.green800, textAlign: 'center' },
+  nudgeText: { ...type.small, fontWeight: '700', color: colors.moss, textAlign: 'center' },
   nudgeTextEarned: { color: colors.success },
 
   item: { flexDirection: 'row', padding: spacing.md, gap: spacing.md },
-  itemImage: { width: 76, height: 76, borderRadius: radius.sm, backgroundColor: colors.green50 },
+  itemImage: { width: 76, height: 76, borderRadius: radius.sm, backgroundColor: colors.wash },
   itemBody: { flex: 1 },
   itemName: { ...type.bodyStrong, color: colors.ink },
   itemUnit: { ...type.small, color: colors.muted, marginTop: 2 },
@@ -159,11 +159,11 @@ const styles = StyleSheet.create({
   },
   itemTotal: { ...type.h3, color: colors.ink },
   remove: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
-  removeGlyph: { fontSize: 22, lineHeight: 24, color: colors.mutedLight },
+  removeGlyph: { fontSize: 22, lineHeight: 24, color: colors.faint },
 
   summary: { marginTop: spacing.sm },
   summaryTitle: { ...type.h3, color: colors.ink, marginBottom: spacing.sm },
-  disclaimer: { ...type.small, color: colors.mutedLight, textAlign: 'center' },
+  disclaimer: { ...type.small, color: colors.faint, textAlign: 'center' },
 
   bar: {
     position: 'absolute',
@@ -176,10 +176,10 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    backgroundColor: colors.white,
+    backgroundColor: colors.paper,
     borderTopWidth: 1,
     borderTopColor: colors.line,
-    ...shadow.md,
+    ...shadow.lifted,
   },
   barLabel: { ...type.small, color: colors.muted },
   barTotal: { ...type.h2, color: colors.ink },

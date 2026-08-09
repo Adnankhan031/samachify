@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 2.4,
     textTransform: 'uppercase',
-    color: colors.green700,
+    color: colors.leaf,
   },
 });
