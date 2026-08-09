@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   FlatList,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -30,6 +31,7 @@ import {
   SpiceDots,
 } from '@/components/ui';
 import { getProduct, getRecipe, listProducts, type Product, type Recipe } from '@/lib/catalogue';
+import { YOUTUBE_URL } from '@/lib/config';
 import { inr } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { pushRecentlyViewed } from '@/store/preferences';
@@ -240,6 +242,43 @@ export default function ProductDetail() {
                 ))}
               </View>
 
+              {/* Recipe video. The in-app player isn't built, so it says so
+                  plainly rather than presenting a dead play button — but the
+                  YouTube channel is real, so the card actually goes somewhere. */}
+              <View style={styles.section}>
+                <SectionHeader title="Watch it cooked" eyebrow="Recipe video" />
+                <Pressable
+                  onPress={() => {
+                    void Linking.openURL(YOUTUBE_URL).catch(() => {});
+                  }}
+                  accessibilityRole="link"
+                  accessibilityLabel={`${recipe.name} recipe video on YouTube. In-app video coming soon.`}
+                  style={({ pressed }) => [styles.video, pressed && { opacity: 0.85 }]}
+                >
+                  <Image source={product.image} style={StyleSheet.absoluteFill} contentFit="cover" />
+                  <LinearGradient
+                    colors={['rgba(11,22,6,0.25)', 'rgba(11,22,6,0.88)']}
+                    style={StyleSheet.absoluteFill}
+                  />
+
+                  <View style={styles.videoBadge}>
+                    <Text style={styles.videoBadgeText}>Coming soon</Text>
+                  </View>
+
+                  <View style={styles.playRing}>
+                    <Ionicons name="play" size={22} color={colors.bark} style={{ marginLeft: 3 }} />
+                  </View>
+
+                  <View style={styles.videoFoot}>
+                    <Text style={styles.videoTitle}>How to cook {recipe.name}</Text>
+                    <View style={styles.videoLink}>
+                      <Ionicons name="logo-youtube" size={13} color={colors.sprout} />
+                      <Text style={styles.videoLinkText}>Watch on our YouTube channel</Text>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+
               <View style={styles.section}>
                 <SectionHeader title="Nutrition" eyebrow={`Full pack · ${recipe.servings} servings`} />
                 <Card style={styles.nutrition}>
@@ -432,6 +471,37 @@ const styles = StyleSheet.create({
   stepNumberText: { ...type.tiny, fontSize: 12, color: colors.onDark, includeFontPadding: false },
   stepLine: { width: 2, flex: 1, backgroundColor: colors.lineStrong, marginVertical: 4 },
   stepText: { ...type.small, color: colors.ink80, flex: 1, paddingBottom: spacing.xl, paddingTop: 4 },
+
+  video: {
+    height: 190,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.forest,
+  },
+  videoBadge: {
+    position: 'absolute',
+    top: spacing.md,
+    right: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+    borderRadius: radius.pill,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+  },
+  videoBadgeText: { ...type.tiny, fontSize: 10, color: colors.moss },
+  playRing: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: colors.sprout,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoFoot: { position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.lg },
+  videoTitle: { ...type.h3, color: colors.onDark },
+  videoLink: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
+  videoLinkText: { ...type.tiny, fontSize: 11, color: colors.onDarkMuted },
 
   nutrition: { flexDirection: 'row', justifyContent: 'space-between' },
   nutrient: { alignItems: 'center', flex: 1 },

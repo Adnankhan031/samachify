@@ -75,13 +75,25 @@ export async function getOrder(id: string): Promise<Order | null> {
 }
 
 /**
- * Subscribe to fulfilment updates for the signed-in user's orders. The admin portal
- * writes `order_status`, so tracking moves without the customer pulling to refresh.
- * Returns an unsubscribe function.
+ * Every call needs its own realtime topic.
+ *
+ * `supabase.channel(topic)` returns the *same* instance for a topic that already
+ * exists. When the Orders tab and an order-detail screen were both mounted they
+ * derived the same name from the user id, so the second one tried to attach a
+ * `postgres_changes` listener to an already-subscribed channel — which throws
+ * "cannot add postgres_changes callbacks ... after subscribe()".
+ */
+let channelSeq = 0;
+
+/**
+ * Subscribe to fulfilment updates for the signed-in user's orders. The admin
+ * portal writes `order_status`, so tracking moves without the customer pulling
+ * to refresh. Returns an unsubscribe function.
  */
 export function subscribeToOrders(userId: string, onChange: () => void): () => void {
+  channelSeq += 1;
   const channel = supabase
-    .channel(`orders-${userId}`)
+    .channel(`orders-${userId}-${channelSeq}`)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${userId}` },

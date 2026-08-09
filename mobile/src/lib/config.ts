@@ -34,3 +34,6 @@ export const DELIVERY_FEE = 39;
 
 export const SUPPORT_PHONE = '+919342266666';
 export const SUPPORT_EMAIL = 'support@samachify.in';
+
+/** Samachify's real YouTube channel, from the website footer. */
+export const YOUTUBE_URL = 'https://www.youtube.com/@samachifydotin';
