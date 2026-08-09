@@ -25,7 +25,8 @@ import {
   Skeleton,
 } from '@/components/ui';
 import { formatAddressSubtitle, listAddresses, type Address } from '@/lib/addresses';
-import { ApiError, NetworkError, placeCodOrder } from '@/lib/api';
+import { ApiError, NetworkError, createRazorpayOrder, placeCodOrder } from '@/lib/api';
+import { setPendingPayment } from '@/lib/payment';
 import { inr } from '@/lib/format';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
@@ -65,6 +66,7 @@ export default function Checkout() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
+  const [payMethod, setPayMethod] = useState<'cod' | 'online'>('cod');
 
   // Checkout needs an account so the order lands in order history and can be
   // tracked. Same rule as the website.
@@ -134,24 +136,32 @@ export default function Checkout() {
     setPlacing(true);
     setSubmitError(null);
 
-    try {
-      const order = await placeCodOrder(
-        {
-          name: form.name.trim(),
-          email: form.email.trim(),
-          phone: form.phone.replace(/\D/g, ''),
-          address: [form.houseNo, form.area, form.landmark].filter(Boolean).join(', '),
-          city: form.city.trim(),
-          pincode: form.pincode,
-        },
-        items.map((i) => ({ productId: i.productId, quantity: i.quantity }))
-      );
+    const customer = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.replace(/\D/g, ''),
+      address: [form.houseNo, form.area, form.landmark].filter(Boolean).join(', '),
+      city: form.city.trim(),
+      pincode: form.pincode,
+    };
+    const payload = items.map((i) => ({ productId: i.productId, quantity: i.quantity }));
 
+    try {
+      if (payMethod === 'online') {
+        // The server re-prices the cart and opens a Razorpay order for that
+        // exact amount. The cart is only cleared once /verify has recorded the
+        // order, so an abandoned payment leaves the customer's cart intact.
+        const intent = await createRazorpayOrder(customer, payload);
+        setPendingPayment({ intent, customer, items: payload });
+        router.push('/pay');
+        return;
+      }
+
+      const order = await placeCodOrder(customer, payload);
       clearCart();
       router.replace(`/order/${order.orderId}?placed=1`);
     } catch (e) {
-      if (e instanceof NetworkError) setSubmitError(e.message);
-      else if (e instanceof ApiError) setSubmitError(e.message);
+      if (e instanceof NetworkError || e instanceof ApiError) setSubmitError(e.message);
       else setSubmitError('Could not place your order. Please try again.');
     } finally {
       setPlacing(false);
@@ -260,23 +270,19 @@ export default function Checkout() {
 
           <View style={styles.section}>
             <SectionHeader title="Payment" />
-            <Pressable disabled accessibilityRole="radio" accessibilityState={{ selected: true }}>
-              <Card style={styles.payMethod}>
-                <View style={styles.radio}>
-                  <View style={styles.radioDot} />
-                </View>
-                <View style={styles.flex}>
-                  <Text style={styles.payTitle}>Cash on Delivery</Text>
-                  <Text style={styles.payBody}>Pay the delivery partner when your pack arrives.</Text>
-                </View>
-              </Card>
-            </Pressable>
-            {/* Online payment needs the native Razorpay module, which requires a
-                development build. Stated plainly rather than shown as a dead option. */}
-            <Text style={styles.payNote}>
-              Online payment (UPI / card) is available on samachify.in and is coming to
-              the app shortly.
-            </Text>
+
+            <PayOption
+              selected={payMethod === 'cod'}
+              onPress={() => setPayMethod('cod')}
+              title="Cash on Delivery"
+              body="Pay the delivery partner when your pack arrives."
+            />
+            <PayOption
+              selected={payMethod === 'online'}
+              onPress={() => setPayMethod('online')}
+              title="Pay online"
+              body="UPI, card, net banking or wallet via Razorpay."
+            />
           </View>
 
           <Card style={styles.section}>
@@ -298,15 +304,52 @@ export default function Checkout() {
           <Text style={styles.barTotal}>{inr(total)}</Text>
         </View>
         <Button
-          label="Place order"
+          label={payMethod === 'online' ? 'Pay now' : 'Place order'}
           size="lg"
           loading={placing}
           onPress={() => void placeOrder()}
           style={styles.barButton}
-          accessibilityHint="Creates your cash-on-delivery order"
+          accessibilityHint={
+            payMethod === 'online'
+              ? 'Opens secure payment'
+              : 'Creates your cash-on-delivery order'
+          }
         />
       </View>
     </Screen>
+  );
+}
+
+/** A single payment method. Radio semantics so screen readers announce it right. */
+function PayOption({
+  selected,
+  onPress,
+  title,
+  body,
+}: {
+  selected: boolean;
+  onPress: () => void;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`${title}. ${body}`}
+      style={({ pressed }) => [pressed && { opacity: 0.75 }]}
+    >
+      <Card style={[styles.payMethod, selected && styles.payMethodOn]}>
+        <View style={[styles.radio, selected && styles.radioOn]}>
+          {selected ? <View style={styles.radioDot} /> : null}
+        </View>
+        <View style={styles.flex}>
+          <Text style={styles.payTitle}>{title}</Text>
+          <Text style={styles.payBody}>{body}</Text>
+        </View>
+      </Card>
+    </Pressable>
   );
 }
 
@@ -320,16 +363,23 @@ const styles = StyleSheet.create({
 
   section: { marginTop: spacing.xxl },
 
-  payMethod: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderColor: colors.fern },
+  payMethod: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  payMethodOn: { borderColor: colors.leaf, borderWidth: 1.5, backgroundColor: colors.wash },
   radio: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: colors.leaf,
+    borderColor: colors.lineStrong,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  radioOn: { borderColor: colors.leaf },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.leaf },
   payTitle: { ...type.bodyStrong, color: colors.ink },
   payBody: { ...type.small, color: colors.muted, marginTop: 2 },
