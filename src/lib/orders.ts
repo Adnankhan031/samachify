@@ -64,8 +64,28 @@ export function priceCart(items: IncomingItem[] | undefined): PricedCart {
   return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee }
 }
 
-/** The current user id if the request is authenticated, else null (guest checkout). */
-export async function getCurrentUserId(): Promise<string | null> {
+/**
+ * The current user id if the request is authenticated, else null (guest checkout).
+ *
+ * The website authenticates with cookies. The Android app has no cookie jar, so it
+ * sends its Supabase access token as `Authorization: Bearer <token>` instead — pass
+ * the request in and that path is tried first. Purely additive: calling this with
+ * no argument behaves exactly as before.
+ */
+export async function getCurrentUserId(request?: Request): Promise<string | null> {
+  const bearer = request?.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1]
+
+  if (bearer) {
+    try {
+      // getUser() verifies the JWT signature against Supabase, so a forged or
+      // expired token resolves to no user rather than being trusted.
+      const { data } = await createAdminClient().auth.getUser(bearer)
+      return data.user?.id ?? null
+    } catch {
+      return null
+    }
+  }
+
   try {
     const supabase = await createClient()
     const { data } = await supabase.auth.getUser()
