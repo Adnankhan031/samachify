@@ -1,11 +1,23 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PriceBreakdown } from '@/components/OrderParts';
-import { Button, Card, EmptyState, QuantityStepper, Screen } from '@/components/ui';
+import { ProductCard } from '@/components/ProductCard';
+import {
+  Button,
+  Card,
+  EmptyState,
+  PageTitle,
+  QuantityStepper,
+  Screen,
+  SectionHeader,
+} from '@/components/ui';
+import { listProducts, type Product } from '@/lib/catalogue';
+import { FREE_DELIVERY_THRESHOLD } from '@/lib/config';
 import { inr, plural } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { colors, radius, shadow, spacing, type } from '@/theme';
@@ -25,15 +37,21 @@ export default function Cart() {
     amountToFreeDelivery,
   } = useCart();
 
+  const [catalogue, setCatalogue] = useState<Product[]>([]);
+
+  useEffect(() => {
+    listProducts()
+      .then(setCatalogue)
+      .catch(() => setCatalogue([]));
+  }, []);
+
   // Don't flash an empty cart before the saved one has been read back.
-  if (!hydrated) {
-    return <Screen />;
-  }
+  if (!hydrated) return <Screen />;
 
   if (items.length === 0) {
     return (
       <Screen>
-        <Text style={styles.title}>Your cart</Text>
+        <PageTitle title="Your cart" />
         <EmptyState
           icon="cart-outline"
           title="Your cart is empty"
@@ -45,30 +63,38 @@ export default function Cart() {
     );
   }
 
+  const inCart = new Set(items.map((i) => i.productId));
+  const suggestions = catalogue.filter((p) => !inCart.has(p.id));
+  const progress = Math.min(1, subtotal / FREE_DELIVERY_THRESHOLD);
+  const earned = amountToFreeDelivery === 0;
+
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Your cart</Text>
-        <Text style={styles.subtitle}>{plural(totalItems, 'item')}</Text>
-      </View>
+      <PageTitle title="Your cart" subtitle={plural(totalItems, 'item')} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.content, { paddingBottom: 160 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 150 }]}
       >
-        {amountToFreeDelivery > 0 ? (
-          <View style={styles.nudge}>
-            <Text style={styles.nudgeText}>
-              Add {inr(amountToFreeDelivery)} more for free delivery
+        {/* Progress toward free delivery. Real threshold, real arithmetic — the
+            same rule the server applies when it prices the order. */}
+        <View style={[styles.nudge, earned && styles.nudgeEarned]}>
+          <View style={styles.nudgeRow}>
+            <Ionicons
+              name={earned ? 'checkmark-circle' : 'bicycle-outline'}
+              size={17}
+              color={earned ? colors.success : colors.moss}
+            />
+            <Text style={[styles.nudgeText, earned && { color: colors.success }]}>
+              {earned
+                ? 'Free delivery unlocked'
+                : `Add ${inr(amountToFreeDelivery)} more for free delivery`}
             </Text>
           </View>
-        ) : (
-          <View style={[styles.nudge, styles.nudgeEarned]}>
-            <Text style={[styles.nudgeText, styles.nudgeTextEarned]}>
-              🎉 Free delivery unlocked
-            </Text>
+          <View style={styles.track}>
+            <View style={[styles.fill, { width: `${progress * 100}%` }]} />
           </View>
-        )}
+        </View>
 
         {items.map((item) => (
           <Card key={item.productId} style={styles.item} padded={false}>
@@ -93,24 +119,41 @@ export default function Cart() {
 
             <Pressable
               onPress={() => removeItem(item.productId)}
-              hitSlop={10}
+              hitSlop={12}
               accessibilityRole="button"
               accessibilityLabel={`Remove ${item.name} from cart`}
               style={({ pressed }) => [styles.remove, pressed && { opacity: 0.5 }]}
             >
-              <Text style={styles.removeGlyph}>×</Text>
+              <Ionicons name="close" size={16} color={colors.faint} />
             </Pressable>
           </Card>
         ))}
+
+        {suggestions.length > 0 ? (
+          <View style={styles.suggest}>
+            <SectionHeader title="Goes well with this" eyebrow="Complete the meal" />
+            <FlatList
+              horizontal
+              data={suggestions}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <ProductCard product={item} variant="rail" />}
+              showsHorizontalScrollIndicator={false}
+              ItemSeparatorComponent={() => <View style={{ width: spacing.md }} />}
+            />
+          </View>
+        ) : null}
 
         <Card style={styles.summary}>
           <Text style={styles.summaryTitle}>Bill details</Text>
           <PriceBreakdown subtotal={subtotal} deliveryFee={deliveryFee} total={total} />
         </Card>
 
-        <Text style={styles.disclaimer}>
-          Final amount is confirmed by Samachify when the order is placed.
-        </Text>
+        <View style={styles.assurance}>
+          <Ionicons name="snow-outline" size={14} color={colors.faint} />
+          <Text style={styles.assuranceText}>
+            Packed in MAP film, delivered through a 2–8°C cold chain.
+          </Text>
+        </View>
       </ScrollView>
 
       <View style={[styles.bar, { paddingBottom: insets.bottom + spacing.md }]}>
@@ -119,9 +162,10 @@ export default function Cart() {
           <Text style={styles.barTotal}>{inr(total)}</Text>
         </View>
         <Button
-          label="Proceed to checkout"
-          onPress={() => router.push('/checkout')}
+          label="Checkout"
+          iconRight="arrow-forward"
           size="lg"
+          onPress={() => router.push('/checkout')}
           style={styles.barButton}
         />
       </View>
@@ -130,40 +174,49 @@ export default function Cart() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm },
-  title: { ...type.h1, color: colors.ink, paddingHorizontal: spacing.lg, paddingTop: spacing.sm },
-  subtitle: { ...type.small, color: colors.muted, marginTop: 2 },
-  content: { padding: spacing.lg, gap: spacing.md },
+  content: { paddingHorizontal: spacing.lg, gap: spacing.md },
 
   nudge: {
     backgroundColor: colors.wash,
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.sm,
+    borderColor: colors.lineStrong,
+    borderRadius: radius.md,
     padding: spacing.md,
+    gap: spacing.sm,
   },
   nudgeEarned: { backgroundColor: colors.successBg, borderColor: '#bbf7d0' },
-  nudgeText: { ...type.small, fontWeight: '700', color: colors.moss, textAlign: 'center' },
-  nudgeTextEarned: { color: colors.success },
+  nudgeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  nudgeText: { ...type.smallStrong, color: colors.moss, flex: 1 },
+  track: { height: 5, borderRadius: 3, backgroundColor: colors.lineStrong, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 3, backgroundColor: colors.leaf },
 
   item: { flexDirection: 'row', padding: spacing.md, gap: spacing.md },
-  itemImage: { width: 76, height: 76, borderRadius: radius.sm, backgroundColor: colors.wash },
+  itemImage: { width: 78, height: 78, borderRadius: radius.sm, backgroundColor: colors.wash },
   itemBody: { flex: 1 },
-  itemName: { ...type.bodyStrong, color: colors.ink },
-  itemUnit: { ...type.small, color: colors.muted, marginTop: 2 },
+  itemName: { ...type.h3, color: colors.ink },
+  itemUnit: { ...type.tiny, color: colors.muted, marginTop: 2 },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: spacing.md,
   },
-  itemTotal: { ...type.h3, color: colors.ink },
+  itemTotal: { ...type.price, color: colors.ink },
   remove: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
-  removeGlyph: { fontSize: 22, lineHeight: 24, color: colors.faint },
+
+  suggest: { marginTop: spacing.xxl },
 
   summary: { marginTop: spacing.sm },
   summaryTitle: { ...type.h3, color: colors.ink, marginBottom: spacing.sm },
-  disclaimer: { ...type.small, color: colors.faint, textAlign: 'center' },
+
+  assurance: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.lg,
+  },
+  assuranceText: { ...type.tiny, fontSize: 10.5, color: colors.faint, textAlign: 'center' },
 
   bar: {
     position: 'absolute',
@@ -181,7 +234,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.line,
     ...shadow.lifted,
   },
-  barLabel: { ...type.small, color: colors.muted },
-  barTotal: { ...type.h2, color: colors.ink },
+  barLabel: { ...type.tiny, color: colors.muted },
+  barTotal: { ...type.priceLg, fontSize: 22, lineHeight: 27, color: colors.ink },
   barButton: { flex: 1 },
 });

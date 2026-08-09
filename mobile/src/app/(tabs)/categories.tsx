@@ -1,22 +1,33 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProductCard } from '@/components/ProductCard';
-import { Chip, EmptyState, Screen, Skeleton } from '@/components/ui';
+import { Chip, EmptyState, PageTitle, Screen, Skeleton } from '@/components/ui';
 import { listCategories, listProducts, type Product } from '@/lib/catalogue';
 import { plural } from '@/lib/format';
-import { colors, spacing, type } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 
 const ALL = 'all';
 
-/** Browse everything, filtered by the real categories the catalogue defines. */
+type SortKey = 'default' | 'price-asc' | 'price-desc';
+
+const SORTS: { key: SortKey; label: string; icon: React.ComponentProps<typeof Ionicons>['name'] }[] = [
+  { key: 'default', label: 'Featured', icon: 'sparkles-outline' },
+  { key: 'price-asc', label: 'Price: low to high', icon: 'arrow-up-outline' },
+  { key: 'price-desc', label: 'Price: high to low', icon: 'arrow-down-outline' },
+];
+
+/** Browse everything, filtered by the categories the catalogue actually defines. */
 export default function Categories() {
   const router = useRouter();
   const categories = useMemo(() => [{ id: ALL, label: 'All packs' }, ...listCategories()], []);
 
   const [products, setProducts] = useState<Product[] | null>(null);
   const [active, setActive] = useState<string>(ALL);
+  const [sort, setSort] = useState<SortKey>('default');
+  const [sortOpen, setSortOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,17 +41,30 @@ export default function Categories() {
 
   const filtered = useMemo(() => {
     if (!products) return [];
-    return active === ALL ? products : products.filter((p) => p.category === active);
-  }, [products, active]);
+    const base = active === ALL ? products : products.filter((p) => p.category === active);
+    if (sort === 'price-asc') return [...base].sort((a, b) => a.price - b.price);
+    if (sort === 'price-desc') return [...base].sort((a, b) => b.price - a.price);
+    return base;
+  }, [products, active, sort]);
+
+  const sortLabel = SORTS.find((s) => s.key === sort)!.label;
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>All packs</Text>
-        <Text style={styles.subtitle}>
-          {products ? plural(filtered.length, 'pack') : 'Loading…'}
-        </Text>
-      </View>
+      <PageTitle
+        title="All packs"
+        subtitle={products ? plural(filtered.length, 'pack') : 'Loading…'}
+        right={
+          <Pressable
+            onPress={() => router.push('/search')}
+            accessibilityRole="button"
+            accessibilityLabel="Search packs"
+            style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.6 }]}
+          >
+            <Ionicons name="search" size={19} color={colors.ink} />
+          </Pressable>
+        }
+      />
 
       <FlatList
         horizontal
@@ -55,10 +79,49 @@ export default function Categories() {
         ItemSeparatorComponent={() => <View style={{ width: spacing.sm }} />}
       />
 
+      {/* Sort is a real control, not decoration — price is the only orderable
+          field the catalogue has, so those are the only options offered. */}
+      <View style={styles.sortRow}>
+        <Pressable
+          onPress={() => setSortOpen((o) => !o)}
+          accessibilityRole="button"
+          accessibilityLabel={`Sorted by ${sortLabel}. Change sorting`}
+          accessibilityState={{ expanded: sortOpen }}
+          style={({ pressed }) => [styles.sortBtn, pressed && { opacity: 0.7 }]}
+        >
+          <Ionicons name="swap-vertical" size={14} color={colors.moss} />
+          <Text style={styles.sortText}>{sortLabel}</Text>
+          <Ionicons name={sortOpen ? 'chevron-up' : 'chevron-down'} size={13} color={colors.moss} />
+        </Pressable>
+      </View>
+
+      {sortOpen ? (
+        <View style={styles.sortSheet}>
+          {SORTS.map((option) => (
+            <Pressable
+              key={option.key}
+              onPress={() => {
+                setSort(option.key);
+                setSortOpen(false);
+              }}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: sort === option.key }}
+              style={({ pressed }) => [styles.sortOption, pressed && { backgroundColor: colors.cream2 }]}
+            >
+              <Ionicons name={option.icon} size={16} color={colors.muted} />
+              <Text style={styles.sortOptionText}>{option.label}</Text>
+              {sort === option.key ? (
+                <Ionicons name="checkmark" size={17} color={colors.leaf} />
+              ) : null}
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+
       {products === null ? (
         <View style={styles.skeletonGrid}>
           {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} width="47%" height={250} radius={18} />
+            <Skeleton key={i} width="47%" height={272} radius={radius.lg} />
           ))}
         </View>
       ) : (
@@ -73,18 +136,11 @@ export default function Categories() {
           ListEmptyComponent={
             <EmptyState
               icon="restaurant-outline"
-              title="Nothing here yet"
-              message="No packs in this category right now. Try another one."
+              title="Nothing in this category"
+              message="No packs here right now. Try another category."
               actionLabel="Show all packs"
               onAction={() => setActive(ALL)}
             />
-          }
-          ListFooterComponent={
-            filtered.length > 0 ? (
-              <Text style={styles.footnote} onPress={() => router.push('/search')}>
-                Looking for something specific? Search the catalogue.
-              </Text>
-            ) : null
           }
         />
       )}
@@ -93,28 +149,59 @@ export default function Categories() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.lg },
-  title: { ...type.h1, color: colors.ink },
-  subtitle: { ...type.small, color: colors.muted, marginTop: 2 },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.sm,
+    backgroundColor: colors.paper,
+    borderWidth: 1,
+    borderColor: colors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   chipRow: { flexGrow: 0 },
-  chips: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
+  chips: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md },
+
+  sortRow: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md },
+  sortBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.wash,
+    borderWidth: 1,
+    borderColor: colors.lineStrong,
+  },
+  sortText: { ...type.tiny, fontSize: 11.5, color: colors.moss },
+
+  sortSheet: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    backgroundColor: colors.paper,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.line,
+    overflow: 'hidden',
+  },
+  sortOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  sortOptionText: { ...type.small, color: colors.ink, flex: 1 },
 
   grid: { paddingHorizontal: spacing.lg, paddingBottom: spacing.section },
   row: { gap: spacing.md, marginBottom: spacing.md },
-
   skeletonGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
-  },
-
-  footnote: {
-    ...type.small,
-    color: colors.leaf,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: spacing.xxl,
   },
 });

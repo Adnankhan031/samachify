@@ -3,10 +3,10 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Card, Divider, Screen } from '@/components/ui';
+import { Button, Card, Divider, Eyebrow, IconTile, Screen } from '@/components/ui';
 import { SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
 import { useAuth } from '@/store/auth';
-import { colors, spacing, type } from '@/theme';
+import { colors, radius, shadow, spacing, type } from '@/theme';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -30,127 +30,162 @@ export default function Profile() {
   return (
     <Screen>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Profile</Text>
+        {/* Dark identity band, matching Home's header treatment. */}
+        <View style={styles.hero}>
+          {user ? (
+            <View style={styles.identity}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>
+                  {user.name.trim().charAt(0).toUpperCase() || 'S'}
+                </Text>
+              </View>
+              <View style={styles.identityText}>
+                <Text style={styles.name} numberOfLines={1}>
+                  {user.name}
+                </Text>
+                <Text style={styles.email} numberOfLines={1}>
+                  {user.email}
+                </Text>
+                {user.phone ? <Text style={styles.email}>+91 {user.phone}</Text> : null}
+              </View>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.guestTitle}>You&apos;re browsing as a guest</Text>
+              <Text style={styles.guestBody}>
+                Sign in to save addresses, track deliveries and see your orders. The same
+                account works on samachify.in.
+              </Text>
+              <View style={styles.guestActions}>
+                <Button
+                  label="Sign in"
+                  variant="onDark"
+                  onPress={() => router.push('/login')}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  label="Create account"
+                  variant="ghost"
+                  onPress={() => router.push('/signup')}
+                  style={[{ flex: 1 }, styles.ghostOnDark]}
+                />
+              </View>
+            </View>
+          )}
+        </View>
 
-        {user ? (
-          <Card style={styles.identity}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {user.name.trim().charAt(0).toUpperCase() || 'S'}
-              </Text>
-            </View>
-            <View style={styles.identityBody}>
-              <Text style={styles.name} numberOfLines={1}>
-                {user.name}
-              </Text>
-              <Text style={styles.email} numberOfLines={1}>
-                {user.email}
-              </Text>
-              {user.phone ? <Text style={styles.email}>+91 {user.phone}</Text> : null}
-            </View>
-          </Card>
-        ) : (
-          <Card style={styles.signedOut}>
-            <Text style={styles.signedOutTitle}>You&apos;re browsing as a guest</Text>
-            <Text style={styles.signedOutBody}>
-              Sign in to save addresses, see your orders and track deliveries. The same
-              account works on samachify.in.
-            </Text>
-            <View style={styles.signedOutActions}>
-              <Button label="Sign in" onPress={() => router.push('/login')} style={{ flex: 1 }} />
-              <Button
-                label="Create account"
-                variant="secondary"
-                onPress={() => router.push('/signup')}
-                style={{ flex: 1 }}
-              />
-            </View>
-          </Card>
-        )}
+        <View style={styles.body}>
+          {user ? (
+            <>
+              <Eyebrow style={styles.groupLabel}>Your account</Eyebrow>
+              <Card padded={false} style={styles.group}>
+                <Row
+                  icon="receipt-outline"
+                  label="My orders"
+                  hint="Track and reorder"
+                  onPress={() => router.push('/(tabs)/orders')}
+                />
+                <Divider />
+                <Row
+                  icon="location-outline"
+                  label="My addresses"
+                  hint="Saved delivery locations"
+                  onPress={() => router.push('/addresses')}
+                />
+              </Card>
+            </>
+          ) : null}
 
-        {user ? (
+          <Eyebrow style={styles.groupLabel}>Support</Eyebrow>
           <Card padded={false} style={styles.group}>
             <Row
-              icon="receipt-outline"
-              label="My orders"
-              onPress={() => router.push('/(tabs)/orders')}
+              icon="call-outline"
+              label="Call us"
+              hint={SUPPORT_PHONE.replace('+91', '+91 ')}
+              onPress={() => open(`tel:${SUPPORT_PHONE}`)}
             />
             <Divider />
             <Row
-              icon="location-outline"
-              label="My addresses"
-              onPress={() => router.push('/addresses')}
+              icon="logo-whatsapp"
+              label="WhatsApp"
+              hint="Fastest reply"
+              onPress={() => open(`https://wa.me/${SUPPORT_PHONE.replace('+', '')}`)}
+            />
+            <Divider />
+            <Row
+              icon="mail-outline"
+              label="Email us"
+              hint={SUPPORT_EMAIL}
+              onPress={() => open(`mailto:${SUPPORT_EMAIL}`)}
             />
           </Card>
-        ) : null}
 
-        <Text style={styles.groupLabel}>Support</Text>
-        <Card padded={false} style={styles.group}>
-          <Row
-            icon="call-outline"
-            label="Call us"
-            value={SUPPORT_PHONE.replace('+91', '+91 ')}
-            onPress={() => open(`tel:${SUPPORT_PHONE}`)}
-          />
-          <Divider />
-          <Row
-            icon="logo-whatsapp"
-            label="WhatsApp"
-            onPress={() => open(`https://wa.me/${SUPPORT_PHONE.replace('+', '')}`)}
-          />
-          <Divider />
-          <Row icon="mail-outline" label="Email us" onPress={() => open(`mailto:${SUPPORT_EMAIL}`)} />
-        </Card>
+          <Eyebrow style={styles.groupLabel}>About Samachify</Eyebrow>
+          <Card tone="wash" style={styles.about}>
+            <Text style={styles.aboutTagline}>From Farm To Pan</Text>
+            <Text style={styles.aboutBody}>
+              South India&apos;s first fresh ingredient meal kit. Vegetables sourced directly
+              from trusted farmers in Kanchipuram, cleaned and prepared under HACCP-compliant
+              conditions, then delivered in Modified Atmosphere Packaging through an unbroken
+              2–8°C cold chain.
+            </Text>
 
-        <Text style={styles.groupLabel}>About Samachify</Text>
-        <Card style={styles.about}>
-          <Text style={styles.aboutTagline}>From Farm To Pan</Text>
-          <Text style={styles.aboutBody}>
-            South India&apos;s first fresh ingredient meal kit. Vegetables sourced directly
-            from trusted farmers in Kanchipuram, cleaned and prepared under HACCP-compliant
-            conditions, then delivered in Modified Atmosphere Packaging through an unbroken
-            2–8°C cold chain.
-          </Text>
-          <Text style={styles.aboutMeta}>FSSAI Licence 22426421000333</Text>
-        </Card>
+            <View style={styles.stats}>
+              {[
+                ['10–15', 'Min to cook'],
+                ['0%', 'Preservatives'],
+                ['100%', 'Farm fresh'],
+              ].map(([metric, label]) => (
+                <View key={label} style={styles.stat}>
+                  <Text style={styles.statMetric}>{metric}</Text>
+                  <Text style={styles.statLabel}>{label}</Text>
+                </View>
+              ))}
+            </View>
 
-        <Card padded={false} style={styles.group}>
-          <Row
-            icon="document-text-outline"
-            label="Terms & Conditions"
-            onPress={() => open('https://samachify.in/legal/terms')}
-          />
-          <Divider />
-          <Row
-            icon="shield-checkmark-outline"
-            label="Privacy Policy"
-            onPress={() => open('https://samachify.in/legal/privacy')}
-          />
-          <Divider />
-          <Row
-            icon="refresh-outline"
-            label="Refund & Cancellation"
-            onPress={() => open('https://samachify.in/legal/refunds')}
-          />
-          <Divider />
-          <Row
-            icon="cube-outline"
-            label="Shipping & Delivery"
-            onPress={() => open('https://samachify.in/legal/shipping')}
-          />
-        </Card>
+            <Text style={styles.fssai}>FSSAI Licence 22426421000333</Text>
+          </Card>
 
-        {user ? (
-          <Button
-            label="Sign out"
-            variant="secondary"
-            onPress={confirmSignOut}
-            fullWidth
-            style={styles.signOut}
-          />
-        ) : null}
+          <Eyebrow style={styles.groupLabel}>Legal</Eyebrow>
+          <Card padded={false} style={styles.group}>
+            <Row
+              icon="document-text-outline"
+              label="Terms & Conditions"
+              onPress={() => open('https://samachify.in/legal/terms')}
+            />
+            <Divider />
+            <Row
+              icon="shield-checkmark-outline"
+              label="Privacy Policy"
+              onPress={() => open('https://samachify.in/legal/privacy')}
+            />
+            <Divider />
+            <Row
+              icon="refresh-outline"
+              label="Refund & Cancellation"
+              onPress={() => open('https://samachify.in/legal/refunds')}
+            />
+            <Divider />
+            <Row
+              icon="cube-outline"
+              label="Shipping & Delivery"
+              onPress={() => open('https://samachify.in/legal/shipping')}
+            />
+          </Card>
 
-        <Text style={styles.version}>Samachify · v1.0.0</Text>
+          {user ? (
+            <Button
+              label="Sign out"
+              icon="log-out-outline"
+              variant="secondary"
+              onPress={confirmSignOut}
+              fullWidth
+              style={styles.signOut}
+            />
+          ) : null}
+
+          <Text style={styles.version}>Samachify · v1.0.0</Text>
+        </View>
       </ScrollView>
     </Screen>
   );
@@ -159,12 +194,12 @@ export default function Profile() {
 function Row({
   icon,
   label,
-  value,
+  hint,
   onPress,
 }: {
   icon: IoniconName;
   label: string;
-  value?: string;
+  hint?: string;
   onPress: () => void;
 }) {
   return (
@@ -172,77 +207,83 @@ function Row({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityHint={hint}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.cream2 }]}
     >
-      <Ionicons name={icon} size={19} color={colors.leaf} />
-      <Text style={styles.rowLabel}>{label}</Text>
-      {value ? <Text style={styles.rowValue}>{value}</Text> : null}
-      <Text style={styles.chevron}>›</Text>
+      <IconTile name={icon} size={36} />
+      <View style={styles.rowText}>
+        <Text style={styles.rowLabel}>{label}</Text>
+        {hint ? (
+          <Text style={styles.rowHint} numberOfLines={1}>
+            {hint}
+          </Text>
+        ) : null}
+      </View>
+      <Ionicons name="chevron-forward" size={17} color={colors.faint} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, paddingBottom: spacing.section, gap: spacing.md },
-  title: { ...type.h1, color: colors.ink, marginBottom: spacing.sm },
+  content: { paddingBottom: spacing.section },
 
+  hero: {
+    backgroundColor: colors.bark,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xxxl,
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
+  },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.leaf,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.sprout,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontSize: 22, fontWeight: '800', color: colors.paper },
-  identityBody: { flex: 1 },
-  name: { ...type.h2, color: colors.ink },
-  email: { ...type.small, color: colors.muted, marginTop: 1 },
+  avatarText: { ...type.display, fontSize: 25, color: colors.bark, includeFontPadding: false },
+  identityText: { flex: 1 },
+  name: { ...type.serifLg, color: colors.onDark },
+  email: { ...type.tiny, color: colors.onDarkMuted, marginTop: 1 },
 
-  signedOut: { gap: spacing.md },
-  signedOutTitle: { ...type.h3, color: colors.ink },
-  signedOutBody: { ...type.small, color: colors.muted, lineHeight: 19 },
-  signedOutActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xs },
+  guestTitle: { ...type.serifLg, color: colors.onDark },
+  guestBody: { ...type.small, color: colors.onDarkMuted, marginTop: spacing.sm, lineHeight: 20 },
+  guestActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xl },
+  ghostOnDark: { borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)' },
 
-  groupLabel: {
-    ...type.tiny,
-    color: colors.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginTop: spacing.lg,
-    marginLeft: spacing.xs,
-  },
-  group: { overflow: 'hidden' },
+  body: { paddingHorizontal: spacing.lg, marginTop: spacing.xxl },
+  groupLabel: { color: colors.muted, marginBottom: spacing.md, marginLeft: spacing.xs },
+  group: { overflow: 'hidden', marginBottom: spacing.xxl },
+
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.md,
   },
-  rowLabel: { ...type.body, color: colors.ink, flex: 1 },
-  rowValue: { ...type.small, color: colors.muted },
-  chevron: { fontSize: 20, color: colors.faint },
+  rowText: { flex: 1 },
+  rowLabel: { ...type.bodyStrong, color: colors.ink },
+  rowHint: { ...type.tiny, color: colors.muted, marginTop: 1 },
 
-  about: { gap: spacing.sm },
-  aboutTagline: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-    color: colors.leaf,
-  },
-  aboutBody: { ...type.small, lineHeight: 20, color: colors.muted },
-  aboutMeta: {
-    ...type.tiny,
-    color: colors.faint,
-    marginTop: spacing.xs,
+  about: { marginBottom: spacing.xxl },
+  aboutTagline: { ...type.eyebrow, color: colors.leaf, marginBottom: spacing.sm },
+  aboutBody: { ...type.small, lineHeight: 20, color: colors.ink80 },
+  stats: {
+    flexDirection: 'row',
+    marginTop: spacing.lg,
+    paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.line,
-    paddingTop: spacing.md,
+    borderTopColor: colors.lineStrong,
   },
+  stat: { flex: 1, alignItems: 'center' },
+  statMetric: { ...type.price, fontSize: 15, color: colors.moss },
+  statLabel: { ...type.tiny, fontSize: 10, color: colors.muted, marginTop: 1 },
+  fssai: { ...type.tiny, fontSize: 10, color: colors.faint, marginTop: spacing.lg },
 
-  signOut: { marginTop: spacing.lg },
-  version: { ...type.tiny, color: colors.faint, textAlign: 'center', marginTop: spacing.lg },
+  signOut: { marginBottom: spacing.lg },
+  version: { ...type.tiny, fontSize: 10.5, color: colors.faint, textAlign: 'center' },
 });
