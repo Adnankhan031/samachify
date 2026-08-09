@@ -1,5 +1,3 @@
-import type { ConfigContext, ExpoConfig } from 'expo/config';
-
 /**
  * Extends `app.json` with values that must not live in the repository.
  *
@@ -10,22 +8,24 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
  * must also be restricted in Google Cloud Console to this app's package name
  * and signing certificate — keeping it out of git prevents scraping, not
  * extraction.
+ *
+ * Plain JS rather than TypeScript on purpose: eas-cli bundles its own config
+ * parser, which fails to transpile .ts config files against this project's
+ * TypeScript version.
  */
-export default ({ config }: ConfigContext): ExpoConfig => ({
+module.exports = ({ config }) => ({
   ...config,
-  name: config.name ?? 'Samachify',
-  slug: config.slug ?? 'samachify',
   android: {
     ...config.android,
     config: {
-      ...config.android?.config,
+      ...(config.android && config.android.config),
       googleMaps: { apiKey: process.env.GOOGLE_MAPS_API_KEY },
     },
   },
   ios: {
     ...config.ios,
     config: {
-      ...config.ios?.config,
+      ...(config.ios && config.ios.config),
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     },
   },

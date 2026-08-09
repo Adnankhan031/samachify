@@ -3,6 +3,7 @@
     "name": "Samachify",
     "slug": "samachify",
     "version": "1.0.0",
+    "owner": "samachify_farm_to_pan",
     "orientation": "portrait",
     "icon": "./assets/images/logo-square.png",
     "scheme": "samachify",
@@ -47,6 +48,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fe273a7b-8f35-4a29-850e-329704844db2"
+      }
     }
   }
 }
