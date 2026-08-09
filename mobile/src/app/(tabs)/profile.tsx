@@ -120,31 +120,26 @@ export default function Profile() {
             />
           </Card>
 
-          <Eyebrow style={styles.groupLabel}>About Samachify</Eyebrow>
-          <Card tone="wash" style={styles.about}>
-            <Text style={styles.aboutTagline}>From Farm To Pan</Text>
-            <Text style={styles.aboutBody}>
-              South India&apos;s first fresh ingredient meal kit. Vegetables sourced directly
-              from trusted farmers in Kanchipuram, cleaned and prepared under HACCP-compliant
-              conditions, then delivered in Modified Atmosphere Packaging through an unbroken
-              2–8°C cold chain.
-            </Text>
-
-            <View style={styles.stats}>
-              {[
-                ['10–15', 'Min to cook'],
-                ['0%', 'Preservatives'],
-                ['100%', 'Farm fresh'],
-              ].map(([metric, label]) => (
-                <View key={label} style={styles.stat}>
-                  <Text style={styles.statMetric}>{metric}</Text>
-                  <Text style={styles.statLabel}>{label}</Text>
+          <Eyebrow style={styles.groupLabel}>Samachify</Eyebrow>
+          <Pressable
+            onPress={() => router.push('/about')}
+            accessibilityRole="button"
+            accessibilityLabel="About Samachify — our story, values, team and roadmap"
+            style={({ pressed }) => [pressed && { opacity: 0.8 }]}
+          >
+            <Card tone="dark" style={styles.about}>
+              <View style={styles.aboutRow}>
+                <View style={styles.flex}>
+                  <Text style={styles.aboutTagline}>From Farm To Pan</Text>
+                  <Text style={styles.aboutBody}>
+                    Our story, what we stand for, the people behind Samachify, and where
+                    we&apos;re going next.
+                  </Text>
                 </View>
-              ))}
-            </View>
-
-            <Text style={styles.fssai}>FSSAI Licence 22426421000333</Text>
-          </Card>
+                <Ionicons name="arrow-forward" size={18} color={colors.sprout} />
+              </View>
+            </Card>
+          </Pressable>
 
           <Eyebrow style={styles.groupLabel}>Legal</Eyebrow>
           <Card padded={false} style={styles.group}>
@@ -270,19 +265,10 @@ const styles = StyleSheet.create({
   rowHint: { ...type.tiny, color: colors.muted, marginTop: 1 },
 
   about: { marginBottom: spacing.xxl },
-  aboutTagline: { ...type.eyebrow, color: colors.leaf, marginBottom: spacing.sm },
-  aboutBody: { ...type.small, lineHeight: 20, color: colors.ink80 },
-  stats: {
-    flexDirection: 'row',
-    marginTop: spacing.lg,
-    paddingTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.lineStrong,
-  },
-  stat: { flex: 1, alignItems: 'center' },
-  statMetric: { ...type.price, fontSize: 15, color: colors.moss },
-  statLabel: { ...type.tiny, fontSize: 10, color: colors.muted, marginTop: 1 },
-  fssai: { ...type.tiny, fontSize: 10, color: colors.faint, marginTop: spacing.lg },
+  aboutRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  flex: { flex: 1 },
+  aboutTagline: { ...type.eyebrow, color: colors.sprout, marginBottom: spacing.sm },
+  aboutBody: { ...type.small, lineHeight: 20, color: colors.onDarkMuted },
 
   signOut: { marginBottom: spacing.lg },
   version: { ...type.tiny, fontSize: 10.5, color: colors.faint, textAlign: 'center' },
