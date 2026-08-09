@@ -23,9 +23,17 @@ export const SUPABASE_ANON_KEY = required(
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 );
 
-/** Base URL of the Next.js storefront — it owns order creation and pricing. */
+/**
+ * Base URL of the Next.js storefront — it owns order creation and pricing.
+ *
+ * Must be the canonical host. `samachify.in` issues a 308 to `www.samachify.in`,
+ * and that is a *cross-origin* redirect: the fetch spec requires the
+ * `Authorization` header to be stripped when the origin changes, so a bearer
+ * token silently disappears en route and every order lands with user_id = null.
+ * Pointing straight at `www` avoids the hop entirely.
+ */
 export const API_BASE_URL = (
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://samachify.in'
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://www.samachify.in'
 ).replace(/\/$/, '');
 
 /** Pricing rules, mirrored from the storefront's `src/lib/orders.ts`. */
