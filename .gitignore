@@ -34,3 +34,7 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
+
+# The mobile app has its own repository. This is a leftover local checkout
+# and must never be committed here: it contains a .env with live keys.
+mobile/
