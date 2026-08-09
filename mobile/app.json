@@ -36,6 +36,12 @@
           "image": "./assets/images/logo-square.png",
           "imageWidth": 160
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Samachify uses your location only to fill in a delivery address when you tap Use my current location."
+        }
       ]
     ],
     "experiments": {

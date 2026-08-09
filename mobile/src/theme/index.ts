@@ -106,8 +106,41 @@ export const type = {
   display: { fontFamily: fonts.displayExtra, fontSize: 28, lineHeight: 34, letterSpacing: -0.5 },
   serifLg: { fontFamily: fonts.displayBold, fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
   serifMd: { fontFamily: fonts.displayBold, fontSize: 18, lineHeight: 24, letterSpacing: -0.2 },
-  /** The signature: cook-time numerals. */
-  numeral: { fontFamily: fonts.displayBlack, fontSize: 26, lineHeight: 30, letterSpacing: -0.6 },
+
+  // ─── Numerals ────────────────────────────────────────────────────────────
+  // Money and time are *data*, not voice. A display serif reads as decorative
+  // on a price and its figures don't align down a column, which is exactly what
+  // a shopper does with them. Inter at heavy weight with tabular figures and
+  // tight tracking is what reads as trustworthy here.
+  priceLg: {
+    fontFamily: fonts.bodyExtra,
+    fontSize: 27,
+    lineHeight: 33,
+    letterSpacing: -0.9,
+    fontVariant: ['tabular-nums'],
+  } as TextStyle,
+  price: {
+    fontFamily: fonts.bodyExtra,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
+  } as TextStyle,
+  priceSm: {
+    fontFamily: fonts.bodyBold,
+    fontSize: 14,
+    lineHeight: 19,
+    letterSpacing: -0.3,
+    fontVariant: ['tabular-nums'],
+  } as TextStyle,
+  /** Cook-time figure on the pack card. */
+  numeral: {
+    fontFamily: fonts.bodyExtra,
+    fontSize: 15,
+    lineHeight: 19,
+    letterSpacing: -0.4,
+    fontVariant: ['tabular-nums'],
+  } as TextStyle,
 
   // Inter
   h1: { fontFamily: fonts.bodyExtra, fontSize: 24, lineHeight: 30, letterSpacing: -0.4 },

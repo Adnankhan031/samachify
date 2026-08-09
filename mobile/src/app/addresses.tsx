@@ -1,8 +1,20 @@
-import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Badge, Button, Card, EmptyState, ErrorState, Screen, ScreenHeader, Skeleton } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  IconTile,
+  Screen,
+  ScreenHeader,
+  Skeleton,
+} from '@/components/ui';
 import {
   deleteAddress,
   formatAddressSubtitle,
@@ -11,15 +23,12 @@ import {
   type Address,
 } from '@/lib/addresses';
 import { useAuth } from '@/store/auth';
-import { colors, spacing, type } from '@/theme';
+import { colors, radius, shadow, spacing, type } from '@/theme';
 
-/**
- * Read/manage the saved addresses shared with the website. Creating an address
- * happens inside checkout, where it's actually needed — a standalone "add address"
- * form here would be a second code path for the same fields.
- */
+/** Saved addresses, shared with the website's address book. */
 export default function Addresses() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
 
   const [addresses, setAddresses] = useState<Address[] | null>(null);
@@ -35,9 +44,12 @@ export default function Addresses() {
     }
   }, [user]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  // Reload on focus so a save from the edit screen lands here immediately.
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load])
+  );
 
   const confirmDelete = (address: Address) => {
     Alert.alert('Delete this address?', formatAddressSubtitle(address), [
@@ -71,8 +83,8 @@ export default function Addresses() {
       <Screen>
         <ScreenHeader title="My addresses" />
         <View style={styles.loading}>
-          <Skeleton height={104} radius={18} />
-          <Skeleton height={104} radius={18} />
+          <Skeleton height={132} radius={radius.lg} />
+          <Skeleton height={132} radius={radius.lg} />
         </View>
       </Screen>
     );
@@ -85,7 +97,7 @@ export default function Addresses() {
         <EmptyState
           icon="location-outline"
           title="Sign in to manage addresses"
-          message="Saved addresses are shared with samachify.in."
+          message="Saved addresses work across the app and samachify.in."
           actionLabel="Sign in"
           onAction={() => router.push('/login')}
         />
@@ -102,91 +114,156 @@ export default function Addresses() {
     );
   }
 
+  const list = addresses ?? [];
+
   return (
     <Screen>
-      <ScreenHeader title="My addresses" />
+      <ScreenHeader
+        title="My addresses"
+        subtitle={list.length > 0 ? `${list.length} saved` : undefined}
+      />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {addresses && addresses.length === 0 ? (
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 110 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {list.length === 0 ? (
           <EmptyState
             icon="location-outline"
             title="No saved addresses"
-            message="Addresses you enter at checkout are saved here for next time."
-            actionLabel="Browse packs"
-            onAction={() => router.push('/(tabs)/categories')}
+            message="Add one and it'll be ready at checkout — here and on the website."
+            actionLabel="Add an address"
+            onAction={() => router.push('/address/edit')}
           />
         ) : (
-          (addresses ?? []).map((address) => (
-            <Card key={address.id} style={styles.card}>
+          list.map((address) => (
+            <Card key={address.id} style={styles.card} padded={false}>
               <View style={styles.cardTop}>
-                <Text style={styles.label}>{address.label || 'Address'}</Text>
-                {address.is_default ? <Badge label="Default" tone="lime" /> : null}
-              </View>
+                <IconTile
+                  name={
+                    address.label === 'Work'
+                      ? 'briefcase'
+                      : address.label === 'Home'
+                        ? 'home'
+                        : 'location'
+                  }
+                  size={36}
+                />
 
-              <Text style={styles.name}>{address.name}</Text>
-              <Text style={styles.line}>{formatAddressSubtitle(address)}</Text>
-              {address.phone ? <Text style={styles.line}>+91 {address.phone}</Text> : null}
+                <View style={styles.cardText}>
+                  <View style={styles.labelRow}>
+                    <Text style={styles.label}>{address.label || 'Address'}</Text>
+                    {address.is_default ? (
+                      <Badge label="Default" tone="lime" icon="checkmark-circle" />
+                    ) : null}
+                  </View>
+                  <Text style={styles.name}>{address.name}</Text>
+                  <Text style={styles.line}>{formatAddressSubtitle(address)}</Text>
+                  {address.phone ? <Text style={styles.line}>+91 {address.phone}</Text> : null}
+                </View>
+              </View>
 
               <View style={styles.actions}>
                 {!address.is_default ? (
-                  <Pressable
+                  <Action
+                    icon="star-outline"
+                    label="Set default"
                     onPress={() => void makeDefault(address)}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    style={({ pressed }) => pressed && { opacity: 0.6 }}
-                  >
-                    <Text style={styles.action}>Set as default</Text>
-                  </Pressable>
+                  />
                 ) : null}
-                <Pressable
+                <Action
+                  icon="create-outline"
+                  label="Edit"
+                  onPress={() => router.push(`/address/edit?id=${address.id}`)}
+                />
+                <Action
+                  icon="trash-outline"
+                  label="Delete"
+                  tone="danger"
                   onPress={() => confirmDelete(address)}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  style={({ pressed }) => pressed && { opacity: 0.6 }}
-                >
-                  <Text style={[styles.action, styles.destructive]}>Delete</Text>
-                </Pressable>
+                />
               </View>
             </Card>
           ))
         )}
-
-        {addresses && addresses.length > 0 ? (
-          <Text style={styles.hint}>
-            New addresses are saved when you enter them at checkout.
-          </Text>
-        ) : null}
-
-        <Button
-          label="Back to profile"
-          variant="secondary"
-          fullWidth
-          onPress={() => router.back()}
-          style={styles.back}
-        />
       </ScrollView>
+
+      <View style={[styles.bar, { paddingBottom: insets.bottom + spacing.md }]}>
+        <Button
+          label="Add a new address"
+          icon="add"
+          size="lg"
+          fullWidth
+          onPress={() => router.push('/address/edit')}
+        />
+      </View>
     </Screen>
+  );
+}
+
+function Action({
+  icon,
+  label,
+  onPress,
+  tone = 'default',
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  label: string;
+  onPress: () => void;
+  tone?: 'default' | 'danger';
+}) {
+  const color = tone === 'danger' ? colors.chilli : colors.leaf;
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.action, pressed && { opacity: 0.55 }]}
+    >
+      <Ionicons name={icon} size={15} color={color} />
+      <Text style={[styles.actionText, { color }]}>{label}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   loading: { padding: spacing.lg, gap: spacing.md },
   content: { padding: spacing.lg },
-  card: { marginBottom: spacing.md },
-  cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  label: { ...type.tiny, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.8 },
-  name: { ...type.bodyStrong, color: colors.ink, marginTop: spacing.sm },
+
+  card: { marginBottom: spacing.md, overflow: 'hidden' },
+  cardTop: { flexDirection: 'row', gap: spacing.md, padding: spacing.lg },
+  cardText: { flex: 1 },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: 3 },
+  label: { ...type.eyebrow, color: colors.muted },
+  name: { ...type.bodyStrong, color: colors.ink },
   line: { ...type.small, color: colors.muted, marginTop: 2 },
+
   actions: {
     flexDirection: 'row',
-    gap: spacing.xl,
-    marginTop: spacing.lg,
-    paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.line,
+    backgroundColor: colors.cream2,
   },
-  action: { ...type.small, fontWeight: '700', color: colors.leaf },
-  destructive: { color: colors.chilli },
-  hint: { ...type.small, color: colors.faint, textAlign: 'center', marginTop: spacing.md },
-  back: { marginTop: spacing.xxl },
+  action: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: spacing.md,
+  },
+  actionText: { ...type.tiny, fontSize: 11.5 },
+
+  bar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    backgroundColor: colors.paper,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
+    ...shadow.lifted,
+  },
 });

@@ -150,13 +150,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radius.xs,
   },
-  timeValue: {
-    ...type.numeral,
-    fontSize: 15,
-    lineHeight: 19,
-    color: colors.sprout,
-    includeFontPadding: false,
-  },
+  timeValue: { ...type.numeral, color: colors.sprout, includeFontPadding: false },
   timeUnit: { ...type.tiny, fontSize: 10, color: colors.onDarkMuted },
 
   veganTag: {
@@ -193,7 +187,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     gap: spacing.sm,
   },
-  price: { ...type.serifMd, color: colors.ink, includeFontPadding: false },
+  price: { ...type.price, color: colors.ink, includeFontPadding: false },
   priceNote: { ...type.tiny, fontSize: 10, color: colors.faint, marginTop: -1 },
 
   add: {
