@@ -76,6 +76,60 @@ export async function resolveCurrentPlace(): Promise<ResolvedPlace> {
   };
 }
 
+/** Reverse-geocode an arbitrary point — used by the map picker as the pin moves. */
+export async function resolvePoint(
+  latitude: number,
+  longitude: number
+): Promise<ResolvedPlace | null> {
+  try {
+    const [place] = await Location.reverseGeocodeAsync({ latitude, longitude });
+    if (!place) return null;
+    return {
+      houseNo: place.name ?? '',
+      area: [place.street, place.district].filter(Boolean).join(', '),
+      landmark: '',
+      city: place.city ?? place.subregion ?? '',
+      state: place.region ?? '',
+      pincode: (place.postalCode ?? '').replace(/\D/g, '').slice(0, 6),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** A single fix without geocoding — for centring the map on the customer. */
+export async function currentCoords(): Promise<{ latitude: number; longitude: number } | null> {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== Location.PermissionStatus.GRANTED) return null;
+    const position = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    return { latitude: position.coords.latitude, longitude: position.coords.longitude };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Hand-off slot between the map picker and the address form.
+ *
+ * Module state rather than route params: an address is several fields of
+ * personal data and has no business being serialised into a URL.
+ */
+let picked: ResolvedPlace | null = null;
+
+export function setPickedPlace(place: ResolvedPlace): void {
+  picked = place;
+}
+
+/** Reads and clears — a picked place should only ever be applied once. */
+export function takePickedPlace(): ResolvedPlace | null {
+  const value = picked;
+  picked = null;
+  return value;
+}
+
 /** Whether permission is already granted, so the UI can skip an unnecessary prompt. */
 export async function hasLocationPermission(): Promise<boolean> {
   try {

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -29,7 +29,7 @@ import {
   type Address,
   type AddressInput,
 } from '@/lib/addresses';
-import { LocationDenied, resolveCurrentPlace } from '@/lib/location';
+import { LocationDenied, resolveCurrentPlace, takePickedPlace } from '@/lib/location';
 import { colors, radius, shadow, spacing, type } from '@/theme';
 
 const LABELS = ['Home', 'Work', 'Other'] as const;
@@ -111,6 +111,25 @@ export default function AddressEdit() {
       cancelled = true;
     };
   }, [id]);
+
+  // Apply whatever the map picker left behind. `take` clears it, so returning
+  // to this screen later doesn't silently re-apply an old pin.
+  useFocusEffect(
+    useCallback(() => {
+      const picked = takePickedPlace();
+      if (!picked) return;
+      setForm((f) => ({
+        ...f,
+        houseNo: picked.houseNo || f.houseNo,
+        area: picked.area || f.area,
+        city: picked.city || f.city,
+        state: picked.state || f.state,
+        pincode: picked.pincode || f.pincode,
+      }));
+      setErrors({});
+      setBanner(null);
+    }, [])
+  );
 
   const set = (field: keyof FormState) => (value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -238,6 +257,20 @@ export default function AddressEdit() {
             {!locating ? <Ionicons name="chevron-forward" size={16} color={colors.onDarkMuted} /> : null}
           </Pressable>
 
+          <Pressable
+            onPress={() => router.push('/address/map')}
+            accessibilityRole="button"
+            accessibilityLabel="Pick your location on a map"
+            style={({ pressed }) => [styles.mapRow, pressed && { opacity: 0.75 }]}
+          >
+            <Ionicons name="map-outline" size={18} color={colors.leaf} />
+            <View style={styles.flex}>
+              <Text style={styles.mapTitle}>Choose on map</Text>
+              <Text style={styles.mapBody}>Drop a pin exactly where you want delivery.</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.faint} />
+          </Pressable>
+
           <Text style={styles.groupLabel}>Save as</Text>
           <View style={styles.labels}>
             {LABELS.map((label) => (
@@ -361,9 +394,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bark,
     borderRadius: radius.md,
     padding: spacing.lg,
-    marginBottom: spacing.xxl,
     ...shadow.card,
   },
+  mapRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.paper,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.xxl,
+  },
+  mapTitle: { ...type.bodyStrong, color: colors.ink },
+  mapBody: { ...type.tiny, color: colors.muted, marginTop: 1 },
   gpsIcon: {
     width: 38,
     height: 38,
