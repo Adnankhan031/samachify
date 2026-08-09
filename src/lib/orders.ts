@@ -17,6 +17,29 @@ export interface Customer {
   address: string
   city: string
   pincode: string
+  /**
+   * The delivery pin the customer placed on a map, when they had one.
+   *
+   * Optional because the website has no map picker yet and older app versions
+   * predate pinning. Null simply means the rider navigates by written address
+   * instead — worse, but not broken.
+   */
+  latitude?: number | null
+  longitude?: number | null
+}
+
+/**
+ * A coordinate is only accepted if it is a real number in range.
+ *
+ * Never trust what the client sends here: a malformed pin doesn't produce a
+ * slightly-wrong delivery, it sends a rider to the wrong hemisphere. Anything
+ * suspect is dropped rather than rejected, because a bad pin should not cost
+ * the customer their order — the written address still works.
+ */
+function sanitiseCoord(value: unknown, limit: number): number | null {
+  const n = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(n) || Math.abs(n) > limit) return null
+  return n
 }
 
 export interface PricedCart {
@@ -36,14 +59,21 @@ export class OrderError extends Error {
 }
 
 export function validateCustomer(customer: Customer | undefined): Customer {
-  const required: (keyof Customer)[] = ['name', 'email', 'phone', 'address', 'city', 'pincode']
+  // Only the text fields are required. The coordinates are optional and
+  // numeric, so they are validated separately rather than trimmed.
+  const required = ['name', 'email', 'phone', 'address', 'city', 'pincode'] as const
   for (const f of required) {
     if (!customer?.[f]?.trim()) throw new OrderError(`Missing field: ${f}`)
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer!.email)) throw new OrderError('Invalid email.')
   if (!/^[0-9]{10}$/.test(customer!.phone.replace(/\D/g, ''))) throw new OrderError('Invalid phone number.')
   if (!/^[0-9]{6}$/.test(customer!.pincode)) throw new OrderError('Invalid pincode.')
-  return customer!
+
+  return {
+    ...customer!,
+    latitude: sanitiseCoord(customer!.latitude, 90),
+    longitude: sanitiseCoord(customer!.longitude, 180),
+  }
 }
 
 /** Re-prices the cart from the trusted catalogue — never trusts client prices. */
@@ -121,6 +151,14 @@ export async function insertOrder(params: {
     delivery_fee: cart.deliveryFee,
     total: cart.total,
     status,
+  }
+
+  // Snapshotted onto the order, not looked up from the address book at delivery
+  // time. An address can be edited or deleted afterwards; the pin for an order
+  // already on its way must not move under the rider.
+  if (customer.latitude != null && customer.longitude != null) {
+    row.latitude = customer.latitude
+    row.longitude = customer.longitude
   }
   // Only set the Razorpay columns for online payments (keeps COD working even
   // before the razorpay migration is applied).
