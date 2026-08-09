@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, StyleSheet, Text, View } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 import { Button, Card, Screen, ScreenHeader } from '@/components/ui';
@@ -173,6 +173,21 @@ export default function Pay() {
         domStorageEnabled
         startInLoadingState
         setSupportMultipleWindows={false}
+        /*
+         * Razorpay launches the customer's UPI app with a non-http scheme —
+         * upi://, phonepe://, tez://, paytmmp://. A WebView only speaks
+         * http(s) and fails with ERR_UNKNOWN_URL_SCHEME, so anything that
+         * isn't http(s) is handed to Android to open the real app instead.
+         */
+        onShouldStartLoadWithRequest={(req) => {
+          if (/^(https?:|about:|data:)/i.test(req.url)) return true;
+          Linking.openURL(req.url).catch(() => {
+            setError('No UPI app found for that option. Try a card, or pick another app.');
+            setPhase('failed');
+            settled.current = true;
+          });
+          return false;
+        }}
         renderLoading={() => (
           <View style={styles.centre}>
             <ActivityIndicator size="large" color={colors.leaf} />
