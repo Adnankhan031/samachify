@@ -16,6 +16,13 @@ export interface ResolvedPlace {
   city: string;
   state: string;
   pincode: string;
+  /**
+   * The exact point the customer pinned. This is what a delivery rider
+   * navigates to — the text fields are context for the last few metres, not
+   * the destination.
+   */
+  latitude: number;
+  longitude: number;
 }
 
 /** Distinguishes "said no" from "it broke" so the UI can respond differently. */
@@ -73,6 +80,8 @@ export async function resolveCurrentPlace(): Promise<ResolvedPlace> {
     city: place.city ?? place.subregion ?? '',
     state: place.region ?? '',
     pincode: (place.postalCode ?? '').replace(/\D/g, '').slice(0, 6),
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
   };
 }
 
@@ -83,14 +92,17 @@ export async function resolvePoint(
 ): Promise<ResolvedPlace | null> {
   try {
     const [place] = await Location.reverseGeocodeAsync({ latitude, longitude });
-    if (!place) return null;
+    // The pin is the delivery point whether or not the geocoder recognises it.
+    // A blank suggestion is fine; a lost coordinate is not.
     return {
-      houseNo: place.name ?? '',
-      area: [place.street, place.district].filter(Boolean).join(', '),
+      houseNo: place?.name ?? '',
+      area: [place?.street, place?.district].filter(Boolean).join(', '),
       landmark: '',
-      city: place.city ?? place.subregion ?? '',
-      state: place.region ?? '',
-      pincode: (place.postalCode ?? '').replace(/\D/g, '').slice(0, 6),
+      city: place?.city ?? place?.subregion ?? '',
+      state: place?.region ?? '',
+      pincode: (place?.postalCode ?? '').replace(/\D/g, '').slice(0, 6),
+      latitude,
+      longitude,
     };
   } catch {
     return null;

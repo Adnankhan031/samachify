@@ -18,6 +18,14 @@ export interface Address {
   state: string;
   is_default: boolean;
   created_at?: string;
+  /**
+   * The customer's delivery pin. Null on addresses saved before pinning
+   * existed, and on anything entered through the website, which has no picker.
+   * The delivery-partner app navigates to this; the text is context for the
+   * last few metres.
+   */
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export type AddressInput = Omit<Address, 'id' | 'created_at' | 'is_default'> & {
@@ -25,7 +33,7 @@ export type AddressInput = Omit<Address, 'id' | 'created_at' | 'is_default'> & {
 };
 
 const COLUMNS =
-  'id, label, name, phone, pincode, house_no, area, landmark, city, state, is_default, created_at';
+  'id, label, name, phone, pincode, house_no, area, landmark, city, state, is_default, created_at, latitude, longitude';
 
 /** Default first, then newest. */
 export async function listAddresses(): Promise<Address[]> {

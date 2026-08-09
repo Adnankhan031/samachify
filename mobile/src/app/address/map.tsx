@@ -142,8 +142,8 @@ export default function MapPicker() {
         </View>
 
         <Text style={styles.note}>
-          We&apos;ll fill the form from this pin. You can still correct the flat number and
-          landmark before saving.
+          Your delivery partner navigates to this exact pin. The address fields are for
+          the last few metres — flat number, floor, landmark — and you can edit those next.
         </Text>
 
         <Button

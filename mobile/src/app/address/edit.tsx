@@ -29,7 +29,7 @@ import {
   type Address,
   type AddressInput,
 } from '@/lib/addresses';
-import { LocationDenied, resolveCurrentPlace, takePickedPlace } from '@/lib/location';
+import { takePickedPlace } from '@/lib/location';
 import { colors, radius, shadow, spacing, type } from '@/theme';
 
 const LABELS = ['Home', 'Work', 'Other'] as const;
@@ -45,6 +45,8 @@ interface FormState {
   state: string;
   pincode: string;
   isDefault: boolean;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 const EMPTY: FormState = {
@@ -58,6 +60,8 @@ const EMPTY: FormState = {
   state: 'Tamil Nadu',
   pincode: '',
   isDefault: false,
+  latitude: null,
+  longitude: null,
 };
 
 /**
@@ -79,7 +83,7 @@ export default function AddressEdit() {
   const [banner, setBanner] = useState<string | null>(null);
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
-  const [locating, setLocating] = useState(false);
+  const pinned = form.latitude !== null && form.longitude !== null;
 
   useEffect(() => {
     if (!id) return;
@@ -101,6 +105,8 @@ export default function AddressEdit() {
             state: found.state,
             pincode: found.pincode,
             isDefault: found.is_default,
+            latitude: found.latitude ?? null,
+            longitude: found.longitude ?? null,
           });
         }
       })
@@ -120,11 +126,16 @@ export default function AddressEdit() {
       if (!picked) return;
       setForm((f) => ({
         ...f,
-        houseNo: picked.houseNo || f.houseNo,
-        area: picked.area || f.area,
-        city: picked.city || f.city,
-        state: picked.state || f.state,
-        pincode: picked.pincode || f.pincode,
+        // The geocoder's guesses only fill blanks — they never overwrite text
+        // the customer has already corrected. The coordinates always win,
+        // because the pin *is* the delivery point.
+        houseNo: f.houseNo || picked.houseNo,
+        area: f.area || picked.area,
+        city: f.city || picked.city,
+        state: f.state || picked.state,
+        pincode: f.pincode || picked.pincode,
+        latitude: picked.latitude,
+        longitude: picked.longitude,
       }));
       setErrors({});
       setBanner(null);
@@ -134,34 +145,6 @@ export default function AddressEdit() {
   const set = (field: keyof FormState) => (value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
     setErrors((e) => ({ ...e, [field]: undefined }));
-  };
-
-  const useMyLocation = async () => {
-    setLocating(true);
-    setBanner(null);
-
-    try {
-      const place = await resolveCurrentPlace();
-      setForm((f) => ({
-        ...f,
-        // Only overwrite what the geocoder actually returned — a blank result
-        // shouldn't wipe something the customer already typed.
-        houseNo: place.houseNo || f.houseNo,
-        area: place.area || f.area,
-        city: place.city || f.city,
-        state: place.state || f.state,
-        pincode: place.pincode || f.pincode,
-      }));
-      setErrors({});
-    } catch (e) {
-      setBanner(
-        e instanceof LocationDenied || e instanceof Error
-          ? e.message
-          : 'Could not read your location.'
-      );
-    } finally {
-      setLocating(false);
-    }
   };
 
   /** Mirrors the server's validation so we fail before a round trip. */
@@ -174,6 +157,10 @@ export default function AddressEdit() {
     if (!form.area.trim()) next.area = 'Enter the area or street';
     if (!form.city.trim()) next.city = 'Enter the city';
     if (!/^[0-9]{6}$/.test(form.pincode)) next.pincode = 'Enter a 6-digit pincode';
+    // Required: without it a delivery partner has text and a guess.
+    if (form.latitude === null || form.longitude === null) {
+      next.latitude = 'Set your delivery location on the map';
+    }
 
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -196,6 +183,8 @@ export default function AddressEdit() {
       state: form.state.trim(),
       pincode: form.pincode,
       is_default: form.isDefault,
+      latitude: form.latitude,
+      longitude: form.longitude,
     };
 
     try {
@@ -236,40 +225,54 @@ export default function AddressEdit() {
         >
           {banner ? <ErrorBanner message={banner} /> : null}
 
-          <Pressable
-            onPress={() => void useMyLocation()}
-            disabled={locating}
-            accessibilityRole="button"
-            accessibilityLabel="Use my current location to fill this form"
-            style={({ pressed }) => [styles.gps, pressed && { opacity: 0.75 }]}
-          >
-            <View style={styles.gpsIcon}>
-              <Ionicons name={locating ? 'ellipsis-horizontal' : 'navigate'} size={18} color={colors.bark} />
-            </View>
-            <View style={styles.flex}>
-              <Text style={styles.gpsTitle}>
-                {locating ? 'Finding you…' : 'Use my current location'}
-              </Text>
-              <Text style={styles.gpsBody}>
-                Fills in the street and pincode. Check them before saving.
-              </Text>
-            </View>
-            {!locating ? <Ionicons name="chevron-forward" size={16} color={colors.onDarkMuted} /> : null}
-          </Pressable>
-
+          {/* The pin is the delivery destination, so it leads the form. The
+              customer always places it themselves — nothing is auto-filled from
+              GPS, which only centres the map inside the picker. */}
           <Pressable
             onPress={() => router.push('/address/map')}
             accessibilityRole="button"
-            accessibilityLabel="Pick your location on a map"
-            style={({ pressed }) => [styles.mapRow, pressed && { opacity: 0.75 }]}
+            accessibilityLabel={
+              pinned ? 'Delivery location pinned. Change it' : 'Set your delivery location on the map'
+            }
+            style={({ pressed }) => [
+              styles.pin,
+              pinned ? styles.pinSet : styles.pinUnset,
+              !!errors.latitude && styles.pinError,
+              pressed && { opacity: 0.8 },
+            ]}
           >
-            <Ionicons name="map-outline" size={18} color={colors.leaf} />
-            <View style={styles.flex}>
-              <Text style={styles.mapTitle}>Choose on map</Text>
-              <Text style={styles.mapBody}>Drop a pin exactly where you want delivery.</Text>
+            <View style={[styles.pinIcon, pinned && styles.pinIconSet]}>
+              <Ionicons
+                name={pinned ? 'checkmark' : 'map-outline'}
+                size={19}
+                color={pinned ? colors.bark : colors.leaf}
+              />
             </View>
-            <Ionicons name="chevron-forward" size={16} color={colors.faint} />
+
+            <View style={styles.flex}>
+              <Text style={[styles.pinTitle, pinned && { color: colors.onDark }]}>
+                {pinned ? 'Delivery location pinned' : 'Set delivery location'}
+              </Text>
+              <Text style={[styles.pinBody, pinned && { color: colors.onDarkMuted }]}>
+                {pinned
+                  ? 'Your rider navigates to this exact point. Tap to move it.'
+                  : 'Drop a pin on the map so your rider knows exactly where to come.'}
+              </Text>
+            </View>
+
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={pinned ? colors.onDarkMuted : colors.faint}
+            />
           </Pressable>
+
+          {errors.latitude ? (
+            <View style={styles.pinErrorRow}>
+              <Ionicons name="alert-circle" size={13} color={colors.chilli} />
+              <Text style={styles.pinErrorText}>{errors.latitude}</Text>
+            </View>
+          ) : null}
 
           <Text style={styles.groupLabel}>Save as</Text>
           <View style={styles.labels}>
@@ -387,39 +390,39 @@ const styles = StyleSheet.create({
   loading: { padding: spacing.lg, gap: spacing.md },
   content: { padding: spacing.lg },
 
-  gps: {
+  pin: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    backgroundColor: colors.bark,
     borderRadius: radius.md,
     padding: spacing.lg,
+    marginBottom: spacing.xxl,
+    borderWidth: 1.5,
     ...shadow.card,
   },
-  mapRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: colors.paper,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    marginTop: spacing.md,
-    marginBottom: spacing.xxl,
-  },
-  mapTitle: { ...type.bodyStrong, color: colors.ink },
-  mapBody: { ...type.tiny, color: colors.muted, marginTop: 1 },
-  gpsIcon: {
+  // Unset reads as an instruction; set reads as a confirmation.
+  pinUnset: { backgroundColor: colors.paper, borderColor: colors.lineStrong, borderStyle: 'dashed' },
+  pinSet: { backgroundColor: colors.bark, borderColor: colors.bark },
+  pinError: { borderColor: colors.chilli, borderStyle: 'solid' },
+  pinIcon: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.sprout,
+    backgroundColor: colors.wash,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  gpsTitle: { ...type.h3, color: colors.onDark },
-  gpsBody: { ...type.tiny, color: colors.onDarkMuted, marginTop: 2 },
+  pinIconSet: { backgroundColor: colors.sprout },
+  pinTitle: { ...type.h3, color: colors.ink },
+  pinBody: { ...type.tiny, color: colors.muted, marginTop: 2 },
+  pinErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: -spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  pinErrorText: { ...type.tiny, color: colors.chilli, flex: 1 },
 
   groupLabel: { ...type.eyebrow, color: colors.muted, marginBottom: spacing.md },
   labels: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xxl },
