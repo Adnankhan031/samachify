@@ -10,6 +10,18 @@ import {
 } from 'lucide-react'
 import Footer from '../components/Footer'
 
+/**
+ * Who appears in Meet Our Team.
+ *
+ * Lifted out of the JSX so the list is one place rather than an array buried
+ * inside a render. The grid below sizes itself from `TEAM.length`, so adding or
+ * removing a person needs no layout change - a single card centres itself
+ * instead of sitting in the left half of a two-column grid.
+ */
+const TEAM = [
+  { role: 'Founder & CEO', name: 'Vikram T', photo: '/assets/CEO.JPG', quote: 'Leading the vision to transform everyday cooking through innovative, farm-to-kitchen solutions — building a future where healthy home-cooked meals are convenient, accessible, and sustainable.', accentColor: '#9abb50', badgeText: 'CEO' },
+]
+
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
   show: (i: number = 0) => ({
@@ -502,11 +514,10 @@ export default function About() {
               </p>
             </motion.div>
 
-            <div className="grid sm:grid-cols-2 max-w-2xl mx-auto gap-6">
-              {[
-                { role: 'Founder & CEO', name: 'Vikram T', photo: '/assets/CEO.JPG', quote: 'Leading the vision to transform everyday cooking through innovative, farm-to-kitchen solutions — building a future where healthy home-cooked meals are convenient, accessible, and sustainable.', accentColor: '#9abb50', badgeText: 'CEO' },
-                { role: 'Chief Operations Officer', name: 'AsifAli I', photo: '/assets/COO.jpg', quote: 'Transforming vision into execution by managing operations, optimising processes, and building a reliable farm-to-kitchen ecosystem — dedicated to operational excellence and continuous improvement.', accentColor: '#3b82f6', badgeText: 'COO' },
-              ].map((member, i) => (
+            <div className={`grid gap-6 mx-auto ${
+              TEAM.length > 1 ? 'sm:grid-cols-2 max-w-2xl' : 'max-w-sm'
+            }`}>
+              {TEAM.map((member, i) => (
                 <motion.div
                   key={i} custom={i} initial="hidden" animate={teamInView ? 'show' : 'hidden'} variants={fadeUp}
                   className="bg-white rounded-3xl border border-gray-100 overflow-hidden group transition-all duration-300 hover:-translate-y-2"
