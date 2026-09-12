@@ -56,7 +56,7 @@ export default function Navbar() {
 
         {/* Logo — flex-1 so it anchors left */}
         <Link to="/" aria-label="Samachify home" className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 flex-1">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden flex-shrink-0">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden flex-shrink-0">
             <img
               src="/assets/logo.png"
               alt="Samachify — From Farm to Pan"

@@ -6,6 +6,7 @@ import {
   listAddresses, createAddress, updateAddress, deleteAddress, setDefaultAddress,
   type Address, type AddressInput,
 } from '@/lib/addresses'
+import DeliveryPin, { type DeliveryPoint } from '@/components/DeliveryPin'
 
 const INDIAN_STATES = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
@@ -17,7 +18,7 @@ const INDIAN_STATES = [
 ]
 
 const EMPTY: AddressInput = {
-  label: 'Home', name: '', phone: '', pincode: '', house_no: '', area: '', landmark: '', city: '', state: '',
+  label: 'Home', name: '', phone: '', pincode: '', house_no: '', area: '', landmark: '', city: '', state: '', latitude: null, longitude: null,
 }
 
 export default function AddressBook() {
@@ -35,6 +36,7 @@ export default function AddressBook() {
     const data: AddressInput = {
       label: a.label, name: a.name, phone: a.phone, pincode: a.pincode,
       house_no: a.house_no, area: a.area, landmark: a.landmark, city: a.city, state: a.state,
+      latitude: a.latitude, longitude: a.longitude,
     }
     setForm(data); setEditing({ id: a.id, data }); setError(null)
   }
@@ -45,6 +47,7 @@ export default function AddressBook() {
     if (!/^[0-9]{10}$/.test(f.phone.replace(/\D/g, ''))) return 'Enter a valid 10-digit mobile number.'
     if (!/^[0-9]{6}$/.test(f.pincode)) return 'Enter a valid 6-digit pincode.'
     if (!f.house_no.trim() || !f.area.trim() || !f.city.trim() || !f.state.trim()) return 'Please fill in the full address.'
+    if (f.latitude == null || f.longitude == null) return 'Choose the exact delivery point on the map or use your current location.'
     return null
   }
 
@@ -99,6 +102,11 @@ export default function AddressBook() {
             <Input label="Full name" value={form.name} onChange={set('name')} placeholder="Recipient name" />
             <Input label="Mobile number" value={form.phone} onChange={set('phone')} placeholder="10-digit mobile" inputMode="numeric" maxLength={10} />
           </div>
+
+          <DeliveryPin
+            value={form.latitude != null && form.longitude != null ? { latitude: form.latitude, longitude: form.longitude } : null}
+            onChange={(point: DeliveryPoint) => setForm((f) => ({ ...f, latitude: point.latitude, longitude: point.longitude }))}
+          />
           <Input label="Pincode" value={form.pincode} onChange={set('pincode')} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
           <Input label="Flat, House no., Building" value={form.house_no} onChange={set('house_no')} placeholder="e.g. 12A, Green Residency" />
           <Input label="Area, Street, Sector" value={form.area} onChange={set('area')} placeholder="e.g. Anna Nagar" />
@@ -143,6 +151,11 @@ export default function AddressBook() {
                 </div>
                 <p className="font-700 text-gray-900 text-sm">{a.name} · {a.phone}</p>
                 <p className="text-xs text-gray-500">{a.house_no}, {a.area}{a.landmark ? `, ${a.landmark}` : ''}, {a.city}, {a.state} — {a.pincode}</p>
+                {a.latitude != null && a.longitude != null && (
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${a.latitude},${a.longitude}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-700 text-green-700 hover:text-green-800">
+                    <MapPin size={12} /> View saved pin
+                  </a>
+                )}
                 <div className="flex items-center gap-3 mt-2.5">
                   {!a.is_default && (
                     <button onClick={() => makeDefault(a.id)} className="text-xs font-700 text-green-700 hover:text-green-800">Set as default</button>

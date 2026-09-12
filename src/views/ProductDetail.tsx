@@ -154,10 +154,12 @@ export default function ProductDetail() {
                   )}
                 </div>
                 {product.familyId === 'sambar' && <div className="mb-6 flex flex-wrap gap-2.5" aria-label="Choose sambar pack size">
-                  {products.filter(p => p.familyId === 'sambar').sort((a,b) => a.servings - b.servings).map(p => <Link key={p.id} to={`/products/${p.id}`} aria-current={p.id === product.id ? 'page' : undefined} className={`min-w-[154px] rounded-2xl border px-4 py-3 backdrop-blur-md transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-amber-400 ${p.id === product.id ? 'bg-[#d9ffa1] text-[#142405] border-[#d9ffa1] shadow-[0_8px_28px_rgba(193,255,114,0.2)]' : 'bg-[#142405]/90 border-white/20 text-white hover:bg-[#20380d] hover:border-green-300/50'}`}>
+                  {products.filter(p => p.familyId === 'sambar').sort((a,b) => a.servings - b.servings).map(p => {
+                    const selected = p.id === product.id
+                    return <Link key={p.id} to={`/products/${p.id}`} aria-current={selected ? 'page' : undefined} className="min-w-[154px] rounded-2xl border px-4 py-3 backdrop-blur-md transition-all hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-3 focus-visible:outline-amber-400" style={{ background: selected ? '#d9ffa1' : 'rgba(20,36,5,0.96)', borderColor: selected ? '#d9ffa1' : 'rgba(193,255,114,0.3)', color: selected ? '#142405' : '#ffffff', boxShadow: selected ? '0 8px 28px rgba(193,255,114,0.2)' : '0 6px 18px rgba(0,0,0,0.18)' }}>
                     <span className="block font-bold">{p.packLabel} · {p.servings} {p.servings === 1 ? 'person' : 'people'}</span>
-                    <span className={p.id === product.id ? 'text-green-950' : 'text-green-100'}>₹{p.price} <del className="opacity-60 text-sm">MRP ₹{p.mrp}</del></span>
-                  </Link>)}
+                    <span style={{ color: selected ? '#284d08' : '#d9ffa1' }}>₹{p.price} <del className="opacity-70 text-sm">MRP ₹{p.mrp}</del></span>
+                  </Link>})}
                 </div>}
                 <h1 className="font-display font-black text-white tracking-tighter mb-3"
                   style={{ fontSize: 'clamp(2rem, 4.5vw, 4.2rem)', lineHeight: 1.04 }}>

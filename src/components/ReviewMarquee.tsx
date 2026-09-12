@@ -16,7 +16,8 @@ export default function ReviewMarquee() {
         title={paused ? 'Play reviews' : 'Pause reviews'}
         onClick={() => setPaused(!paused)}
       >
-        {paused ? <Play size={15} fill="currentColor" /> : <Pause size={15} fill="currentColor" />}
+        {paused ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+        <span>{paused ? 'Resume' : 'Pause motion'}</span>
       </button>
       <div className="reviews-window">
         <div className="reviews-track">
