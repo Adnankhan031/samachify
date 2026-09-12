@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from '@/lib/nav'
 import { motion, useInView, useScroll, useTransform, type Variants } from 'framer-motion'
 import {
@@ -48,6 +48,10 @@ function HeroSection() {
   const { scrollY } = useScroll()
   const imgY = useTransform(scrollY, [0, 700], ['0%', '6%'])
   const [showAppPrompt, setShowAppPrompt] = useState(true)
+
+  useEffect(() => {
+    setShowAppPrompt(sessionStorage.getItem('samachify-app-prompt') !== 'dismissed')
+  }, [])
 
   return (
     <section className="relative overflow-hidden grain" style={{ minHeight: '100vh' }}>
@@ -237,7 +241,10 @@ function HeroSection() {
             </a>
             <button
               type="button"
-              onClick={() => setShowAppPrompt(false)}
+              onClick={() => {
+                sessionStorage.setItem('samachify-app-prompt', 'dismissed')
+                setShowAppPrompt(false)
+              }}
               className="absolute right-2 top-2 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
               aria-label="Dismiss app download prompt"
             >
