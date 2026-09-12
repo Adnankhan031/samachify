@@ -9,7 +9,7 @@ import {
   Flame, GraduationCap, Video, Trash2, AlertTriangle,
   Briefcase, Scissors, Recycle, Microscope, Thermometer,
   TrendingUp, Mail, MessageCircle, Truck,
-  Quote, Leaf, FlaskConical, Droplets,
+  Quote, Leaf, FlaskConical, Droplets, Smartphone, Download, X,
 } from 'lucide-react'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { products, testimonials, faqs } from '../data/products'
@@ -47,6 +47,7 @@ function SectionLabelDark({ icon: Icon, text }: { icon: React.ElementType; text:
 function HeroSection() {
   const { scrollY } = useScroll()
   const imgY = useTransform(scrollY, [0, 700], ['0%', '6%'])
+  const [showAppPrompt, setShowAppPrompt] = useState(true)
 
   return (
     <section className="relative overflow-hidden grain" style={{ minHeight: '100vh' }}>
@@ -204,6 +205,46 @@ function HeroSection() {
             How It Works
           </Link>
         </motion.div>
+
+        {/* Customer app prompt */}
+        {showAppPrompt && (
+          <motion.aside
+            initial={{ opacity: 0, y: 18, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.97 }}
+            transition={{ duration: 0.5, delay: 0.78, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 overflow-hidden rounded-2xl border border-green-200 bg-white/95 p-3 pr-10 shadow-[0_18px_60px_rgba(18,45,4,0.24)] backdrop-blur-md sm:bottom-6 sm:left-auto sm:right-6 sm:w-full sm:max-w-[430px]"
+            aria-label="Samachify Android app download"
+          >
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-green-900 p-1.5 shadow-sm">
+              <img src="/assets/logo.png" alt="" className="h-full w-full rounded-full object-cover" />
+              <span className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-green-600 text-white">
+                <Smartphone size={10} strokeWidth={2.5} />
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-800 uppercase tracking-[0.16em] text-green-600">Android app available</p>
+              <p className="mt-0.5 text-sm font-800 leading-tight text-gray-900">Order faster with the Samachify app</p>
+              <p className="mt-1 text-[11px] leading-tight text-gray-500">Direct APK download · Customer app</p>
+            </div>
+            <a
+              href="/app"
+              className="group inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-green-600 px-3 py-2.5 text-xs font-800 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-green-700"
+              aria-label="Download Samachify customer app for Android"
+            >
+              <Download size={14} />
+              <span className="hidden sm:inline">Download</span>
+            </a>
+            <button
+              type="button"
+              onClick={() => setShowAppPrompt(false)}
+              className="absolute right-2 top-2 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Dismiss app download prompt"
+            >
+              <X size={13} />
+            </button>
+          </motion.aside>
+        )}
 
         {/* Trust indicators */}
         <motion.div

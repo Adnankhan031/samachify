@@ -659,7 +659,23 @@ export default function About() {
                     >
                       {/* Mobile timeline node */}
                       <div className="md:hidden absolute left-0 flex-shrink-0 z-10">
-                        {isCurrent && <motion.div aria-hidden="true" className="absolute -inset-1.5 rounded-full border-2 border-transparent border-t-amber-200 border-r-amber-500" animate={{ rotate: 360 }} transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }} />}
+                        {isCurrent && (
+                          <>
+                            <motion.div
+                              aria-hidden="true"
+                              className="absolute -inset-2 rounded-full"
+                              style={{
+                                background: 'conic-gradient(from 25deg, transparent 0 36%, #fde68a 48%, #f59e0b 72%, transparent 86%)',
+                                WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0)',
+                                mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0)',
+                                filter: 'drop-shadow(0 0 5px rgba(245,158,11,0.7))',
+                              }}
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 2.8, repeat: Infinity, ease: 'linear' }}
+                            />
+                            <motion.span aria-hidden="true" className="absolute -right-2 top-1/2 h-1.5 w-1.5 rounded-full bg-amber-200 shadow-[0_0_8px_#fbbf24]" animate={{ scale: [0.75, 1.25, 0.75], opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.4, repeat: Infinity }} />
+                          </>
+                        )}
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
                           style={{
@@ -706,7 +722,24 @@ export default function About() {
 
                       {/* Center node */}
                       <div className="hidden md:flex flex-shrink-0 flex-col items-center relative z-10">
-                        {isCurrent && <motion.div aria-hidden="true" className="absolute -inset-2 rounded-full border-[3px] border-transparent border-t-amber-200 border-r-amber-500" animate={{ rotate: 360 }} transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }} />}
+                        {isCurrent && (
+                          <>
+                            <motion.div
+                              aria-hidden="true"
+                              className="absolute -inset-3 rounded-full"
+                              style={{
+                                background: 'conic-gradient(from 25deg, transparent 0 32%, #fde68a 45%, #f59e0b 70%, transparent 88%)',
+                                WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0)',
+                                mask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0)',
+                                filter: 'drop-shadow(0 0 7px rgba(245,158,11,0.72))',
+                              }}
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 2.8, repeat: Infinity, ease: 'linear' }}
+                            />
+                            <motion.div aria-hidden="true" className="absolute -inset-1 rounded-full border border-amber-200/50" animate={{ scale: [1, 1.14, 1], opacity: [0.7, 0.2, 0.7] }} transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} />
+                            <motion.span aria-hidden="true" className="absolute -right-3 top-1/2 h-2 w-2 rounded-full bg-amber-100 shadow-[0_0_10px_#fbbf24]" animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.65, 1, 0.65] }} transition={{ duration: 1.4, repeat: Infinity }} />
+                          </>
+                        )}
                         <motion.div
                           className="w-14 h-14 rounded-full flex items-center justify-center"
                           style={{
