@@ -6,7 +6,7 @@ import { Link } from '@/lib/nav'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 
-const FREE_DELIVERY_THRESHOLD = 299
+const FREE_DELIVERY_THRESHOLD = 380
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, totalPrice, totalItems } = useCart()

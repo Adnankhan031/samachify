@@ -7,7 +7,7 @@ import {
   ArrowLeft, Clock, Users, Flame, ChefHat, Share2, CheckCircle,
   ArrowRight, Leaf, Timer, Sprout, Camera, ShoppingBag, Plus, Minus, Check,
 } from 'lucide-react'
-import { products, recipes } from '../data/products'
+import { products, recipes, SAMBAR_VARIATION_NOTE } from '../data/products'
 import { useCart } from '@/context/CartContext'
 import Footer from '../components/Footer'
 
@@ -56,7 +56,7 @@ const stepItem = {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
   const product = products.find((p) => p.id === id)
-  const recipe = recipes.find((r) => r.productId === id)
+  const recipe = recipes.find((r) => r.productId === (product?.familyId === 'sambar' ? 'sambar-pack' : id))
   const { addItem } = useCart()
   const [qty, setQty] = useState(1)
   const [justAdded, setJustAdded] = useState(false)
@@ -153,6 +153,12 @@ export default function ProductDetail() {
                     </span>
                   )}
                 </div>
+                {product.familyId === 'sambar' && <div className="mb-6 flex flex-wrap gap-3" aria-label="Choose sambar pack size">
+                  {products.filter(p => p.familyId === 'sambar').sort((a,b) => a.servings - b.servings).map(p => <Link key={p.id} to={`/products/${p.id}`} aria-current={p.id === product.id ? 'page' : undefined} className={`rounded-2xl border px-4 py-3 ${p.id === product.id ? 'bg-green-100 text-green-950 border-green-300' : 'border-white/30 text-white'}`}>
+                    <span className="block font-bold">{p.packLabel} · {p.servings} {p.servings === 1 ? 'person' : 'people'}</span>
+                    <span>₹{p.price} <del className="opacity-60 text-sm">MRP ₹{p.mrp}</del></span>
+                  </Link>)}
+                </div>}
                 <h1 className="font-display font-black text-white tracking-tighter mb-3"
                   style={{ fontSize: 'clamp(2rem, 4.5vw, 4.2rem)', lineHeight: 1.04 }}>
                   {product.name}
@@ -165,7 +171,7 @@ export default function ProductDetail() {
                   {[
                     { icon: Clock,  label: 'Cook Time',  val: recipe.cookTime },
                     { icon: Timer,  label: 'Prep Time',  val: recipe.prepTime },
-                    { icon: Users,  label: 'Serves',     val: `${recipe.servings} people` },
+                    { icon: Users,  label: 'Serves',     val: `${product.servings} ${product.servings === 1 ? 'person' : 'people'}` },
                     { icon: Flame,  label: 'Difficulty', val: recipe.difficulty },
                   ].map((s, i) => {
                     const Icon = s.icon
@@ -292,7 +298,8 @@ export default function ProductDetail() {
                 </div>
 
                 {/* Individual ingredient cards — 3-col grid */}
-                <div className="p-6">
+                {product.familyId === 'sambar' && <aside className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"><strong>Weekly vegetable variation</strong><p className="mt-1">{SAMBAR_VARIATION_NOTE}</p></aside>}
+              <div className="p-6">
                   <motion.div
                     className="grid grid-cols-2 sm:grid-cols-3 gap-3"
                     variants={ingredientContainer}

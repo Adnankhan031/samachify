@@ -15,12 +15,14 @@ export interface Address {
   city: string
   state: string
   is_default: boolean
+  latitude?: number | null
+  longitude?: number | null
   created_at?: string
 }
 
 export type AddressInput = Omit<Address, 'id' | 'created_at' | 'is_default'> & { is_default?: boolean }
 
-const COLUMNS = 'id, label, name, phone, pincode, house_no, area, landmark, city, state, is_default, created_at'
+const COLUMNS = 'id, label, name, phone, pincode, house_no, area, landmark, city, state, is_default, created_at, latitude, longitude'
 
 /** All saved addresses for the signed-in user (default first, then newest). */
 export async function listAddresses(): Promise<Address[]> {
