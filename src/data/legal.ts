@@ -218,7 +218,7 @@ export const legalDocs: Record<string, LegalDoc> = {
       {
         heading: '2. Delivery charges',
         body: [
-          `A delivery charge of ₹39 applies to orders below ₹299. Orders of ₹299 and above qualify for FREE delivery. The exact charge is always shown at checkout before you pay.`,
+          `Delivery costs ₹5 per kilometre using the road route from our Medavakkam operating office. Delivery is free for road distances below 2 km or product subtotals above ₹379. We deliver only to approved pincodes, and the exact charge is shown at checkout before you pay.`,
         ],
       },
       {

@@ -10,10 +10,9 @@ import {
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
+import DeliveryPin, { type DeliveryPoint } from '@/components/DeliveryPin'
 import { listAddresses, createAddress, type Address } from '@/lib/addresses'
-
-const FREE_DELIVERY_THRESHOLD = 299
-const DELIVERY_FEE = 39
+import { DELIVERY_AREAS } from '@/lib/office'
 
 // Online payments show up only when the Razorpay public key is configured.
 const RAZORPAY_ENABLED = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
@@ -62,6 +61,10 @@ export default function CheckoutView() {
     state: '',
     addressType: 'Home',
   })
+  const [pin, setPin] = useState<DeliveryPoint | null>(null)
+  const [quote, setQuote] = useState<{subtotal:number; deliveryFee:number; total:number} | null>(null)
+  const [quoteError, setQuoteError] = useState('')
+  const [quoteLoading, setQuoteLoading] = useState(false)
   const [pay, setPay] = useState<PayMethod>('cod')
   const [placing, setPlacing] = useState(false)
   const [orderId, setOrderId] = useState<string | null>(null)
@@ -95,6 +98,7 @@ export default function CheckoutView() {
   }, [user])
 
   const applyAddress = (a: Address) => {
+    setPin(a.latitude != null && a.longitude != null ? {latitude:a.latitude, longitude:a.longitude} : null)
     setSelectedAddressId(a.id)
     setForm((f) => ({
       ...f,
@@ -112,13 +116,14 @@ export default function CheckoutView() {
 
   // Switch to entering a brand-new address.
   const useNewAddress = () => {
+    setPin(null)
     setSelectedAddressId(null)
     setSaveAddress(true)
     setForm((f) => ({ ...f, pincode: '', houseNo: '', area: '', landmark: '', city: '', state: '', addressType: 'Home' }))
   }
 
-  const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
-  const grandTotal = totalPrice + deliveryFee
+  const deliveryFee = quote?.deliveryFee ?? 0
+  const grandTotal = quote?.total ?? totalPrice
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -134,6 +139,8 @@ export default function CheckoutView() {
     if (!form.area.trim()) e.area = 'Required'
     if (!form.city.trim()) e.city = 'Required'
     if (!form.state.trim()) e.state = 'Select a state'
+    if (!pin) e.location = 'Choose your delivery pin'
+    if (!quote || quoteLoading || quoteError) e.delivery = quoteError || 'Wait for the delivery quote.'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -149,7 +156,29 @@ export default function CheckoutView() {
       `${form.landmark ? `, Landmark: ${form.landmark}` : ''}, ${form.state}`,
     city: form.city,
     pincode: form.pincode,
+    latitude: pin?.latitude,
+    longitude: pin?.longitude,
   })
+
+  useEffect(() => {
+    setQuote(null)
+    setQuoteError('')
+    setQuoteLoading(false)
+    if (!pin || !form.name || !form.email || !form.phone || !form.pincode || !form.houseNo || !form.area || !form.city || !items.length) return
+    const controller = new AbortController()
+    setQuoteLoading(true)
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch('/api/checkout/quote', { method:'POST', headers:{'Content-Type':'application/json'}, signal:controller.signal, body:JSON.stringify({customer:customerPayload(),items:cartPayload()}) })
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Could not check delivery')
+        if (!controller.signal.aborted) setQuote(data)
+      } catch(e) { if(!controller.signal.aborted) setQuoteError(e instanceof Error ? e.message : 'Could not check delivery') }
+      finally { if(!controller.signal.aborted) setQuoteLoading(false) }
+    }, 600)
+    return () => {clearTimeout(timer);controller.abort()}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, pin, items])
 
   // Save the just-used address to the account, if it's new and the user opted in.
   const persistAddressIfNeeded = async () => {
@@ -165,6 +194,8 @@ export default function CheckoutView() {
         landmark: form.landmark,
         city: form.city,
         state: form.state,
+        latitude: pin?.latitude,
+        longitude: pin?.longitude,
         is_default: savedAddresses.length === 0, // first address becomes default
       })
     } catch { /* non-blocking: never fail an order over address saving */ }
@@ -418,7 +449,21 @@ export default function CheckoutView() {
 
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="col-span-full">
+                    <DeliveryPin value={pin} onChange={setPin} />
+                    <p className="text-sm">Delivery Rs.5/km by road. Free below 2 km or for purchases above Rs.379 in available pincodes.</p>
+                    <p role="status" className="my-2 text-sm">{quoteLoading ? 'Checking road distance…' : quote ? `Delivery: Rs.${quote.deliveryFee}. Total: Rs.${quote.total}` : 'Complete your address and pin to check delivery.'}</p>
+                    {(quoteError || errors.location || errors.delivery) && <p role="alert" className="text-sm text-red-700">{quoteError || errors.location || errors.delivery}</p>}
+                  </div>
                   <TextField label="Pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
+                  <details className="col-span-full rounded-2xl border border-green-100 bg-green-50/60 px-4 py-3 text-sm text-green-950">
+                    <summary className="cursor-pointer font-700">View available delivery areas</summary>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {Object.entries(DELIVERY_AREAS).map(([code, area]) => (
+                        <div key={code}><strong>{code}</strong> · {area}</div>
+                      ))}
+                    </div>
+                  </details>
                 </div>
                 <TextField icon={MapPin} label="Flat, House no., Building, Company" value={form.houseNo} onChange={set('houseNo')} error={errors.houseNo} placeholder="e.g. 12A, Green Residency" />
                 <TextField label="Area, Street, Sector, Village" value={form.area} onChange={set('area')} error={errors.area} placeholder="e.g. Anna Nagar, 2nd Main Road" />
@@ -514,7 +559,7 @@ export default function CheckoutView() {
               <Row label={`Subtotal (${totalItems} item${totalItems !== 1 ? 's' : ''})`} value={`₹${totalPrice}`} />
               <Row
                 label="Delivery"
-                value={deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
+                value={!quote ? 'Choose location' : deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
                 accent={deliveryFee === 0}
               />
               <div className="flex justify-between items-baseline pt-2.5 border-t border-gray-100">

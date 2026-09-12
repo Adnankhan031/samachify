@@ -11,6 +11,7 @@ import {
   TrendingUp, Mail, MessageCircle, Truck,
   Quote, Leaf, FlaskConical, Droplets,
 } from 'lucide-react'
+import ReviewMarquee from '@/components/ReviewMarquee'
 import { products, testimonials, faqs } from '../data/products'
 import Footer from '../components/Footer'
 import HeroSlider from '../components/HeroSlider'
@@ -1103,80 +1104,8 @@ function TestimonialsSection() {
           </div>
         </motion.div>
 
-        {/* Featured testimonial */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.15, duration: 0.6 }}
-          className="rounded-2xl sm:rounded-3xl overflow-hidden mb-5 relative"
-          style={{ background: 'linear-gradient(140deg, #070d03 0%, #0b1606 45%, #152708 100%)' }}
-        >
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(circle at 80% 50%, rgba(193,255,114,0.07), transparent 60%)' }} />
-          <div className="relative z-10 p-6 sm:p-8 lg:p-12 grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
-            <div>
-              <div className="flex items-center gap-1 mb-5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={16} className="text-amber-400 fill-amber-400" />
-                ))}
-              </div>
-              <Quote size={32} className="text-green-400/30 mb-4" />
-              <p className="text-white/85 text-lg leading-relaxed italic font-500 mb-7">
-                {testimonials[0].text}
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-700 flex-shrink-0">
-                  {testimonials[0].initials}
-                </div>
-                <div>
-                  <div className="font-700 text-white">{testimonials[0].name}</div>
-                  <div className="text-green-300/50 text-sm">{testimonials[0].role} · {testimonials[0].location}</div>
-                </div>
-              </div>
-            </div>
-            {/* Right side stat */}
-            <div className="hidden lg:flex flex-col items-center justify-center text-center">
-              <div className="font-display font-black text-green-400 leading-none mb-2" style={{ fontSize: '6rem' }}>15</div>
-              <div className="text-white/50 text-lg font-600">minutes to a</div>
-              <div className="text-white font-700 text-xl">proper South Indian meal</div>
-              <div className="mt-6 text-green-300/40 text-sm">down from 45–60 min of prep</div>
-            </div>
-          </div>
-        </motion.div>
+        <ReviewMarquee />
 
-        {/* Remaining testimonials grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {testimonials.slice(1, 6).map((t, i) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white rounded-3xl p-6 border border-gray-100 flex flex-col hover:-translate-y-1 transition-all duration-300"
-              style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.1)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 2px 16px rgba(0,0,0,0.05)' }}
-            >
-              <div className="flex items-center gap-0.5 mb-4">
-                {Array.from({ length: t.rating }).map((_, j) => (
-                  <Star key={j} size={13} className="text-amber-400 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-gray-600 text-sm leading-relaxed flex-1 mb-5 italic">
-                &ldquo;{t.text}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white text-xs font-700 flex-shrink-0">
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="font-700 text-gray-900 text-sm">{t.name}</div>
-                  <div className="text-gray-400 text-xs">{t.role} · {t.location}</div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   )

@@ -1,9 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { quoteDelivery } from './delivery'
 import { products } from '@/data/products'
-
-export const FREE_DELIVERY_THRESHOLD = 299
-export const DELIVERY_FEE = 39
 
 export interface IncomingItem {
   productId: string
@@ -17,13 +15,7 @@ export interface Customer {
   address: string
   city: string
   pincode: string
-  /**
-   * The delivery pin the customer placed on a map, when they had one.
-   *
-   * Optional because the website has no map picker yet and older app versions
-   * predate pinning. Null simply means the rider navigates by written address
-   * instead — worse, but not broken.
-   */
+  /** Exact delivery pin selected by the customer. Older stored addresses may omit it. */
   latitude?: number | null
   longitude?: number | null
 }
@@ -37,6 +29,7 @@ export interface Customer {
  * the customer their order — the written address still works.
  */
 function sanitiseCoord(value: unknown, limit: number): number | null {
+  if (value == null || value === '' || typeof value === 'boolean') return null
   const n = typeof value === 'number' ? value : Number(value)
   if (!Number.isFinite(n) || Math.abs(n) > limit) return null
   return n
@@ -77,20 +70,20 @@ export function validateCustomer(customer: Customer | undefined): Customer {
 }
 
 /** Re-prices the cart from the trusted catalogue — never trusts client prices. */
-export function priceCart(items: IncomingItem[] | undefined): PricedCart {
+export async function priceCart(items: IncomingItem[] | undefined, customer: Customer): Promise<PricedCart> {
   if (!Array.isArray(items) || items.length === 0) throw new OrderError('Cart is empty.')
   const lineItems: PricedCart['lineItems'] = []
   let subtotal = 0
   for (const it of items) {
     const product = products.find((p) => p.id === it.productId)
-    const qty = Math.floor(Number(it.quantity))
-    if (!product || !Number.isFinite(qty) || qty < 1 || qty > 50) {
+    const qty = Number(it.quantity)
+    if (!product || !Number.isInteger(qty) || qty < 1 || qty > 50) {
       throw new OrderError('Invalid cart item.')
     }
     subtotal += product.price * qty
     lineItems.push({ product_id: product.id, product_name: product.name, price: product.price, quantity: qty })
   }
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
+  const { deliveryFee } = await quoteDelivery(customer, subtotal)
   return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee }
 }
 

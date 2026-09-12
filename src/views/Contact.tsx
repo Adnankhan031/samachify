@@ -112,7 +112,7 @@ export default function Contact() {
               {[
                 { icon: Mail,   title: 'Email Us',           value: 'samachifydotin@gmail.com', sub: 'Reply within 24 hours',     href: 'mailto:samachifydotin@gmail.com', accent: '#9abb50' },
                 { icon: Phone,  title: 'Call or WhatsApp',   value: '+91 90251 15657',          sub: 'Mon–Sat, 9 AM – 7 PM',       href: 'tel:+919025115657',              accent: '#498a0c' },
-                { icon: MapPin, title: 'Our Location',       value: 'Sathya Nagar, Kanchipuram', sub: 'Orikkai, Kanchipuram – 631502', href: '#map',                        accent: '#c1ff72' },
+                { icon: MapPin, title: 'Registered Office',       value: 'Sathya Nagar, Kanchipuram', sub: 'Orikkai, Kanchipuram – 631502', href: '#map',                        accent: '#c1ff72' },
               ].map((c, i) => {
                 const Icon = c.icon
                 return (
@@ -232,8 +232,8 @@ export default function Contact() {
                 >
                   <div className="h-52">
                     <iframe
-                      title="Samachify Location"
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62505.45095395046!2d79.66892!3d12.8342!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52c0c8a55de4cf%3A0x4a0c05bc22e76921!2sKanchipuram%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1234567890"
+                      title="Samachify operating office in Medavakkam"
+                      src="https://www.google.com/maps?q=12.9219353,80.192949&z=16&output=embed"
                       className="w-full h-full border-0"
                       loading="lazy"
                       allowFullScreen
@@ -244,8 +244,9 @@ export default function Contact() {
                       <MapPin size={15} className="text-green-600" />
                     </div>
                     <div>
-                      <div className="font-700 text-gray-900 text-sm">73, Karmari Amman Kovil Street, Sathya Nagar</div>
-                      <div className="text-gray-400 text-xs">Orikkai, Kanchipuram – 631502, Tamil Nadu</div>
+                      <div className="font-700 text-gray-900 text-sm">Operating office</div>
+                      <div className="text-gray-500 text-xs">J4A, Third floor, E Moorthy Enclave, Perumal Kovil Street, Medavakkam, Tamil Nadu 600100</div>
+                      <a href="https://maps.app.goo.gl/pc8denFUBKmWvemq5?g_st=awb" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-green-700 underline">Get directions</a>
                     </div>
                   </div>
                 </motion.div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { OrderError, priceCart, validateCustomer } from '@/lib/orders'
+import { paymentQuoteHash } from '@/lib/paymentQuote'
 
 /**
  * POST /api/razorpay/order
@@ -16,14 +17,15 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    validateCustomer(body.customer) // fail fast on bad address before creating a payment
-    const cart = priceCart(body.items)
+    const validCustomer = validateCustomer(body.customer) // fail fast on bad address before creating a payment
+    const cart = await priceCart(body.items, validCustomer)
 
     const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret })
     const rpOrder = await razorpay.orders.create({
       amount: cart.total * 100, // paise
       currency: 'INR',
       receipt: `rcpt_${Date.now()}`,
+      notes: { quote_hash: paymentQuoteHash(keySecret, validCustomer, cart) },
     })
 
     return NextResponse.json({

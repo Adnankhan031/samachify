@@ -6,15 +6,13 @@ import { ShoppingBag, Plus, Minus, Trash2, ArrowRight, ArrowLeft } from 'lucide-
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 
-const FREE_DELIVERY_THRESHOLD = 299
-const DELIVERY_FEE = 39
+const FREE_DELIVERY_THRESHOLD = 380
 
 export default function CartView() {
   const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
   const { user } = useAuth()
 
-  const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD || totalPrice === 0 ? 0 : DELIVERY_FEE
-  const grandTotal = totalPrice + deliveryFee
+  const freeByOrderValue = totalPrice >= FREE_DELIVERY_THRESHOLD
 
   if (items.length === 0) {
     return (
@@ -102,17 +100,18 @@ export default function CartView() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Delivery</span>
-                <span className={deliveryFee === 0 ? 'font-800 text-green-600' : 'font-700 text-gray-900'}>
-                  {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
+                <span className={freeByOrderValue ? 'font-800 text-green-600' : 'font-700 text-gray-900'}>
+                  {freeByOrderValue ? 'FREE' : 'Calculated at checkout'}
                 </span>
               </div>
-              {deliveryFee > 0 && (
+              {!freeByOrderValue && (
                 <p className="text-xs text-gray-400">Add ₹{FREE_DELIVERY_THRESHOLD - totalPrice} more for free delivery.</p>
               )}
               <div className="flex justify-between items-baseline pt-3 border-t border-gray-100">
                 <span className="font-800 text-gray-900">Total</span>
-                <span className="font-display font-900 text-gray-900 text-2xl">₹{grandTotal}</span>
+                <span className="font-display font-900 text-gray-900 text-2xl">₹{totalPrice}{freeByOrderValue ? '' : '+'}</span>
               </div>
+              {!freeByOrderValue && <p className="text-xs text-gray-400">Road-distance delivery is added after you choose your map pin.</p>}
             </div>
             <Link to={user ? '/checkout' : '/login?redirect=/checkout'}
               className="flex items-center justify-center gap-2 w-full mt-6 py-4 bg-green-600 hover:bg-green-700 text-white font-800 rounded-2xl transition-colors"

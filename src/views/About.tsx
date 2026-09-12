@@ -661,12 +661,12 @@ export default function About() {
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
                           style={{
-                            background: m.done ? 'linear-gradient(135deg, #498a0c, #2a4f07)' : 'rgba(245,158,11,0.1)',
+                            background: m.done ? '#3a6c09' : '#f59e0b',
                             border: m.done ? '2px solid #c1ff72' : '2px solid rgba(245,158,11,0.4)',
                             boxShadow: m.done ? '0 0 16px rgba(193,255,114,0.3)' : 'none',
                           }}
                         >
-                          <Icon size={14} className={m.done ? 'text-white' : 'text-amber-400'} />
+                          <Icon size={14} className={m.done ? 'text-white' : 'text-amber-950'} />
                         </div>
                       </div>
 
@@ -695,7 +695,7 @@ export default function About() {
                             m.done ? 'text-green-400 border-green-500/30' : 'text-amber-400 border-amber-500/30'
                           }`} style={{ background: m.done ? 'rgba(193,255,114,0.1)' : 'rgba(245,158,11,0.1)' }}>
                             {m.done ? <CheckCircle size={10} /> : <Timer size={10} />}
-                            {m.date}
+                            {m.date}{i === 1 ? ' · Current phase' : m.done ? ' · Completed' : ''}
                           </div>
                           <h3 className="font-display font-700 text-white text-lg mb-2.5 leading-snug">{m.title}</h3>
                           <p className="text-green-100/45 text-sm leading-relaxed">{m.desc}</p>
@@ -707,7 +707,7 @@ export default function About() {
                         <motion.div
                           className="w-14 h-14 rounded-full flex items-center justify-center"
                           style={{
-                            background: m.done ? 'linear-gradient(135deg, #498a0c, #2a4f07)' : 'rgba(245,158,11,0.1)',
+                            background: m.done ? '#3a6c09' : '#f59e0b',
                             border: m.done ? '3px solid #c1ff72' : '2px solid rgba(245,158,11,0.4)',
                             boxShadow: m.done ? '0 0 24px rgba(193,255,114,0.35)' : '0 0 12px rgba(245,158,11,0.15)',
                           }}
@@ -715,7 +715,7 @@ export default function About() {
                           viewport={{ once: true }}
                           transition={{ duration: 0.5, delay: 0.3 + i * 0.08 }}
                         >
-                          <Icon size={20} className={m.done ? 'text-white' : 'text-amber-400'} />
+                          <Icon size={20} className={m.done ? 'text-white' : 'text-amber-950'} />
                         </motion.div>
                       </div>
 

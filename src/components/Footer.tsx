@@ -48,8 +48,17 @@ export default function Footer() {
                 <Phone size={14} className="text-green-600" /> +91 90251 15657
               </a>
               <div className="flex items-center gap-2 text-gray-400">
-                <MapPin size={14} className="text-green-600" /> Kanchipuram, Tamil Nadu
+                <MapPin size={14} className="text-green-600" /> Registered office: Kanchipuram, Tamil Nadu
               </div>
+              <a
+                href="https://maps.app.goo.gl/pc8denFUBKmWvemq5?g_st=awb"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 text-gray-400 hover:text-green-400 transition-colors"
+              >
+                <MapPin size={14} className="mt-1 flex-shrink-0 text-green-600" />
+                <span>Operating office: J4A, Third floor, E Moorthy Enclave, Perumal Kovil Street, Medavakkam, Tamil Nadu 600100</span>
+              </a>
             </div>
           </div>
 

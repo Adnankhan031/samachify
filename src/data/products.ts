@@ -5,6 +5,9 @@ export interface Product {
   subtitle: string;
   /** Price in INR (rupees) for the standard pack. */
   price: number;
+  mrp?: number;
+  packLabel?: string;
+  familyId?: string;
   cookTime: string;
   tags: string[];
   description: string;
@@ -26,6 +29,9 @@ export const products: Product[] = [
     emoji: '🍲',
     subtitle: 'The heart of every South Indian meal',
     price: 79,
+    mrp: 119,
+    packLabel: 'Duo',
+    familyId: 'sambar',
     cookTime: '10-15 mins',
     tags: ['One-Pot', 'Farm Fresh', 'Pre-Cut', 'Zero Waste'],
     description:
@@ -36,7 +42,7 @@ export const products: Product[] = [
       '/assets/hero-sambar-meal.webp',
     ],
     category: 'sambar',
-    servings: 4,
+    servings: 2,
     ingredients: [
       'Carrot', 'Beans', 'Tomato', 'Onion', 'Semi-Cooked Sambar Dal',
       'Tamarind Extract', 'Sambar Powder', 'Curry Leaves', 'Coriander Leaves',
@@ -149,6 +155,14 @@ export const products: Product[] = [
     dietType: 'Vegan',
   },
 ];
+
+export const SAMBAR_VARIATION_NOTE = 'Our sambar vegetables change weekly with availability. Carrot and beans may be replaced by radish or moringa (drumstick). The vegetable combination can differ from the photos. Check the pack label for the ingredients supplied.';
+const sambarDuo = products.find(p => p.id === 'sambar-pack')!;
+products.splice(1, 0,
+  { ...sambarDuo, id: 'sambar-single-pack', name: 'Sambar Pack · Single', packLabel: 'Single', servings: 1, mrp: 59, price: 39 },
+  { ...sambarDuo, id: 'sambar-four-pack', name: 'Sambar Pack · Four', packLabel: 'Four', servings: 4, mrp: 179, price: 119 },
+);
+
 
 export interface RecipeIngredient {
   name: string;
