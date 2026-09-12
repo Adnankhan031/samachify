@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import '@/index.css'
+import 'leaflet/dist/leaflet.css'
 import Providers from './Providers'
 import Navbar from '@/components/Navbar'
 
