@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion } from 'framer-motion'
-import { Mail, Phone, Package, LogOut, ShoppingBag, ChevronRight, Heart, Pencil, Check, X, Loader2 } from 'lucide-react'
+import { Mail, Phone, Package, LogOut, ShoppingBag, ChevronRight, Headphones, Pencil, Check, X, Loader2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import AddressBook from '@/components/AddressBook'
@@ -217,6 +217,9 @@ export default function AccountView() {
                     </p>
                     <div className="pt-3 border-t border-gray-100">
                       <OrderTracker status={o.order_status ?? 'placed'} />
+                      <Link to={`/support?order=${o.id}`} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-green-50 px-3 py-2 text-xs font-800 text-green-700 transition hover:bg-green-100">
+                        <Headphones size={13} /> Get help with this order
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -231,9 +234,9 @@ export default function AccountView() {
               <div className="flex-1"><p className="font-800 text-gray-900">Browse products</p><p className="text-sm text-gray-400">Fresh ready-to-cook packs</p></div>
               <ChevronRight size={18} className="text-gray-300 group-hover:text-green-600 transition-colors" />
             </Link>
-            <Link to="/contact" className="group flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:-translate-y-0.5 transition-all">
-              <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center"><Heart size={19} className="text-green-600" /></div>
-              <div className="flex-1"><p className="font-800 text-gray-900">Need help?</p><p className="text-sm text-gray-400">Contact our team</p></div>
+            <Link to="/support" className="group flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:-translate-y-0.5 transition-all">
+              <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center"><Headphones size={19} className="text-green-600" /></div>
+              <div className="flex-1"><p className="font-800 text-gray-900">Order support</p><p className="text-sm text-gray-400">Chat securely with our team</p></div>
               <ChevronRight size={18} className="text-gray-300 group-hover:text-green-600 transition-colors" />
             </Link>
           </div>

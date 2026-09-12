@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@/lib/nav'
-import { Menu, X, ShoppingBag, User, LogOut, Truck } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, LogOut, Truck, Headphones } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
@@ -141,6 +141,9 @@ export default function Navbar() {
                         <Link to="/account" onClick={() => setAccountOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50 transition-colors">
                           <User size={15} /> My Account
                         </Link>
+                        <Link to="/support" onClick={() => setAccountOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50 transition-colors">
+                          <Headphones size={15} /> Order support
+                        </Link>
                         <button
                           onClick={() => { signOut(); setAccountOpen(false) }}
                           className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-600 text-red-500 hover:bg-red-50 transition-colors"
@@ -224,6 +227,9 @@ export default function Navbar() {
                 <>
                   <Link to="/account" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50">
                     <User size={16} /> {user.name}
+                  </Link>
+                  <Link to="/support" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-gray-700 hover:bg-gray-50">
+                    <Headphones size={16} /> Order support
                   </Link>
                   <button onClick={() => signOut()} className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-600 text-red-500 hover:bg-red-50">
                     <LogOut size={16} /> Sign out
