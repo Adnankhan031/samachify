@@ -1209,7 +1209,7 @@ function ContactCTASection() {
               Explore Products <ArrowRight size={15} />
             </Link>
             <a
-              href="https://wa.me/919025115657?text=Hi%2C%20I%27m%20interested%20in%20Samachify!"
+              href="https://wa.me/919025115657"
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 font-700 rounded-xl transition-all duration-250 text-sm hover:-translate-y-0.5 w-full sm:w-auto justify-center"
               style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.28)', color: '#fff' }}

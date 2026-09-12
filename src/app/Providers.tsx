@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { usePathname } from 'next/navigation'
 import { CartProvider } from '@/context/CartContext'
@@ -20,9 +20,13 @@ import ActiveOrderPill from '@/components/ActiveOrderPill'
  */
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
     const lenis = new Lenis({ duration: 1.2, smoothWheel: true })
+    lenisRef.current = lenis
+    const previousScrollRestoration = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
     let rafId: number
     function raf(time: number) {
       lenis.raf(time)
@@ -32,11 +36,20 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return () => {
       cancelAnimationFrame(rafId)
       lenis.destroy()
+      lenisRef.current = null
+      window.history.scrollRestoration = previousScrollRestoration
     }
   }, [])
 
   useEffect(() => {
+    // Next and Lenis can otherwise retain the previous page's scroll offset.
+    lenisRef.current?.scrollTo(0, { immediate: true, force: true })
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    const frame = requestAnimationFrame(() => {
+      lenisRef.current?.scrollTo(0, { immediate: true, force: true })
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    })
+    return () => cancelAnimationFrame(frame)
   }, [pathname])
 
   return (

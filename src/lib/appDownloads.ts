@@ -19,17 +19,22 @@ import { NextResponse } from 'next/server'
  * that the destination changes.
  */
 
-/** Set `CUSTOMER_APK_URL` / `DELIVERY_APK_URL` in Vercel to override. */
+/** Set these environment variables in Vercel to override the fallback targets. */
 const FALLBACK = {
   customer:
     'https://expo.dev/artifacts/eas/3KzD4GXpk5JNb25YLnx3J3Kp2iGsAAJs5vFiXP0E8u0.apk',
   delivery:
     'https://expo.dev/artifacts/eas/Iy8trWZNp4s17rDDb2WvmTaQ9GGQ4JaXLZL_I-UUhXM.apk',
+  admin:
+    'https://github.com/samachifydotin/Samachify-Admin',
 } as const
 
 export function apkRedirect(which: keyof typeof FALLBACK) {
-  const configured =
-    which === 'customer' ? process.env.CUSTOMER_APK_URL : process.env.DELIVERY_APK_URL
+  const configured = {
+    customer: process.env.CUSTOMER_APK_URL,
+    delivery: process.env.DELIVERY_APK_URL,
+    admin: process.env.ADMIN_APK_URL,
+  }[which]
 
   const target = configured?.trim() || FALLBACK[which]
 

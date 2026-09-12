@@ -1,7 +1,7 @@
 'use client'
 
 import { Link } from '@/lib/nav'
-import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf, Smartphone, Bike } from 'lucide-react'
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -28,8 +28,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-green-600">
-                <img src="/assets/logo.png" alt="Samachify" className="w-full h-full object-cover" />
+              <div className="w-16 h-16 overflow-hidden">
+                <img src="/assets/logo.png" alt="Samachify — From Farm to Pan" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="font-display font-800 text-white text-xl tracking-wide">SAMACHIFY</div>
@@ -105,6 +105,34 @@ export default function Footer() {
                 </div>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Stable app links */}
+        <div className="border-t border-[#192e09] py-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div>
+              <div className="text-white font-700 text-sm">Samachify apps</div>
+              <p className="text-gray-500 text-xs mt-1">Permanent links to the latest Android builds.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:min-w-[660px]">
+              {[
+                { label: 'Customer app', href: '/app', icon: Smartphone },
+                { label: 'Admin app', href: '/admin-app', icon: ShieldCheck },
+                { label: 'Delivery app', href: '/delivery-app', icon: Bike },
+              ].map((app) => {
+                const Icon = app.icon
+                return (
+                  <a key={app.label} href={app.href} className="group flex items-center gap-3 rounded-2xl border border-[#294b11] bg-[#142405] px-4 py-3 hover:bg-[#1c3309] hover:border-green-600 transition-colors">
+                    <img src="/assets/logo.png" alt="" className="w-10 h-10 object-contain flex-shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block text-white text-sm font-700">{app.label}</span>
+                      <span className="flex items-center gap-1 text-green-400 text-[11px] mt-0.5"><Icon size={11} /> Open Android link</span>
+                    </span>
+                  </a>
+                )
+              })}
+            </div>
           </div>
         </div>
 

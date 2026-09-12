@@ -1,14 +1,22 @@
 'use client'
 
 import { useState } from 'react'
+import { Pause, Play } from 'lucide-react'
 import { testimonials } from '@/data/products'
 
 export default function ReviewMarquee() {
   const [paused, setPaused] = useState(false)
   return (
     <section aria-label="Customer reviews" className="reviews-marquee" data-paused={paused}>
-      <button type="button" className="mb-4 rounded-full border border-green-700 px-5 py-3 text-sm text-green-900" aria-pressed={paused} onClick={() => setPaused(!paused)}>
-        {paused ? 'Play reviews' : 'Pause reviews'}
+      <button
+        type="button"
+        className="reviews-control"
+        aria-label={paused ? 'Play customer reviews' : 'Pause customer reviews'}
+        aria-pressed={paused}
+        title={paused ? 'Play reviews' : 'Pause reviews'}
+        onClick={() => setPaused(!paused)}
+      >
+        {paused ? <Play size={15} fill="currentColor" /> : <Pause size={15} fill="currentColor" />}
       </button>
       <div className="reviews-window">
         <div className="reviews-track">

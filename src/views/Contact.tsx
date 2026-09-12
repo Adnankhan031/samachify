@@ -36,14 +36,14 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const msg = encodeURIComponent(
-      `Hi Samachify! I am ${form.name}.\n\nQuery: ${form.subject}\n\n${form.message}\n\nPhone: ${form.phone}`
+      `${form.subject}\n\n${form.message}\n\nName: ${form.name}${form.phone ? `\nPhone: ${form.phone}` : ''}`
     )
     window.open(`https://wa.me/919025115657?text=${msg}`, '_blank')
     setSubmitted(true)
   }
 
   const handleQuickQuery = (query: string) => {
-    const msg = encodeURIComponent(`Hi Samachify! ${query}`)
+    const msg = encodeURIComponent(query)
     window.open(`https://wa.me/919025115657?text=${msg}`, '_blank')
   }
 
@@ -157,7 +157,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-display font-700 text-gray-900 text-base">Quick Questions?</h3>
-                      <p className="text-gray-400 text-xs">Tap to send a pre-filled WhatsApp message</p>
+                      <p className="text-gray-400 text-xs">Open a question in WhatsApp, then tap Send</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -264,13 +264,13 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-display font-700 text-gray-900 text-xl">Send a Message</h3>
-                    <p className="text-gray-400 text-sm">Submits via WhatsApp for fastest response</p>
+                    <p className="text-gray-400 text-sm">Opens your message in WhatsApp</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mb-6 mt-4">
                   <Leaf size={13} className="text-green-600 flex-shrink-0" />
-                  <p className="text-green-700 text-xs font-600">Your message will open in WhatsApp — no login required.</p>
+                  <p className="text-green-700 text-xs font-600">WhatsApp will ask you to review the message and tap Send.</p>
                 </div>
 
                 {submitted ? (
@@ -285,9 +285,9 @@ export default function Contact() {
                     >
                       <Send size={28} className="text-green-600" />
                     </motion.div>
-                    <h4 className="font-display font-700 text-gray-900 text-xl mb-2">Message Sent!</h4>
+                    <h4 className="font-display font-700 text-gray-900 text-xl mb-2">Ready to send</h4>
                     <p className="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto">
-                      WhatsApp has opened with your message. We typically reply within a few hours.
+                      Review the message in WhatsApp and tap Send. We typically reply within a few hours.
                     </p>
                     <button
                       onClick={() => setSubmitted(false)}

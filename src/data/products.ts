@@ -44,7 +44,7 @@ export const products: Product[] = [
     category: 'sambar',
     servings: 2,
     ingredients: [
-      'Carrot', 'Beans', 'Tomato', 'Onion', 'Semi-Cooked Sambar Dal',
+      'Carrot', 'Beans', 'Radish', 'Moringa (Drumstick)', 'Tomato', 'Onion', 'Semi-Cooked Sambar Dal',
       'Tamarind Extract', 'Sambar Powder', 'Curry Leaves', 'Coriander Leaves',
       'Mustard Seeds, Jeera, Fenugreek & Asafoetida', 'Dried Red Chilli',
     ],
@@ -218,6 +218,8 @@ export const recipes: Recipe[] = [
     includedIngredients: [
       { amount: '2 pieces', name: 'Carrot', icon: '🥕', note: 'Pre-cut rounds', image: '/assets/Ingredients/Carrot.jpg' },
       { amount: '1 cup', name: 'Beans', icon: '🫛', note: 'Pre-cut' },
+      { amount: 'Weekly portion', name: 'Radish', icon: '🥬', note: 'Seasonal alternative to carrot or beans' },
+      { amount: 'Weekly portion', name: 'Moringa (Drumstick)', icon: '🌿', note: 'Seasonal alternative to carrot or beans' },
       { amount: '2 pieces', name: 'Tomato', icon: '🍅', note: 'Roughly chopped', image: '/assets/Ingredients/Tomato.jpg' },
       { amount: '1 medium', name: 'Onion', icon: '🧅', note: 'Pre-sliced', image: '/assets/Ingredients/red-onion-whole-isolated-white.jpg' },
       { amount: '1 pouch', name: 'Semi-Cooked Sambar Dal', icon: '🫘', note: 'Saves 20 min of cooking', image: '/assets/Ingredients/sambar%20dal.jpg' },

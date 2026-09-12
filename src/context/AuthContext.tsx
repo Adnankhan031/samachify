@@ -111,7 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const callback = `${window.location.origin}/auth/callback${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ''}`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: callback },
+      options: {
+        redirectTo: callback,
+        queryParams: { prompt: 'select_account' },
+      },
     })
     if (error) return { error: error.message }
     return {}

@@ -100,7 +100,7 @@ export default function ProductDetail() {
     } catch { /* ignore */ }
   }
 
-  const relatedProducts = products.filter((p) => p.id !== product.id).slice(0, 3)
+  const relatedProducts = products.filter((p) => (!p.familyId || p.id === 'sambar-pack') && p.id !== product.id).slice(0, 3)
 
   return (
     <>
@@ -153,15 +153,15 @@ export default function ProductDetail() {
                     </span>
                   )}
                 </div>
-                {product.familyId === 'sambar' && <div className="mb-6 flex flex-wrap gap-3" aria-label="Choose sambar pack size">
-                  {products.filter(p => p.familyId === 'sambar').sort((a,b) => a.servings - b.servings).map(p => <Link key={p.id} to={`/products/${p.id}`} aria-current={p.id === product.id ? 'page' : undefined} className={`rounded-2xl border px-4 py-3 ${p.id === product.id ? 'bg-green-100 text-green-950 border-green-300' : 'border-white/30 text-white'}`}>
+                {product.familyId === 'sambar' && <div className="mb-6 flex flex-wrap gap-2.5" aria-label="Choose sambar pack size">
+                  {products.filter(p => p.familyId === 'sambar').sort((a,b) => a.servings - b.servings).map(p => <Link key={p.id} to={`/products/${p.id}`} aria-current={p.id === product.id ? 'page' : undefined} className={`min-w-[154px] rounded-2xl border px-4 py-3 backdrop-blur-md transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-amber-400 ${p.id === product.id ? 'bg-[#d9ffa1] text-[#142405] border-[#d9ffa1] shadow-[0_8px_28px_rgba(193,255,114,0.2)]' : 'bg-[#142405]/90 border-white/20 text-white hover:bg-[#20380d] hover:border-green-300/50'}`}>
                     <span className="block font-bold">{p.packLabel} · {p.servings} {p.servings === 1 ? 'person' : 'people'}</span>
-                    <span>₹{p.price} <del className="opacity-60 text-sm">MRP ₹{p.mrp}</del></span>
+                    <span className={p.id === product.id ? 'text-green-950' : 'text-green-100'}>₹{p.price} <del className="opacity-60 text-sm">MRP ₹{p.mrp}</del></span>
                   </Link>)}
                 </div>}
                 <h1 className="font-display font-black text-white tracking-tighter mb-3"
                   style={{ fontSize: 'clamp(2rem, 4.5vw, 4.2rem)', lineHeight: 1.04 }}>
-                  {product.name}
+                  {product.familyId === 'sambar' ? 'Sambar Pack' : product.name}
                 </h1>
                 <p className="text-green-100/50 leading-relaxed mb-8 sm:mb-10 max-w-[400px]"
                   style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)' }}>

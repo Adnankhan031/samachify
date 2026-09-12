@@ -506,11 +506,11 @@ export default function About() {
                 style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
                 Meet Our{' '}
                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #498a0c, #c1ff72)' }}>
-                  Team
+                  Founder
                 </span>
               </h2>
               <p className="text-gray-500 text-lg mt-4 max-w-xl mx-auto">
-                The people behind Samachify — passionate about food, technology, and South Indian culture.
+                The founder behind Samachify&apos;s vision for simpler, fresher South Indian cooking.
               </p>
             </motion.div>
 
@@ -582,7 +582,7 @@ export default function About() {
               className="mt-10 text-center"
             >
               <p className="text-gray-400 text-sm">
-                Founded by food technologists and supply chain professionals passionate about South Indian cuisine.
+                Building Samachify with a passion for food technology, reliable sourcing, and South Indian cuisine.
               </p>
             </motion.div>
           </div>
@@ -647,6 +647,7 @@ export default function About() {
                 ].map((m, i) => {
                   const Icon = m.icon
                   const isLeft = i % 2 === 0
+                  const isCurrent = i === 1
                   return (
                     <motion.div
                       key={i}
@@ -658,6 +659,7 @@ export default function About() {
                     >
                       {/* Mobile timeline node */}
                       <div className="md:hidden absolute left-0 flex-shrink-0 z-10">
+                        {isCurrent && <motion.div aria-hidden="true" className="absolute -inset-1.5 rounded-full border-2 border-transparent border-t-amber-200 border-r-amber-500" animate={{ rotate: 360 }} transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }} />}
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
                           style={{
@@ -704,6 +706,7 @@ export default function About() {
 
                       {/* Center node */}
                       <div className="hidden md:flex flex-shrink-0 flex-col items-center relative z-10">
+                        {isCurrent && <motion.div aria-hidden="true" className="absolute -inset-2 rounded-full border-[3px] border-transparent border-t-amber-200 border-r-amber-500" animate={{ rotate: 360 }} transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }} />}
                         <motion.div
                           className="w-14 h-14 rounded-full flex items-center justify-center"
                           style={{

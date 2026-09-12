@@ -8,6 +8,8 @@ import { products } from '../data/products'
 import { useCart } from '@/context/CartContext'
 import Footer from '../components/Footer'
 
+const catalogueProducts = products.filter((product) => !product.familyId || product.id === 'sambar-pack')
+
 const DARK_BG = 'linear-gradient(160deg, #050902 0%, #0b1606 55%, #142405 100%)'
 const DOT_GRID = {
   backgroundImage: 'radial-gradient(circle, rgba(193,255,114,0.1) 1px, transparent 1px)',
@@ -32,11 +34,11 @@ export default function Products() {
   const { addItem } = useCart()
 
   const getFiltered = (tab: string) => {
-    if (tab === 'All') return products
-    if (tab === 'Chutney') return products.filter(p => p.category === 'chutney')
-    if (tab === 'Main Course') return products.filter(p => p.category !== 'chutney')
-    if (tab === 'Quick (under 15 min)') return products.filter(p => parseInt(p.cookTime) <= 15)
-    return products
+    if (tab === 'All') return catalogueProducts
+    if (tab === 'Chutney') return catalogueProducts.filter(p => p.category === 'chutney')
+    if (tab === 'Main Course') return catalogueProducts.filter(p => p.category !== 'chutney')
+    if (tab === 'Quick (under 15 min)') return catalogueProducts.filter(p => parseInt(p.cookTime) <= 15)
+    return catalogueProducts
   }
 
   const filtered = getFiltered(active)
@@ -211,13 +213,13 @@ export default function Products() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.5, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-                  className="group flex flex-col rounded-3xl overflow-hidden bg-white transition-all duration-400 hover:-translate-y-2 cursor-default"
+                  className="group flex flex-col rounded-3xl overflow-hidden bg-white transition-all duration-400 hover:-translate-y-2"
                   style={{ border: '1px solid #eef2ee', boxShadow: '0 2px 14px rgba(0,0,0,0.06)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 24px 60px rgba(0,0,0,0.12)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 2px 14px rgba(0,0,0,0.06)' }}
                 >
                   {/* Image */}
-                  <div className="relative overflow-hidden flex-shrink-0" style={{ height: 'clamp(230px, 22vw, 290px)' }}>
+                  <Link to={`/products/${product.id}`} aria-label={`View ${product.name}`} className="relative block overflow-hidden flex-shrink-0 focus-visible:outline focus-visible:outline-3 focus-visible:outline-green-500 focus-visible:outline-offset-[-3px]" style={{ height: 'clamp(230px, 22vw, 290px)' }}>
                     <img
                       src={product.image} alt={product.name}
                       className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.06]"
@@ -226,14 +228,11 @@ export default function Products() {
                       style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.0) 55%)' }} />
 
                     {/* Hover overlay with quick action */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
                       style={{ background: 'rgba(7,13,3,0.5)', backdropFilter: 'blur(3px)' }}>
-                      <Link
-                        to={`/products/${product.id}`}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-400 text-white font-700 rounded-xl text-sm transition-all shadow-lg shadow-green-900/40"
-                      >
+                      <span className="flex items-center gap-2 px-5 py-2.5 bg-green-500 text-white font-700 rounded-xl text-sm shadow-lg shadow-green-900/40">
                         View Recipe <ArrowRight size={14} />
-                      </Link>
+                      </span>
                     </div>
 
                     {/* Top badges */}
@@ -266,7 +265,7 @@ export default function Products() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Content */}
                   <div className="p-5 sm:p-6 flex flex-col flex-1">
@@ -281,9 +280,9 @@ export default function Products() {
                       </div>
                     </div>
 
-                    <h2 className="font-display font-800 text-gray-900 text-xl tracking-tight mb-1.5 leading-tight">
+                    <Link to={`/products/${product.id}`} className="font-display font-800 text-gray-900 hover:text-green-700 text-xl tracking-tight mb-1.5 leading-tight transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500 rounded-sm">
                       {product.name}
-                    </h2>
+                    </Link>
                     <p className="text-gray-500 text-sm leading-relaxed mb-4 flex-1 line-clamp-2">
                       {product.description}
                     </p>

@@ -55,19 +55,19 @@ export default function Navbar() {
       <nav className="relative flex items-center justify-between" style={{ paddingLeft: 'max(1.25rem, 5vw)', paddingRight: 'max(1.25rem, 5vw)' }}>
 
         {/* Logo — flex-1 so it anchors left */}
-        <Link to="/" className="flex items-center gap-2 flex-shrink-0 flex-1">
-          <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-green-600/80">
+        <Link to="/" aria-label="Samachify home" className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 flex-1">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden flex-shrink-0">
             <img
               src="/assets/logo.png"
-              alt="Samachify"
-              className="w-full h-full object-cover"
+              alt="Samachify — From Farm to Pan"
+              className="w-full h-full object-contain"
             />
           </div>
           <div className="flex flex-col justify-center">
-            <div className="font-display font-800 text-gray-900 tracking-tight leading-none" style={{ fontSize: '1.05rem' }}>
+            <div className="font-display font-800 text-gray-900 tracking-tight leading-none text-lg sm:text-xl">
               SAMACHIFY
             </div>
-            <div className="font-600 tracking-widest text-green-600/75 leading-none mt-[3px]" style={{ fontSize: '0.58rem' }}>
+            <div className="font-700 tracking-[0.16em] text-green-700 leading-none mt-1 text-[0.55rem] sm:text-[0.62rem]">
               FROM FARM TO PAN
             </div>
           </div>
