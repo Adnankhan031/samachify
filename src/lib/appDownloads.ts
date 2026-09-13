@@ -22,11 +22,11 @@ import { NextResponse } from 'next/server'
 /** Set these environment variables in Vercel to override the fallback targets. */
 const FALLBACK = {
   customer:
-    'https://expo.dev/artifacts/eas/3KzD4GXpk5JNb25YLnx3J3Kp2iGsAAJs5vFiXP0E8u0.apk',
+    'https://expo.dev/artifacts/eas/4KPhiSdFej-KVHS76oRgpUYqOhSzGWA2HlN6Fk7dKqU.apk',
   delivery:
     'https://expo.dev/artifacts/eas/Iy8trWZNp4s17rDDb2WvmTaQ9GGQ4JaXLZL_I-UUhXM.apk',
   admin:
-    'https://github.com/samachifydotin/Samachify-Admin',
+    'https://expo.dev/artifacts/eas/d5DTtGv8OwsSJF9QltkkzkcZDTQnj0ROm8v7QnNM99w.apk',
 } as const
 
 export function apkRedirect(which: keyof typeof FALLBACK) {
