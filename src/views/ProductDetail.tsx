@@ -104,7 +104,7 @@ export default function ProductDetail() {
 
   return (
     <>
-      <main className="pt-[68px] overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
+      <main className="pt-[72px] sm:pt-[88px] overflow-x-hidden min-h-screen" style={{ background: '#f7fbef' }}>
 
         {/* ── Hero ── */}
         <section className="relative overflow-hidden" style={{ minHeight: '78vh', background: '#070d03' }}>
@@ -125,7 +125,7 @@ export default function ProductDetail() {
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
               <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
                 <Link to="/products"
-                  className="inline-flex items-center gap-2 text-sm font-600 mb-8 transition-all hover:gap-3 group/back"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-600 mb-6 sm:mt-0 sm:mb-8 transition-all hover:gap-3 group/back"
                   style={{ color: 'rgba(255,255,255,0.75)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = '#fff' }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
@@ -169,7 +169,7 @@ export default function ProductDetail() {
                   style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)' }}>
                   {product.subtitle}
                 </p>
-                <div className="flex flex-wrap gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                   {[
                     { icon: Clock,  label: 'Cook Time',  val: recipe.cookTime },
                     { icon: Timer,  label: 'Prep Time',  val: recipe.prepTime },
@@ -178,7 +178,7 @@ export default function ProductDetail() {
                   ].map((s, i) => {
                     const Icon = s.icon
                     return (
-                      <div key={i} className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-sm"
+                      <div key={i} className="flex min-w-0 items-center gap-2 px-3 py-2.5 sm:w-auto sm:gap-3 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-sm"
                         style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                           style={{ background: 'rgba(154,187,80,0.15)', border: '1px solid rgba(154,187,80,0.25)' }}>

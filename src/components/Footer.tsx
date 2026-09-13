@@ -113,12 +113,12 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div>
               <div className="text-white font-700 text-sm">Get the Samachify app</div>
-              <p className="text-gray-500 text-xs mt-1">Download the customer app for Android.</p>
+              <p className="text-gray-500 text-xs mt-1">Order easily from your Android phone.</p>
             </div>
             <a href="/app" className="group flex items-center gap-3 rounded-2xl border border-[#294b11] bg-[#142405] px-4 py-3 hover:bg-[#1c3309] hover:border-green-600 transition-colors sm:min-w-[240px]">
-              <img src="/assets/logo.png" alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+              <img src="/assets/logo.png" alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
               <span className="min-w-0">
-                <span className="block text-white text-sm font-700">Customer app</span>
+                <span className="block text-white text-sm font-700">Samachify app</span>
                 <span className="flex items-center gap-1 text-green-400 text-[11px] mt-0.5"><Smartphone size={11} /> Download for Android</span>
               </span>
             </a>
