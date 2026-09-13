@@ -6,13 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag, MapPin, Phone, Mail, User, Truck, Wallet, CreditCard,
   CheckCircle2, ArrowRight, Loader2, ShieldCheck, ArrowLeft,
-  Home, Briefcase, ChevronDown, Plus,
+  Home, Briefcase, ChevronDown, Plus, LocateFixed, CircleCheckBig, Info,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 import DeliveryPin, { type DeliveryPoint } from '@/components/DeliveryPin'
 import { listAddresses, createAddress, type Address } from '@/lib/addresses'
-import { DELIVERY_AREAS } from '@/lib/office'
+import { DELIVERY_PINCODES } from '@/lib/office'
 
 // Online payments show up only when the Razorpay public key is configured.
 const RAZORPAY_ENABLED = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
@@ -124,6 +124,8 @@ export default function CheckoutView() {
 
   const deliveryFee = quote?.deliveryFee ?? 0
   const grandTotal = quote?.total ?? totalPrice
+  const validPincode = /^[0-9]{6}$/.test(form.pincode)
+  const supportedPincode = validPincode && DELIVERY_PINCODES.includes(form.pincode)
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -134,7 +136,8 @@ export default function CheckoutView() {
     if (!form.name.trim()) e.name = 'Required'
     if (!/^[0-9]{10}$/.test(form.phone.replace(/\D/g, ''))) e.phone = 'Enter a 10-digit mobile number'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email'
-    if (!/^[0-9]{6}$/.test(form.pincode)) e.pincode = 'Enter a 6-digit pincode'
+    if (!validPincode) e.pincode = 'Enter a 6-digit pincode'
+    else if (!supportedPincode) e.pincode = 'We’re expanding to this area. Delivery is not available here yet.'
     if (!form.houseNo.trim()) e.houseNo = 'Required'
     if (!form.area.trim()) e.area = 'Required'
     if (!form.city.trim()) e.city = 'Required'
@@ -164,7 +167,7 @@ export default function CheckoutView() {
     setQuote(null)
     setQuoteError('')
     setQuoteLoading(false)
-    if (!pin || !form.name || !form.email || !form.phone || !form.pincode || !form.houseNo || !form.area || !form.city || !items.length) return
+    if (!pin || !form.name || !form.email || !form.phone || !supportedPincode || !form.houseNo || !form.area || !form.city || !items.length) return
     const controller = new AbortController()
     setQuoteLoading(true)
     const timer = setTimeout(async () => {
@@ -449,21 +452,22 @@ export default function CheckoutView() {
 
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="col-span-full">
-                    <DeliveryPin value={pin} onChange={setPin} />
-                    <p className="text-sm">Delivery Rs.5/km by road. Free below 2 km or for purchases above Rs.379 in available pincodes.</p>
-                    <p role="status" className="my-2 text-sm">{quoteLoading ? 'Checking road distance…' : quote ? `Delivery: Rs.${quote.deliveryFee}. Total: Rs.${quote.total}` : 'Complete your address and pin to check delivery.'}</p>
-                    {(quoteError || errors.location || errors.delivery) && <p role="alert" className="text-sm text-red-700">{quoteError || errors.location || errors.delivery}</p>}
+                  <div className="col-span-full sm:max-w-sm">
+                    <TextField label="Delivery pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
+                    {validPincode && !supportedPincode && (
+                      <p className="mt-2 text-sm leading-relaxed text-amber-800">We’re expanding to your area. Delivery is not available at this pincode yet.</p>
+                    )}
                   </div>
-                  <TextField label="Pincode" value={form.pincode} onChange={set('pincode')} error={errors.pincode} placeholder="6-digit pincode" inputMode="numeric" maxLength={6} />
-                  <details className="col-span-full rounded-2xl border border-green-100 bg-green-50/60 px-4 py-3 text-sm text-green-950">
-                    <summary className="cursor-pointer font-700">View available delivery areas</summary>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {Object.entries(DELIVERY_AREAS).map(([code, area]) => (
-                        <div key={code}><strong>{code}</strong> · {area}</div>
-                      ))}
+                  <div className="col-span-full space-y-3">
+                    <DeliveryPin value={pin} onChange={setPin} />
+                    <div role="status" aria-live="polite" className={`flex items-start gap-3 rounded-2xl border px-4 py-3.5 text-sm ${quote ? 'border-green-200 bg-green-50 text-green-900' : quoteError ? 'border-red-200 bg-red-50 text-red-800' : 'border-gray-200 bg-gray-50 text-gray-600'}`}>
+                      {quoteLoading ? <Loader2 size={18} className="mt-0.5 shrink-0 animate-spin text-green-600" /> : quote ? <CircleCheckBig size={18} className="mt-0.5 shrink-0 text-green-600" /> : quoteError ? <Info size={18} className="mt-0.5 shrink-0" /> : <LocateFixed size={18} className="mt-0.5 shrink-0 text-green-700" />}
+                      <div>
+                        <p className="font-800">{quoteLoading ? 'Checking delivery' : quote ? 'Delivery confirmed' : quoteError ? 'Check your delivery details' : 'Pin your delivery entrance'}</p>
+                        <p className="mt-0.5 leading-relaxed">{quoteLoading ? 'This usually takes a few seconds.' : quote ? `${quote.deliveryFee === 0 ? 'Free delivery' : `Delivery ₹${quote.deliveryFee}`} · Order total ₹${quote.total}` : quoteError || errors.location || errors.delivery || 'Enter your address and place the pin at the entrance you want the rider to use.'}</p>
+                      </div>
                     </div>
-                  </details>
+                  </div>
                 </div>
                 <TextField icon={MapPin} label="Flat, House no., Building, Company" value={form.houseNo} onChange={set('houseNo')} error={errors.houseNo} placeholder="e.g. 12A, Green Residency" />
                 <TextField label="Area, Street, Sector, Village" value={form.area} onChange={set('area')} error={errors.area} placeholder="e.g. Anna Nagar, 2nd Main Road" />
