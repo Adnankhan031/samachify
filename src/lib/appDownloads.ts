@@ -22,7 +22,7 @@ import { NextResponse } from 'next/server'
 /** Set these environment variables in Vercel to override the fallback targets. */
 const FALLBACK = {
   customer:
-    'https://expo.dev/artifacts/eas/GJhLepb2UTQ-34MBL7SOLB1vjRadZtbmwqX2UKCUsoI.apk',
+    'https://expo.dev/artifacts/eas/-hknFPsybkmogiL5_n6ChxN1P6dOIdxaC-OQ4fzBVkk.apk',
   delivery:
     'https://expo.dev/artifacts/eas/Iy8trWZNp4s17rDDb2WvmTaQ9GGQ4JaXLZL_I-UUhXM.apk',
   admin:
