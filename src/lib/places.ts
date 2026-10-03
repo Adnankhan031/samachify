@@ -53,7 +53,7 @@ export async function autocompleteAddress(query: string, sessionToken: string): 
     error?: { message?: string }
   } | null
 
-  if (!response.ok) throw new PlacesError(data?.error?.message ?? 'Address search is temporarily unavailable.')
+  if (!response.ok) throw new PlacesError('Address search is temporarily unavailable. Use your current location or try again later.')
 
   return (data?.suggestions ?? []).flatMap(({ placePrediction }) => {
     if (!placePrediction?.placeId || !placePrediction.structuredFormat?.mainText?.text) return []
@@ -95,7 +95,7 @@ export async function placeDetails(placeId: string, sessionToken: string) {
   } | null
 
   if (!response.ok || !data?.location || !Number.isFinite(data.location.latitude) || !Number.isFinite(data.location.longitude)) {
-    throw new PlacesError(data?.error?.message ?? 'That address could not be opened. Please choose another result.')
+    throw new PlacesError('That address could not be opened. Please choose another result.')
   }
 
   const parts = data.addressComponents ?? []
