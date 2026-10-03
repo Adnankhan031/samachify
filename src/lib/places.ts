@@ -6,7 +6,10 @@ export class PlacesError extends Error {
 }
 
 function apiKey() {
-  const key = process.env.GOOGLE_PLACES_API_KEY
+  // A dedicated key is preferred. The existing server-only Routes key is a
+  // safe fallback when its Google Cloud API restriction also allows Places
+  // API (New), avoiding any key inside the mobile bundle.
+  const key = process.env.GOOGLE_PLACES_API_KEY ?? process.env.GOOGLE_ROUTES_API_KEY
   if (!key) throw new PlacesError('Address search is being configured. Use your current location for now.')
   return key
 }
