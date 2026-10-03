@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 export interface CartItem {
   productId: string
@@ -81,10 +82,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     })
     // Don't fling the drawer open on every add — just flash a small toast.
     setFlash({ name: item.name, image: item.image, key: Date.now() })
+    void trackEvent(EVENTS.CART_ITEM_ADDED, {
+      product_id: item.productId,
+      product_name: item.name,
+      quantity,
+      unit_price: item.price,
+    })
   }, [])
 
   const removeItem = useCallback((productId: string) => {
     setItems((prev) => prev.filter((i) => i.productId !== productId))
+    void trackEvent(EVENTS.CART_ITEM_REMOVED, { product_id: productId })
   }, [])
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
@@ -93,6 +101,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ? prev.filter((i) => i.productId !== productId)
         : prev.map((i) => (i.productId === productId ? { ...i, quantity } : i))
     )
+    if (quantity <= 0) void trackEvent(EVENTS.CART_ITEM_REMOVED, { product_id: productId })
   }, [])
 
   const clearCart = useCallback(() => {

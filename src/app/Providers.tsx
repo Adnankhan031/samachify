@@ -9,6 +9,7 @@ import { ActiveOrderProvider } from '@/context/ActiveOrderContext'
 import CartDrawer from '@/components/CartDrawer'
 import CartToast from '@/components/CartToast'
 import ActiveOrderPill from '@/components/ActiveOrderPill'
+import AnalyticsObserver from '@/components/AnalyticsObserver'
 
 /**
  * Client-side providers + global behaviours.
@@ -54,6 +55,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
+      <AnalyticsObserver />
       <ActiveOrderProvider>
         <CartProvider>
           {children}

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 export interface AuthUser {
   id: string
@@ -55,9 +56,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false)
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(toAuthUser(session?.user ?? null))
       setLoading(false)
+      if (event === 'SIGNED_IN' && session?.user) {
+        const marker = `${session.user.id}:${session.expires_at ?? 'session'}`
+        if (sessionStorage.getItem('samachify_last_sign_in_event') !== marker) {
+          sessionStorage.setItem('samachify_last_sign_in_event', marker)
+          void trackEvent(EVENTS.USER_SIGNED_IN, {
+            provider: session.user.app_metadata?.provider ?? 'email',
+          })
+        }
+      }
     })
 
     return () => {
@@ -83,6 +93,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: { data: { name: name.trim(), phone: cleanedPhone } },
       })
       if (error) return { error: error.message }
+      void trackEvent(EVENTS.USER_SIGNED_UP, {
+        provider: 'email',
+        confirmation_required: Boolean(data.user && !data.session),
+      })
       // If email confirmation is enabled, there's no active session yet.
       if (data.user && !data.session) {
         return { message: 'Check your email to confirm your account, then sign in.' }
@@ -121,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [supabase])
 
   const signOut = useCallback(async () => {
+    await trackEvent(EVENTS.USER_SIGNED_OUT)
     await supabase.auth.signOut()
     setUser(null)
   }, [supabase])

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from '@/lib/nav'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -13,6 +13,7 @@ import { useAuth } from '@/context/AuthContext'
 import DeliveryPin, { type DeliveryPoint } from '@/components/DeliveryPin'
 import { listAddresses, createAddress, type Address } from '@/lib/addresses'
 import { DELIVERY_PINCODES } from '@/lib/office'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 // Online payments show up only when the Razorpay public key is configured.
 const RAZORPAY_ENABLED = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
@@ -70,6 +71,18 @@ export default function CheckoutView() {
   const [orderId, setOrderId] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const checkoutTracked = useRef(false)
+  const verifiedAddressMarker = useRef('')
+
+  useEffect(() => {
+    if (checkoutTracked.current || !items.length) return
+    checkoutTracked.current = true
+    void trackEvent(EVENTS.CHECKOUT_STARTED, {
+      item_count: totalItems,
+      cart_value: totalPrice,
+      distinct_products: items.length,
+    })
+  }, [items, totalItems, totalPrice])
 
   // Saved addresses: load once the user is known, prefill from the default.
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([])
@@ -175,7 +188,18 @@ export default function CheckoutView() {
         const response = await fetch('/api/checkout/quote', { method:'POST', headers:{'Content-Type':'application/json'}, signal:controller.signal, body:JSON.stringify({customer:customerPayload(),items:cartPayload()}) })
         const data = await response.json()
         if (!response.ok) throw new Error(data.error || 'Could not check delivery')
-        if (!controller.signal.aborted) setQuote(data)
+        if (!controller.signal.aborted) {
+          setQuote(data)
+          const marker = `${form.pincode}:${data.total}`
+          if (verifiedAddressMarker.current !== marker) {
+            verifiedAddressMarker.current = marker
+            void trackEvent(EVENTS.CHECKOUT_ADDRESS_VERIFIED, {
+              pincode: form.pincode,
+              delivery_fee: data.deliveryFee,
+              order_total: data.total,
+            })
+          }
+        }
       } catch(e) { if(!controller.signal.aborted) setQuoteError(e instanceof Error ? e.message : 'Could not check delivery') }
       finally { if(!controller.signal.aborted) setQuoteLoading(false) }
     }, 600)
@@ -229,6 +253,11 @@ export default function CheckoutView() {
         return
       }
       await persistAddressIfNeeded()
+      void trackEvent(EVENTS.ORDER_PLACED, {
+        payment_method: 'cod',
+        item_count: totalItems,
+        order_value: data.total ?? grandTotal,
+      })
       setOrderId(data.orderId)
       clearCart()
     } catch {
@@ -287,11 +316,21 @@ export default function CheckoutView() {
             return
           }
           await persistAddressIfNeeded()
+          void trackEvent(EVENTS.ORDER_PLACED, {
+            payment_method: 'razorpay',
+            item_count: totalItems,
+            order_value: vdata.total ?? grandTotal,
+          })
           setOrderId(vdata.orderId)
           clearCart()
           setPlacing(false)
         },
         modal: { ondismiss: () => setPlacing(false) },
+      })
+      void trackEvent(EVENTS.PAYMENT_STARTED, {
+        payment_method: 'razorpay',
+        item_count: totalItems,
+        order_value: grandTotal,
       })
       rzp.on('payment.failed', () => {
         setSubmitError('Payment failed. Please try again.')

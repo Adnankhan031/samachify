@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 export type SupportStatus = 'active' | 'on_hold' | 'resolved'
 export type SupportPriority = 'normal' | 'high' | 'urgent'
@@ -79,6 +80,10 @@ export async function createSupportCase(input: { orderId: string; userId: string
   const opening = input.note.trim() || `I need help with this order. ${input.issue}.`
   const { error: messageError } = await client.from('support_messages').insert({ case_id: supportCase.id, sender_id: input.userId, sender_role: 'customer', body: opening })
   if (messageError) throw messageError
+  void trackEvent(EVENTS.SUPPORT_CASE_CREATED, {
+    category: input.category,
+    priority: input.priority ?? (input.issue === 'Product safety concern' ? 'urgent' : 'normal'),
+  })
   return supportCase as unknown as SupportCase
 }
 

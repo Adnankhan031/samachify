@@ -3,6 +3,7 @@ import '@/index.css'
 import 'leaflet/dist/leaflet.css'
 import Providers from './Providers'
 import Navbar from '@/components/Navbar'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://samachify.in'),
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   )

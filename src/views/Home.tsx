@@ -15,6 +15,7 @@ import ReviewMarquee from '@/components/ReviewMarquee'
 import { products, testimonials, faqs } from '../data/products'
 import Footer from '../components/Footer'
 import HeroSlider from '../components/HeroSlider'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 36 },
@@ -233,6 +234,7 @@ function HeroSection() {
             </div>
             <a
               href="/app"
+              onClick={() => void trackEvent(EVENTS.APP_DOWNLOAD_CLICKED, { placement: 'home_banner' })}
               className="group inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-green-600 px-3 py-2.5 text-xs font-800 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-green-700"
               aria-label="Download the Samachify app for Android"
             >

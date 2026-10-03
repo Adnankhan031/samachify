@@ -2,6 +2,7 @@
 
 import { Link } from '@/lib/nav'
 import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, MessageCircle, ShieldCheck, Sprout, Leaf, Smartphone } from 'lucide-react'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -115,7 +116,7 @@ export default function Footer() {
               <div className="text-white font-700 text-sm">Get the Samachify app</div>
               <p className="text-gray-500 text-xs mt-1">Order easily from your Android phone.</p>
             </div>
-            <a href="/app" className="group flex items-center gap-3 rounded-2xl border border-[#294b11] bg-[#142405] px-4 py-3 hover:bg-[#1c3309] hover:border-green-600 transition-colors sm:min-w-[240px]">
+            <a href="/app" onClick={() => void trackEvent(EVENTS.APP_DOWNLOAD_CLICKED, { placement: 'footer' })} className="group flex items-center gap-3 rounded-2xl border border-[#294b11] bg-[#142405] px-4 py-3 hover:bg-[#1c3309] hover:border-green-600 transition-colors sm:min-w-[240px]">
               <img src="/assets/logo.png" alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
               <span className="min-w-0">
                 <span className="block text-white text-sm font-700">Samachify app</span>

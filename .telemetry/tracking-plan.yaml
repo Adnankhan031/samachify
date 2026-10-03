@@ -1,0 +1,40 @@
+version: 1
+updated: 2026-10-03
+destinations:
+  - supabase_first_party
+  - vercel_web_analytics
+naming: object.action
+identity:
+  anonymous_id: persisted per browser installation or app installation
+  session_id: rotates after 30 minutes of inactivity
+  user_id: assigned by Supabase auth inside the database RPC
+privacy:
+  prohibited_properties:
+    - email
+    - name
+    - phone
+    - address
+    - latitude
+    - longitude
+    - message_text
+    - payment_identifier
+events:
+  - session.started
+  - page.viewed
+  - screen.viewed
+  - user.signed_up
+  - user.signed_in
+  - user.signed_out
+  - app.first_opened
+  - app.download_clicked
+  - product.viewed
+  - product.shared
+  - cart.item_added
+  - cart.item_removed
+  - checkout.started
+  - checkout.address_verified
+  - payment.started
+  - order.placed
+  - search.performed
+  - support.case_created
+

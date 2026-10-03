@@ -10,6 +10,7 @@ import {
 import { products, recipes, SAMBAR_VARIATION_NOTE } from '../data/products'
 import { useCart } from '@/context/CartContext'
 import Footer from '../components/Footer'
+import { EVENTS, trackEvent } from '@/lib/analytics'
 
 const spiceBadge: Record<string, string> = {
   Mild: 'bg-green-50 text-green-700 border-green-200',
@@ -72,6 +73,17 @@ export default function ProductDetail() {
     window.scrollTo(0, 0)
   }, [id])
 
+  useEffect(() => {
+    if (!product) return
+    void trackEvent(EVENTS.PRODUCT_VIEWED, {
+      product_id: product.id,
+      product_name: product.name,
+      category: product.category,
+      pack_size: product.packLabel,
+      price: product.price,
+    })
+  }, [product])
+
   const nutriRef = useRef<HTMLDivElement>(null)
   const nutriInView = useInView(nutriRef, { once: true, margin: '-60px' })
   const calories = useCountUp(parseNum(recipe?.nutrition.calories ?? '0'), nutriInView, 1600)
@@ -97,6 +109,10 @@ export default function ProductDetail() {
         await navigator.clipboard.writeText(window.location.href)
         alert('Link copied to clipboard!')
       }
+      void trackEvent(EVENTS.PRODUCT_SHARED, {
+        product_id: product.id,
+        product_name: product.name,
+      })
     } catch { /* ignore */ }
   }
 
