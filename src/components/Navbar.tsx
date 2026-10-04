@@ -52,11 +52,18 @@ export default function Navbar() {
           : `bg-white border-b border-transparent ${scrolled ? 'py-2 shadow-lg shadow-black/[0.06] backdrop-blur-xl' : 'py-3'}`
       }`}
     >
-      <nav className="relative flex items-center justify-between" style={{ paddingLeft: 'max(1.25rem, 5vw)', paddingRight: 'max(1.25rem, 5vw)' }}>
+      <nav
+        className="relative flex items-center justify-between"
+        style={{
+          paddingLeft: 'max(1.25rem, 5vw)',
+          paddingRight: 'max(1.25rem, 5vw)',
+          fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        }}
+      >
 
         {/* Logo — flex-1 so it anchors left */}
-        <Link to="/" aria-label="Samachify home" className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 flex-1">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden flex-shrink-0">
+        <Link to="/" aria-label="Samachify home" className="flex items-center gap-2.5 flex-shrink-0 flex-1">
+          <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden flex-shrink-0">
             <img
               src="/assets/logo.png"
               alt="Samachify — From Farm to Pan"
@@ -64,22 +71,25 @@ export default function Navbar() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <div className="font-display font-800 text-gray-900 tracking-tight leading-none text-lg sm:text-xl">
+            <div
+              className="font-display font-800 text-gray-900 tracking-tight leading-none whitespace-nowrap text-[1.1rem] sm:text-[1.35rem]"
+              style={{ fontFamily: "Sora, Inter, system-ui, sans-serif" }}
+            >
               SAMACHIFY
             </div>
-            <div className="font-700 tracking-[0.16em] text-green-700 leading-none mt-1 text-[0.55rem] sm:text-[0.62rem]">
+            <div className="font-700 tracking-[0.16em] text-green-700 leading-none mt-1 text-[0.55rem] sm:text-[0.65rem]">
               FROM FARM TO PAN
             </div>
           </div>
         </Link>
 
         {/* Desktop nav links — absolutely centered */}
-        <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+        <div className="hidden lg:flex items-center gap-0.5 xl:gap-2 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className={`relative px-4 py-2.5 text-sm font-600 transition-colors duration-200 whitespace-nowrap group ${
+              className={`relative px-3.5 xl:px-4 py-2.5 text-[0.95rem] xl:text-base font-600 transition-colors duration-200 whitespace-nowrap group ${
                 isActive(link.href)
                   ? 'text-gray-900'
                   : 'text-gray-500 hover:text-gray-900'
@@ -158,9 +168,9 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-700 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[0.95rem] xl:text-base font-700 text-gray-700 hover:bg-gray-100 transition-colors"
               >
-                <User size={16} /> Login
+                <User size={17} /> Login
               </Link>
             )}
           </div>

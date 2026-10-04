@@ -2,19 +2,18 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { Link } from '@/lib/nav'
-import { motion, useInView, useScroll, useTransform, type Variants } from 'framer-motion'
+import { motion, useInView, type Variants } from 'framer-motion'
 import {
-  ArrowRight, CheckCircle, ChevronDown, ChevronUp,
+  ArrowRight, CheckCircle, ChevronDown, ChevronUp, Play,
   Clock, Shield, Sprout, Zap, Star, Package, ChefHat,
-  Flame, GraduationCap, Video, Trash2, AlertTriangle,
-  Briefcase, Scissors, Recycle, Microscope, Thermometer,
-  TrendingUp, Mail, MessageCircle, Truck,
-  Quote, Leaf, FlaskConical, Droplets, Smartphone, Download, X,
+  Flame, GraduationCap, Video, AlertTriangle,
+  Scissors, Microscope, Thermometer,
+  TrendingUp, Mail, MessageCircle,
+  Quote, Leaf, FlaskConical, Droplets, Smartphone, Download, X, PackageCheck,
 } from 'lucide-react'
 import ReviewMarquee from '@/components/ReviewMarquee'
-import { products, testimonials, faqs } from '../data/products'
+import { products } from '../data/products'
 import Footer from '../components/Footer'
-import HeroSlider from '../components/HeroSlider'
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 36 },
@@ -45,8 +44,6 @@ function SectionLabelDark({ icon: Icon, text }: { icon: React.ElementType; text:
 
 // ─── 1. HERO ──────────────────────────────────────────────────────────────────
 function HeroSection() {
-  const { scrollY } = useScroll()
-  const imgY = useTransform(scrollY, [0, 700], ['0%', '6%'])
   const [showAppPrompt, setShowAppPrompt] = useState(true)
 
   useEffect(() => {
@@ -54,42 +51,42 @@ function HeroSection() {
   }, [])
 
   return (
-    <section className="relative overflow-hidden grain" style={{ minHeight: '100vh' }}>
+    <section className="relative overflow-hidden bg-[#f7fbee]" style={{ minHeight: '100svh' }}>
 
-      {/* ── Full-bleed rotating background slider ────────────────── */}
+      {/* ── One clear Sambar hero — no carousel ─────────────────── */}
       <motion.div
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-y-0 right-0 h-full w-full sm:w-[72%] lg:w-[70%] xl:w-[68%]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{ y: imgY }}
       >
-        <HeroSlider />
+        <img
+          src="/assets/hero-sambar-meal.webp"
+          alt="Samachify Sambar Pack with freshly cooked sambar"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: '62% center', filter: 'saturate(1.04) contrast(1.03)' }}
+        />
       </motion.div>
-
-      {/* ── Dark tint beneath the cream overlay ── */}
-      <div className="absolute inset-0 z-[5] pointer-events-none"
-        style={{ background: 'rgba(0,0,0,0.10)' }} />
 
       {/* ── Cream overlay — mobile: soft full-screen; desktop: directional fade ── */}
       <div className="absolute inset-0 z-10 sm:hidden"
-        style={{ background: 'rgba(247,251,238,0.87)' }} />
+        style={{ background: 'linear-gradient(to bottom, #f7fbee 0%, rgba(247,251,238,0.98) 48%, rgba(247,251,238,0.82) 63%, rgba(247,251,238,0.34) 78%, rgba(247,251,238,0.08) 90%, transparent 100%)' }} />
       <div className="absolute inset-0 z-10 hidden sm:block"
         style={{
-          background: 'linear-gradient(to right, #f7fbee 0%, #f7fbee 18%, rgba(247,251,238,0.97) 28%, rgba(247,251,238,0.88) 38%, rgba(247,251,238,0.55) 50%, rgba(247,251,238,0.18) 64%, transparent 80%)',
+          background: 'linear-gradient(to right, #f7fbee 0%, #f7fbee 30%, rgba(247,251,238,0.96) 38%, rgba(247,251,238,0.68) 46%, rgba(247,251,238,0.16) 56%, transparent 64%)',
         }}
       />
       {/* Bottom softener */}
       <div
         className="absolute inset-x-0 bottom-0 z-10 pointer-events-none"
-        style={{ height: '120px', background: 'linear-gradient(to top, rgba(247,251,238,0.55), transparent)' }}
+        style={{ height: '64px', background: 'linear-gradient(to top, rgba(247,251,238,0.18), transparent)' }}
       />
 
       {/* ── Text content ─────────────────────────────────────────── */}
       <div
-        className="relative z-20 flex flex-col justify-center w-full sm:max-w-[52%]"
+        className="relative z-20 flex flex-col justify-center w-full sm:max-w-[52%] lg:max-w-[50%] 2xl:max-w-[46%]"
         style={{
-          minHeight: '100vh',
+          minHeight: '100svh',
           paddingTop: '7rem',
           paddingBottom: '3.5rem',
           paddingLeft: 'max(1.25rem, 5vw)',
@@ -103,10 +100,10 @@ function HeroSection() {
           className="mb-5"
         >
           <div className="text-green-700 font-800 tracking-[0.2em] uppercase leading-none" style={{ fontSize: '0.68rem' }}>
-            South India's First
+            Fresh South Indian
           </div>
           <div className="text-green-600/70 font-700 tracking-[0.2em] uppercase mt-1" style={{ fontSize: '0.68rem' }}>
-            Fresh Ingredient Meal Kit
+            Ingredient Meal Kits
           </div>
         </motion.div>
 
@@ -122,30 +119,23 @@ function HeroSection() {
           }}
         >
           <motion.span
-            className="text-gray-900 block"
+            className="text-gray-900 block sm:whitespace-nowrap"
             initial={{ opacity: 0, y: 52 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
-            From Farm To Pan.
+            Real South Indian Food.
           </motion.span>
           <motion.span
             className="text-gray-900 block"
             initial={{ opacity: 0, y: 52 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
-            Traditional South Indian
-          </motion.span>
-          <motion.span
-            className="text-gray-900 block"
-            initial={{ opacity: 0, y: 52 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
-          >
-            Cooking.
+            Without the Prep.
           </motion.span>
           <motion.span
             className="block mt-1.5"
             initial={{ opacity: 0, y: 52 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.7, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
             style={{
               background: 'linear-gradient(130deg, #2a4f07 0%, #498a0c 48%, #9abb50 100%)',
               WebkitBackgroundClip: 'text',
@@ -153,7 +143,7 @@ function HeroSection() {
               backgroundClip: 'text',
             }}
           >
-            Ready In 10–15 Minutes.
+            Open. Cook. Eat.
           </motion.span>
         </h1>
 
@@ -164,13 +154,13 @@ function HeroSection() {
           className="mb-7"
         >
           <p className="text-gray-600 mb-4" style={{ fontSize: 'clamp(0.9rem, 1.35vw, 1.05rem)', lineHeight: 1.74, maxWidth: '420px' }}>
-            Freshly sourced ingredients, pre-cut and pre-measured, delivered as ready-to-cook meal kits inspired by traditional South Indian recipes.
+            Everything you need to cook your favourite South Indian dishes, already cleaned, cut and measured.
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             {([
-              { icon: Droplets, label: 'No Washing.' },
-              { icon: Scissors, label: 'No Cutting.' },
-              { icon: Zap,      label: 'No Guesswork.' },
+              { icon: Droplets, label: 'Pre-cleaned.' },
+              { icon: Scissors, label: 'Pre-cut.' },
+              { icon: Package,  label: 'Pre-measured.' },
             ] as { icon: React.ElementType; label: string }[]).map(({ icon: Icon, label }) => (
               <span key={label} className="inline-flex items-center gap-1.5 text-gray-700 font-600" style={{ fontSize: '0.85rem' }}>
                 <Icon size={13} className="text-green-600 flex-shrink-0" />
@@ -184,7 +174,7 @@ function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.64, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex flex-wrap gap-3 mb-8"
+          className="flex flex-wrap gap-3"
         >
           <Link
             to="/products"
@@ -196,8 +186,8 @@ function HeroSection() {
             Explore Products
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
           </Link>
-          <Link
-            to="/technology"
+          <a
+            href="#how-it-works"
             className="inline-flex items-center gap-2.5 bg-white/90 border border-gray-200 text-gray-800 font-700 rounded-2xl transition-all duration-250 hover:-translate-y-1 hover:border-green-300 hover:bg-white"
             style={{ fontSize: '1rem', padding: '1.05rem 2.3rem', boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}
             onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 10px 28px rgba(0,0,0,0.12)')}
@@ -207,7 +197,7 @@ function HeroSection() {
               <span className="w-0 h-0 border-t-[4.5px] border-t-transparent border-b-[4.5px] border-b-transparent border-l-[8px] border-l-green-600 ml-0.5" />
             </span>
             How It Works
-          </Link>
+          </a>
         </motion.div>
 
         {/* Samachify app prompt — inline on phones so mobile browser controls never cover it. */}
@@ -217,7 +207,7 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.97 }}
             transition={{ duration: 0.5, delay: 0.78, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-30 mb-6 flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-green-200 bg-white/95 p-3 pr-9 shadow-[0_14px_40px_rgba(18,45,4,0.18)] backdrop-blur-md sm:fixed sm:bottom-6 sm:left-auto sm:right-6 sm:mb-0 sm:max-w-[430px] sm:shadow-[0_18px_60px_rgba(18,45,4,0.24)]"
+            className="relative z-30 mt-6 flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-green-200 bg-white/95 p-3 pr-9 shadow-[0_14px_40px_rgba(18,45,4,0.18)] backdrop-blur-md sm:fixed sm:bottom-6 sm:left-auto sm:right-6 sm:mt-0 sm:max-w-[430px] sm:shadow-[0_18px_60px_rgba(18,45,4,0.24)]"
             aria-label="Samachify Android app download"
           >
             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-green-900 p-1 shadow-sm sm:h-12 sm:w-12 sm:p-1.5">
@@ -253,28 +243,6 @@ function HeroSection() {
           </motion.aside>
         )}
 
-        {/* Trust indicators */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.82, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-3 pt-5 border-t border-gray-300/50"
-        >
-          {[
-            { metric: '10-15 Min', label: 'Cooking Time'       },
-            { metric: '100%',      label: 'Farm Fresh'         },
-            { metric: '0%',        label: 'Preservatives'      },
-            { metric: '4',         label: 'Authentic Recipes'  },
-          ].map(({ metric, label }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.88 + i * 0.08, duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              <div className="text-gray-900 font-800 leading-none" style={{ fontSize: '1.05rem' }}>{metric}</div>
-              <div className="text-gray-400 font-500 mt-0.5" style={{ fontSize: '0.7rem' }}>{label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
       </div>
 
       {/* ── Steam wisps ──────────────────────────────────────────── */}
@@ -307,20 +275,130 @@ function HeroSection() {
   )
 }
 
-// ─── 2. PROBLEM ───────────────────────────────────────────────────────────────
+// ─── 2. PROOF CARDS ──────────────────────────────────────────────────────────
+function ProofCardsSection() {
+  const ref = useRef<HTMLElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+
+  const proofPoints = [
+    { icon: Clock, value: '10–15 Min', label: 'Cooking Time', detail: 'From pack to plate' },
+    { icon: Sprout, value: '100%', label: 'Farm Fresh', detail: 'Ingredients prepared fresh' },
+    { icon: Shield, value: '0%', label: 'Preservatives', detail: 'Freshness without shortcuts' },
+    { icon: ChefHat, value: '4', label: 'Authentic Recipes', detail: 'South Indian favourites' },
+  ]
+
+  return (
+    <section ref={ref} className="relative overflow-visible pb-12 pt-8 sm:pb-20 sm:pt-12" style={{ background: '#f7fbef' }}>
+      <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 34 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="overflow-hidden rounded-3xl border border-green-100 bg-white shadow-[0_18px_60px_rgba(31,72,10,0.10)]"
+        >
+          <div className="flex flex-col gap-2 border-b border-green-100 px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-8 sm:py-6">
+            <div>
+              <p className="text-[11px] font-800 uppercase tracking-[0.18em] text-green-600">Why Samachify</p>
+              <h2 className="mt-1 font-display text-xl font-800 tracking-tight text-gray-900 sm:text-2xl">Fresh food, with the prep already done.</h2>
+            </div>
+            <p className="max-w-md text-sm leading-relaxed text-gray-500">Everything is prepared around one goal: helping you cook a proper meal with less time and effort.</p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4">
+            {proofPoints.map(({ icon: Icon, value, label, detail }, index) => (
+              <motion.div
+                key={label}
+                custom={index}
+                initial="hidden"
+                animate={inView ? 'show' : 'hidden'}
+                variants={fadeUp}
+                className={`group relative min-h-[168px] p-5 sm:min-h-[182px] sm:p-7 ${
+                  index % 2 === 0 ? 'border-r border-green-100' : ''
+                } ${index < 2 ? 'border-b border-green-100 lg:border-b-0' : ''} ${
+                  index === 1 ? 'lg:border-r' : ''
+                } ${index === 2 ? 'lg:border-r' : ''}`}
+              >
+                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-2xl border border-green-200 bg-green-50 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:bg-green-100 sm:h-11 sm:w-11">
+                  <Icon size={19} className="text-green-700" />
+                </div>
+                <div className="font-display text-2xl font-800 leading-none tracking-tight text-gray-900 sm:text-[1.75rem]">{value}</div>
+                <div className="mt-2 text-sm font-700 text-gray-800">{label}</div>
+                <div className="mt-1 text-xs leading-relaxed text-gray-400">{detail}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// ─── 3. PREPARATION PROMISE BANNER ───────────────────────────────────────────
+function ValueBannerSection() {
+  const ref = useRef<HTMLElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+
+  return (
+    <section ref={ref} className="overflow-hidden pb-14 sm:pb-28" style={{ background: '#f7fbef' }}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 34 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative min-h-[430px] overflow-hidden rounded-3xl sm:min-h-[390px]"
+          style={{ boxShadow: '0 24px 70px rgba(11,22,6,0.18)' }}
+        >
+          <img
+            src="/assets/product-kitchen-1.jpg"
+            alt="Samachify Sambar Pack with fresh prepared ingredients"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: '62% center' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(90deg, rgba(5,13,3,0.98) 0%, rgba(8,22,4,0.94) 38%, rgba(8,22,4,0.62) 57%, rgba(8,22,4,0.10) 100%)' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent lg:hidden" />
+
+          <div className="relative z-10 flex min-h-[430px] max-w-2xl flex-col justify-center px-6 py-10 sm:min-h-[390px] sm:px-10 lg:px-14">
+            <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-green-300/25 bg-green-200/10 px-3.5 py-1.5 backdrop-blur-sm">
+              <PackageCheck size={13} className="text-green-300" />
+              <span className="text-[11px] font-700 uppercase tracking-[0.16em] text-green-200">The Samachify Promise</span>
+            </div>
+            <h2 className="max-w-xl font-display text-3xl font-black leading-[1.08] tracking-tighter text-white sm:text-4xl lg:text-5xl">
+              You handle the cooking.<br />
+              <span className="text-green-300">We handle the preparation.</span>
+            </h2>
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-green-50/70 sm:text-lg">
+              Pre-cleaned. Pre-cut. Pre-measured. Ready for the pan.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                to="/products/sambar-pack"
+                className="group inline-flex items-center gap-2.5 rounded-xl bg-green-300 px-5 py-3 text-sm font-800 text-green-950 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-green-200"
+              >
+                Explore Sambar Pack
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <span className="inline-flex items-center gap-2 text-xs font-600 text-green-100/65">
+                <Clock size={14} className="text-green-300" /> Ready in about 10–15 minutes
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// ─── 10. PREPARATION PROBLEM ─────────────────────────────────────────────────
 function ProblemSection() {
   const ref = useRef<HTMLElement>(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
-  const problems = [
-    { icon: Clock, num: '01', title: 'Time-Consuming Preparation', desc: 'Cleaning, peeling, cutting, and organising ingredients can take longer than cooking itself.', accent: 'from-red-500 to-orange-500' },
-    { icon: Trash2, num: '02', title: 'Food Wastage', desc: 'Buying vegetables individually often leads to unused leftovers and unnecessary waste.', accent: 'from-orange-500 to-amber-500' },
-    { icon: AlertTriangle, num: '03', title: 'Hygiene Concerns', desc: 'Busy consumers worry about the cleanliness and quality of ingredients purchased from different sources.', accent: 'from-amber-500 to-yellow-500' },
-    { icon: Briefcase, num: '04', title: 'Busy Lifestyle Challenges', desc: 'Working professionals, students, and families often choose unhealthy alternatives because cooking from scratch requires too much preparation.', accent: 'from-red-600 to-red-400' },
-  ]
-
   const beforeSteps = ['Buy Vegetables from market', 'Wash under running water (10 min)', 'Peel and cut everything (20 min)', 'Sort & measure ingredients', 'Deal with excess and waste', 'Finally start cooking']
   const afterSteps = ['Open your Samachify kit', 'Follow the step-by-step recipe card', 'Enjoy an authentic South Indian meal']
+  const prepFlow = ['Shopping', 'Washing', 'Cutting', 'Measuring', 'Cooking']
 
   return (
     <section ref={ref} className="py-14 sm:py-28 overflow-hidden" style={{ background: '#f7fbef' }}>
@@ -328,54 +406,30 @@ function ProblemSection() {
         <motion.div
           initial={{ opacity: 0, y: 28 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12 sm:mb-20"
+          className="text-center mb-10 sm:mb-14"
         >
-          <SectionLabel icon={AlertTriangle} text="The Problem" />
+          <SectionLabel icon={AlertTriangle} text="The Preparation Problem" />
           <h2 className="font-display font-black text-gray-900 tracking-tighter mb-5 leading-[1.05]"
             style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
-            Why Is Cooking<br />
+            Love Home-Cooked Food.<br />
             <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #dc2626, #f97316)' }}>
-              Becoming Difficult?
+              Hate the Preparation?
             </span>
           </h2>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
-            Traditional South Indian cooking is rich in flavour — but the preparation effort makes it feel impossible for busy modern households.
+            Shopping, washing, cutting and measuring ingredients can take longer than cooking itself.
           </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            {prepFlow.map((step, index) => (
+              <span key={step} className="flex items-center gap-2">
+                <span className="rounded-full border border-orange-100 bg-white px-3.5 py-1.5 text-xs font-700 uppercase tracking-wide text-gray-600 shadow-sm">
+                  {step}
+                </span>
+                {index < prepFlow.length - 1 && <ArrowRight size={12} className="text-orange-300" />}
+              </span>
+            ))}
+          </div>
         </motion.div>
-
-        {/* Problem cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
-          {problems.map((p, i) => {
-            const Icon = p.icon
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative bg-white rounded-3xl overflow-hidden hover:-translate-y-2 transition-all duration-400"
-                style={{ border: '1px solid #f0f0ef', boxShadow: '0 2px 20px rgba(0,0,0,0.06)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.13)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 2px 20px rgba(0,0,0,0.06)' }}
-              >
-                <div className={`h-0.5 w-full bg-gradient-to-r ${p.accent}`} />
-                <div className="absolute top-3 right-4 font-display font-black text-gray-100 select-none pointer-events-none"
-                  style={{ fontSize: '5rem', lineHeight: 1 }}>
-                  {p.num}
-                </div>
-                <div className="p-7 relative z-10">
-                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-5"
-                    style={{ background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.13)' }}>
-                    <Icon size={20} className="text-red-400" />
-                  </div>
-                  <h3 className="font-700 text-gray-900 text-base mb-2.5 leading-snug">{p.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
 
         {/* Before / After */}
         <motion.div
@@ -466,12 +520,10 @@ function ProblemSection() {
 // ─── 3. SOLUTION ──────────────────────────────────────────────────────────────
 function SolutionSection() {
   const solutions = [
-    { icon: Sprout, num: '01', title: 'Farm-Sourced Ingredients', desc: 'Fresh vegetables sourced directly from trusted local farmers in Kanchipuram. Same-day processing.' },
-    { icon: Microscope, num: '02', title: 'Hygienic Processing', desc: 'Ingredients are cleaned, inspected, and prepared under HACCP-compliant controlled conditions.' },
-    { icon: Scissors, num: '03', title: 'Pre-Cut Preparation', desc: 'No washing. No peeling. No chopping. Everything arrives ready for the pan, precisely portioned.' },
-    { icon: Package, num: '04', title: 'Smart Portioning', desc: 'Perfect ingredient quantities for the exact dish. No guessing, no excess, no last-minute store runs.' },
-    { icon: Recycle, num: '05', title: 'Less Waste', desc: 'Use exactly what you need. Save food. Save money. Our packs reduce food waste by up to 90%.' },
-    { icon: ChefHat, num: '06', title: 'Ready To Cook', desc: 'Authentic South Indian dishes — sambar, kuzhambu, chutneys — made easier than ever before.' },
+    { icon: Sprout, num: '01', title: 'Fresh Ingredients', desc: 'Vegetables are selected from trusted local sourcing partners for every preparation cycle.' },
+    { icon: Droplets, num: '02', title: 'Clean & Ready', desc: 'Ingredients are washed, inspected, cut, and prepared before they reach your kitchen.' },
+    { icon: Shield, num: '03', title: 'Safe & Fresh', desc: 'Controlled handling and cold-chain practices protect quality from preparation to delivery.' },
+    { icon: Package, num: '04', title: 'You Know What You Get', desc: 'See the ingredients, portions, pack information, and cooking steps before you begin.' },
   ]
 
   return (
@@ -489,21 +541,21 @@ function SolutionSection() {
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full mb-6">
             <Leaf size={13} className="text-green-400" />
-            <span className="text-green-400 text-xs font-700 tracking-widest uppercase">Our Solution</span>
+            <span className="text-green-400 text-xs font-700 tracking-widest uppercase">Why Trust Samachify</span>
           </div>
           <h2 className="font-display font-black text-white tracking-tighter mb-5 leading-[1.05]"
             style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
-            From Farm{' '}
+            Fresh Ingredients.{' '}
             <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
-              To Pan
+              Carefully Prepared.
             </span>
           </h2>
           <p className="text-green-100/45 text-lg max-w-2xl mx-auto leading-relaxed">
-            Samachify provides pre-cleaned, pre-cut, perfectly portioned ingredient packs that allow customers to cook authentic homemade dishes in minutes.
+            We take care of the preparation so you can cook fresh South Indian food with confidence.
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {solutions.map((s, i) => {
             const Icon = s.icon
             return (
@@ -555,10 +607,11 @@ function HowItWorksSection() {
   const lineInView = useInView(lineRef, { once: true, margin: '-40px' })
 
   const steps = [
-    { icon: Package, title: 'Choose Your Dish', desc: 'Select from ready-to-cook packs — Sambar, Kara Kuzhambu, Coconut Chutney, or Tomato Chutney.' },
-    { icon: Sprout, title: 'Fresh Ingredients Prepared', desc: 'We source fresh vegetables directly from farmers and prepare them hygienically.' },
-    { icon: Truck, title: 'Delivered Fresh', desc: 'Your ingredient pack is packed using Modified Atmosphere Packaging technology and delivered fresh and ready to cook.' },
-    { icon: ChefHat, title: 'Cook & Enjoy', desc: 'Open the pack, add ingredients according to instructions, and enjoy delicious homemade food — no experience needed. Choose Pack → Open Pack → Add Ingredients → Cook → Serve.' },
+    { icon: Package, title: 'Choose', desc: 'Pick the South Indian dish and serving size that suits your table.' },
+    { icon: PackageCheck, title: 'Open', desc: 'Open a pack filled with cleaned, cut, and measured ingredients.' },
+    { icon: Sprout, title: 'Add', desc: 'Add each prepared ingredient to the pan in the guided order.' },
+    { icon: Flame, title: 'Cook', desc: 'Follow the simple instructions and cook for around 10–15 minutes.' },
+    { icon: ChefHat, title: 'Serve', desc: 'Finish, serve hot, and enjoy fresh home-cooked South Indian food.' },
   ]
 
   const miniFlow = ['Choose Pack', 'Open Pack', 'Add Ingredients', 'Cook', 'Serve']
@@ -572,7 +625,7 @@ function HowItWorksSection() {
   ]
 
   return (
-    <section ref={ref} className="py-14 sm:py-28 overflow-hidden" style={{ background: '#f7fbef' }}>
+    <section ref={ref} id="how-it-works" className="py-14 sm:py-28 overflow-hidden" style={{ background: '#f7fbef' }}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 28 }} animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -582,12 +635,12 @@ function HowItWorksSection() {
           <SectionLabel icon={Zap} text="How It Works" />
           <h2 className="font-display font-black text-gray-900 tracking-tighter mb-5 leading-[1.05]"
             style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
-            How Samachify{' '}
+            From Pack{' '}
             <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #498a0c, #c1ff72)' }}>
-              Works
+              To Plate
             </span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">From choosing your dish to your table — in 4 simple steps</p>
+          <p className="text-gray-500 text-lg max-w-xl mx-auto">Five simple steps between choosing dinner and serving it.</p>
 
           <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
             {miniFlow.map((label, i) => (
@@ -684,13 +737,107 @@ function HowItWorksSection() {
   )
 }
 
-// ─── 5. FEATURED PRODUCTS ─────────────────────────────────────────────────────
+const homepageFaqs = [
+  { id: 'home-faq-1', question: 'What comes inside a Samachify pack?', answer: 'You receive the fresh ingredients for the selected dish, already cleaned, cut, measured, and packed with the essential spice components and guided cooking steps.' },
+  { id: 'home-faq-2', question: 'What do I need at home?', answer: 'Keep basic cooking oil, water, and salt ready where the recipe calls for them. The main ingredients and recipe-specific preparation are included.' },
+  { id: 'home-faq-3', question: 'How long does cooking take?', answer: 'Most Samachify dishes are designed to be cooked in approximately 10–15 minutes.' },
+  { id: 'home-faq-4', question: 'Do I need cooking experience?', answer: 'No. The ingredients arrive prepared and the step-by-step instructions are designed for beginners as well as experienced home cooks.' },
+  { id: 'home-faq-5', question: 'Are the ingredients fresh and preservative-free?', answer: 'We use fresh ingredients, controlled preparation, and cold-chain handling. Our current meal kits are made without added preservatives.' },
+  { id: 'home-faq-6', question: 'How should I store the pack?', answer: 'Keep the pack refrigerated and use it before the date printed on its label.' },
+  { id: 'home-faq-7', question: 'Which serving sizes are available?', answer: 'Serving options vary by dish and may include single, two-person, and family packs. The available size is shown before you add a product to your cart.' },
+  { id: 'home-faq-8', question: 'Where does Samachify deliver?', answer: 'Delivery is available in selected Chennai service areas. Your exact delivery pin and pincode are checked during checkout.' },
+]
+
+// ─── 5. COOKING DEMONSTRATION ───────────────────────────────────────────────
+function DemoSection() {
+  const ref = useRef<HTMLElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const demoSteps = ['Open the pack', 'Take out the prepared ingredients', 'Add them to the pan', 'Cook with the guided steps', 'Serve fresh and hot']
+
+  return (
+    <section ref={ref} id="cooking-demo" className="py-14 sm:py-28 overflow-hidden bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -34 }}
+          animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden rounded-3xl group"
+          style={{ minHeight: 'clamp(360px, 48vw, 560px)', boxShadow: '0 28px 70px rgba(11,22,6,0.16)' }}
+        >
+          <img
+            src="/assets/product-kitchen-2.jpg"
+            alt="Samachify Sambar Pack ready to be cooked"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(5,9,2,0.88), rgba(5,9,2,0.05) 65%)' }} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Link
+              to="/products/sambar-pack"
+              className="w-14 h-14 rounded-2xl bg-green-200 text-green-950 flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-105 hover:bg-green-100"
+              aria-label="See the Sambar Pack cooking guide"
+            >
+              <Play size={20} fill="currentColor" className="ml-0.5" />
+            </Link>
+          </div>
+          <div className="absolute left-5 right-5 bottom-5 sm:left-7 sm:right-7 sm:bottom-7">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-700 uppercase tracking-wider text-green-200 backdrop-blur-md">
+              <Video size={12} /> Sambar preparation
+            </div>
+            <h3 className="font-display font-800 text-white text-xl sm:text-2xl mt-3">See the process before you cook.</h3>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <SectionLabel icon={Video} text="Cooking Demo" />
+          <h2 className="font-display font-black text-gray-900 tracking-tighter mb-5 leading-[1.05]" style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
+            See How{' '}
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #498a0c, #c1ff72)' }}>
+              Easy It Is
+            </span>
+          </h2>
+          <p className="text-gray-500 text-lg leading-relaxed max-w-xl">
+            The preparation is completed before the pack reaches you. Your part is simply opening, adding, cooking, and serving.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-3 mt-8">
+            {demoSteps.map((step, index) => (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 14 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: 0.24 + index * 0.07 }}
+                className="flex items-center gap-3 rounded-2xl border border-green-100 bg-green-50/60 p-3.5"
+              >
+                <span className="w-7 h-7 rounded-xl bg-green-600 text-white flex items-center justify-center flex-shrink-0 text-xs font-800">{index + 1}</span>
+                <span className="text-sm font-600 text-gray-700">{step}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          <Link
+            to="/products/sambar-pack"
+            className="group inline-flex items-center gap-2.5 bg-green-600 text-white font-700 rounded-2xl transition-all duration-250 hover:-translate-y-1 hover:bg-green-700 mt-8"
+            style={{ fontSize: '0.95rem', padding: '0.95rem 1.5rem', boxShadow: '0 4px 22px rgba(73,138,12,0.28)' }}
+          >
+            View Sambar Pack <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// ─── 6. FEATURED PRODUCTS ─────────────────────────────────────────────────────
 function FeaturedProductsSection() {
   const ref = useRef<HTMLElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="py-14 sm:py-28 overflow-hidden"
+    <section ref={ref} id="products" className="py-14 sm:py-28 overflow-hidden"
       style={{ background: 'linear-gradient(160deg, #050902 0%, #0b1606 55%, #142405 100%)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -707,13 +854,13 @@ function FeaturedProductsSection() {
             </div>
             <h2 className="font-display font-black text-white tracking-tighter"
               style={{ fontSize: 'clamp(2rem, 4.5vw, 3.2rem)' }}>
-              Authentic South Indian{' '}
+              What Are You{' '}
               <span className="text-transparent bg-clip-text"
                 style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
-                Meal Kits
+                Cooking Today?
               </span>
             </h2>
-            <p className="text-green-100/35 mt-2 text-sm">Four dish-specific packs. No prep, no waste — ready in minutes.</p>
+            <p className="text-green-100/35 mt-2 text-sm">Choose a dish. The ingredients are ready for you.</p>
           </div>
           <Link to="/products"
             style={{ color: '#fff' }}
@@ -905,10 +1052,10 @@ function WhyChooseSection() {
           <SectionLabel icon={Star} text="Why Samachify" />
           <h2 className="font-display font-black text-gray-900 tracking-tighter mb-4"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
-            What Makes Samachify Different?
+            Everything You Need. No Prep Needed.
           </h2>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            We don&apos;t just cut vegetables. We preserve tradition and make it accessible for everyone.
+            The preparation is already done, while the cooking stays fresh and yours.
           </p>
         </motion.div>
 
@@ -930,15 +1077,15 @@ function WhyChooseSection() {
               <div className="w-14 h-14 rounded-2xl bg-green-500/15 border border-green-400/20 flex items-center justify-center mb-6">
                 <TrendingUp size={26} className="text-green-400" />
               </div>
-              <div className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-green-400 leading-none mb-2">70%</div>
-              <div className="font-display font-700 text-white text-lg sm:text-2xl mb-3 sm:mb-4">Time Saved</div>
+              <div className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-green-400 leading-none mb-2">Ready</div>
+              <div className="font-display font-700 text-white text-lg sm:text-2xl mb-3 sm:mb-4">Pre-Cleaned & Pre-Cut</div>
               <p className="text-green-100/50 text-sm leading-relaxed max-w-xs">
-                From 45 minutes of chopping and prep to just 10–15 minutes. Every Samachify pack eliminates the prep entirely.
+                Vegetables arrive washed, inspected, cut, and portioned for the dish you selected.
               </p>
             </div>
             <div className="flex items-center gap-2 mt-6">
               <CheckCircle size={15} className="text-green-400" />
-              <span className="text-green-300/70 text-sm font-600">Verified by our early customers</span>
+              <span className="text-green-300/70 text-sm font-600">Prepared for the pan</span>
             </div>
           </div>
 
@@ -962,16 +1109,16 @@ function WhyChooseSection() {
           <motion.div custom={3} initial="hidden" animate={inView ? 'show' : 'hidden'} variants={fadeUp}
             className="p-6 rounded-3xl bg-green-50 border border-green-100 shadow-sm card-hover">
             <GraduationCap size={24} className="text-green-700 mb-4" />
-            <div className="font-700 text-gray-900 mb-1.5">No Experience Needed</div>
-            <p className="text-gray-500 text-sm">Beginner-friendly instructions. Anyone can cook authentic South Indian food.</p>
+            <div className="font-700 text-gray-900 mb-1.5">Pre-Measured Portions</div>
+            <p className="text-gray-500 text-sm">The right quantity for your selected serving size, with less guesswork and waste.</p>
           </motion.div>
 
           {/* Cell 5 */}
           <motion.div custom={4} initial="hidden" animate={inView ? 'show' : 'hidden'} variants={fadeUp}
             className="p-6 rounded-3xl bg-white border border-gray-100 shadow-sm card-hover">
             <Video size={24} className="text-blue-500 mb-4" />
-            <div className="font-700 text-gray-900 mb-1.5">Guided Recipe Videos</div>
-            <p className="text-gray-500 text-sm">Step-by-step video guidance. Cook with confidence every single time.</p>
+            <div className="font-700 text-gray-900 mb-1.5">Guided Cooking</div>
+            <p className="text-gray-500 text-sm">Clear, beginner-friendly steps keep the cooking process simple and confident.</p>
           </motion.div>
 
           {/* Cell 6 — full width strip */}
@@ -1180,7 +1327,7 @@ function FAQSection() {
         </motion.div>
 
         <div className="space-y-3">
-          {faqs.map((faq, i) => (
+          {homepageFaqs.map((faq, i) => (
             <motion.div
               key={faq.id} custom={i}
               initial="hidden" animate={inView ? 'show' : 'hidden'} variants={fadeUp}
@@ -1188,6 +1335,7 @@ function FAQSection() {
             >
               <button
                 onClick={() => setOpen(open === faq.id ? null : faq.id)}
+                aria-expanded={open === faq.id}
                 className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-gray-50/70 transition-colors"
               >
                 <span className="font-600 text-gray-900 text-sm leading-snug">{faq.question}</span>
@@ -1239,16 +1387,16 @@ function ContactCTASection() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}>
-          <SectionLabelDark icon={Sprout} text="Get In Touch" />
+          <SectionLabelDark icon={Sprout} text="Start Cooking" />
           <h2 className="font-display font-black text-white tracking-tighter mb-5"
             style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
-            Ready to cook tradition<br />
+            Ready to cook<br />
             <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c1ff72, #9abb50)' }}>
-              in minutes?
+              without the prep?
             </span>
           </h2>
           <p className="text-green-100/45 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            We&apos;re launching soon in Chennai. Get early access, ask a question, or just say hello.
+            Pick your favourite South Indian dish. We&apos;ll prepare the ingredients so you can enjoy the cooking.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
@@ -1287,12 +1435,15 @@ export default function Home() {
     <>
       <main className="overflow-x-hidden">
         <HeroSection />
-        <ProblemSection />
+        <ProofCardsSection />
+        <ValueBannerSection />
         <SolutionSection />
-        <HowItWorksSection />
         <FeaturedProductsSection />
-        <WhyChooseSection />
+        <HowItWorksSection />
+        <DemoSection />
         <TechHighlightsSection />
+        <WhyChooseSection />
+        <ProblemSection />
         <TestimonialsSection />
         <FAQSection />
         <ContactCTASection />
